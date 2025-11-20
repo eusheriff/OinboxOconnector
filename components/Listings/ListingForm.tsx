@@ -1,7 +1,9 @@
+
 import React, { useState } from 'react';
 import { Platform } from '../../types';
-import { Upload, Sparkles, Check, AlertCircle, X, Loader2, Facebook, Instagram, Eye, Image as ImageIcon } from 'lucide-react';
+import { Upload, Sparkles, Check, AlertCircle, X, Loader2, Facebook, Instagram, Eye, Image as ImageIcon, CloudLightning } from 'lucide-react';
 import { generatePropertyDescription, analyzePropertyImage } from '../../services/geminiService';
+import { uploadImageToCloudflare } from '../../services/integrationService';
 
 const ListingForm: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -17,6 +19,7 @@ const ListingForm: React.FC = () => {
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isAnalyzingImage, setIsAnalyzingImage] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [success, setSuccess] = useState(false);
 
@@ -42,25 +45,34 @@ const ListingForm: React.FC = () => {
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const url = URL.createObjectURL(file);
       
-      // Adiciona imagem à visualização
-      setFormData(prev => ({ ...prev, images: [...prev.images, url] }));
+      // 1. Upload para Cloudflare
+      setIsUploading(true);
+      try {
+        const cloudflareUrl = await uploadImageToCloudflare(file);
+        
+        // Adiciona imagem à visualização usando a URL retornada (simulada ou real)
+        setFormData(prev => ({ ...prev, images: [...prev.images, cloudflareUrl] }));
 
-      // Se for a primeira imagem, sugerir analise automática
-      if (formData.features.length < 5) {
-          const confirmAnalyze = window.confirm("Gostaria que a IA analisasse essa foto para preencher as características automaticamente?");
-          if (confirmAnalyze) {
-              setIsAnalyzingImage(true);
-              const result = await analyzePropertyImage(file);
-              
-              setFormData(prev => ({
-                  ...prev,
-                  features: prev.features ? `${prev.features}, ${result.features}` : result.features,
-                  description: result.description || prev.description // Usa a descrição da imagem se o campo estiver vazio
-              }));
-              setIsAnalyzingImage(false);
-          }
+        // 2. Análise de IA (Gemini)
+        if (formData.features.length < 5) {
+            const confirmAnalyze = window.confirm("Imagem enviada para Cloudflare! Gostaria que a IA analisasse essa foto para preencher as características automaticamente?");
+            if (confirmAnalyze) {
+                setIsAnalyzingImage(true);
+                const result = await analyzePropertyImage(file);
+                
+                setFormData(prev => ({
+                    ...prev,
+                    features: prev.features ? `${prev.features}, ${result.features}` : result.features,
+                    description: result.description || prev.description
+                }));
+                setIsAnalyzingImage(false);
+            }
+        }
+      } catch (error) {
+        alert("Erro ao fazer upload da imagem.");
+      } finally {
+        setIsUploading(false);
       }
     }
   };
@@ -115,7 +127,10 @@ const ListingForm: React.FC = () => {
              
              {/* Upload Section */}
              <div className="space-y-3">
-                <label className="block text-sm font-medium text-slate-700">Galeria de Fotos</label>
+                <label className="block text-sm font-medium text-slate-700 flex justify-between">
+                    Galeria de Fotos
+                    {isUploading && <span className="text-xs text-orange-500 flex items-center gap-1"><Loader2 className="w-3 h-3 animate-spin"/> Enviando para Cloudflare...</span>}
+                </label>
                 <div className="grid grid-cols-3 gap-3">
                     {formData.images.map((img, idx) => (
                     <div key={idx} className="aspect-square rounded-lg overflow-hidden relative group border border-gray-200 shadow-sm">
@@ -123,22 +138,27 @@ const ListingForm: React.FC = () => {
                         <button type="button" className="absolute top-1 right-1 bg-black/60 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500">
                         <X className="w-3 h-3" />
                         </button>
+                        <div className="absolute bottom-1 right-1 bg-orange-500/80 p-0.5 rounded text-white" title="Hospedado na Cloudflare">
+                            <CloudLightning className="w-3 h-3" />
+                        </div>
                     </div>
                     ))}
-                    <label className={`aspect-square rounded-lg border-2 border-dashed transition-all flex flex-col items-center justify-center cursor-pointer group ${isAnalyzingImage ? 'border-purple-400 bg-purple-50' : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'}`}>
-                        {isAnalyzingImage ? (
+                    <label className={`aspect-square rounded-lg border-2 border-dashed transition-all flex flex-col items-center justify-center cursor-pointer group ${isAnalyzingImage || isUploading ? 'border-purple-400 bg-purple-50' : 'border-gray-300 hover:border-blue-500 hover:bg-blue-50'}`}>
+                        {isAnalyzingImage || isUploading ? (
                             <>
                                 <Loader2 className="w-6 h-6 mb-2 text-purple-600 animate-spin" />
-                                <span className="text-[10px] font-bold text-purple-600 text-center px-2">Analisando Ambiente...</span>
+                                <span className="text-[10px] font-bold text-purple-600 text-center px-2">
+                                    {isUploading ? 'Enviando...' : 'Analisando...'}
+                                </span>
                             </>
                         ) : (
                             <>
                                 <Upload className="w-6 h-6 mb-2 text-gray-400 group-hover:text-blue-500" />
                                 <span className="text-xs font-medium text-gray-500 group-hover:text-blue-500">Adicionar Foto</span>
-                                <span className="text-[9px] text-gray-400 mt-1 text-center">+ Detecção IA</span>
+                                <span className="text-[9px] text-gray-400 mt-1 text-center">+ Cloudflare CDN</span>
                             </>
                         )}
-                        <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isAnalyzingImage} />
+                        <input type="file" className="hidden" accept="image/*" onChange={handleImageUpload} disabled={isAnalyzingImage || isUploading} />
                     </label>
                 </div>
              </div>

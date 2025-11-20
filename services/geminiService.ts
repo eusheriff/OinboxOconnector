@@ -1,6 +1,18 @@
+
 import { GoogleGenAI } from "@google/genai";
 
-const apiKey = process.env.API_KEY || '';
+const getApiKey = () => {
+  try {
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      return process.env.API_KEY;
+    }
+  } catch (e) {
+    // Ignore error
+  }
+  return '';
+};
+
+const apiKey = getApiKey();
 const ai = new GoogleGenAI({ apiKey });
 
 // Helper to convert blob/file to base64
@@ -8,7 +20,8 @@ export const fileToGenerativePart = async (file: File): Promise<{inlineData: {da
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onloadend = () => {
-      const base64String = (reader.result as string).split(',')[1];
+      const result = reader.result as string;
+      const base64String = result.split(',')[1];
       resolve({
         inlineData: {
           data: base64String,
@@ -21,7 +34,7 @@ export const fileToGenerativePart = async (file: File): Promise<{inlineData: {da
 };
 
 export const analyzePropertyImage = async (file: File): Promise<{ features: string, description: string }> => {
-  if (!apiKey) return { features: "Erro de API Key", description: "Erro de API Key" };
+  if (!apiKey) return { features: "Erro: API Key não configurada", description: "Configure a API Key para usar a IA." };
 
   try {
     const imagePart = await fileToGenerativePart(file);

@@ -1,7 +1,8 @@
 
 import React, { useState } from 'react';
-import { Building2, MessageCircle, Zap, Globe, CheckCircle2, ArrowRight, LayoutDashboard, ShieldCheck, Check, X as XIcon, FileText, Users, Mail, Lock, HelpCircle } from 'lucide-react';
+import { Building2, MessageCircle, Zap, Globe, CheckCircle2, ArrowRight, LayoutDashboard, ShieldCheck, Check, X as XIcon, FileText, Users, Mail, Lock, HelpCircle, CreditCard } from 'lucide-react';
 import GlobalChatbot from './GlobalChatbot';
+import { processStripeSubscription } from '../../services/integrationService';
 
 interface LandingPageProps {
   onNavigateLogin: () => void;
@@ -24,6 +25,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
   const openPage = (e: React.MouseEvent, page: FooterPageKey) => {
     e.preventDefault();
     setActiveFooterPage(page);
+  };
+
+  const handleSubscribe = (planName: string, price: string) => {
+    if (price === "Consultar") {
+      openPage({} as any, 'contact');
+      return;
+    }
+    // Chama o serviço de integração Stripe
+    processStripeSubscription(planName, billingCycle);
   };
 
   // Conteúdo das páginas do Footer
@@ -251,7 +261,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
             >
               Começar Agora <ArrowRight className="w-5 h-5" />
             </button>
-            <button className="h-12 px-8 rounded-lg border border-slate-200 bg-white text-slate-900 font-bold text-lg hover:bg-slate-50 transition-all">
+            <button 
+              onClick={(e) => openPage(e, 'contact')}
+              className="h-12 px-8 rounded-lg border border-slate-200 bg-white text-slate-900 font-bold text-lg hover:bg-slate-50 transition-all"
+            >
               Agendar Demo
             </button>
           </div>
@@ -387,13 +400,14 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
                 </div>
 
                 <button 
-                  onClick={onNavigateLogin}
-                  className={`w-full py-3 rounded-lg font-bold text-sm transition-all ${
+                  onClick={() => handleSubscribe(plan.name, plan.price)}
+                  className={`w-full py-3 rounded-lg font-bold text-sm transition-all flex justify-center items-center gap-2 ${
                     plan.highlight 
                       ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-600/20' 
                       : 'bg-white border border-slate-200 text-slate-700 hover:border-blue-300 hover:text-blue-600'
                   }`}
                 >
+                  {plan.price !== "Consultar" && <CreditCard className="w-4 h-4" />}
                   {plan.cta}
                 </button>
               </div>
