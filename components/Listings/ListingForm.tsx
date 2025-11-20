@@ -1,13 +1,14 @@
 
 import React, { useState } from 'react';
 import { Platform } from '../../types';
-import { Upload, Sparkles, Check, AlertCircle, X, Loader2, Facebook, Instagram, Eye, Image as ImageIcon, CloudLightning } from 'lucide-react';
+import { Upload, Sparkles, Check, AlertCircle, X, Loader2, Facebook, Instagram, Eye, Image as ImageIcon, CloudLightning, TrendingUp, Key } from 'lucide-react';
 import { generatePropertyDescription, analyzePropertyImage } from '../../services/geminiService';
 import { uploadImageToCloudflare } from '../../services/integrationService';
 
 const ListingForm: React.FC = () => {
   const [formData, setFormData] = useState({
     title: '',
+    listingType: 'sale' as 'sale' | 'rent', // Novo campo
     type: 'Apartamento',
     location: '',
     features: '',
@@ -37,7 +38,8 @@ const ListingForm: React.FC = () => {
       return;
     }
     setIsGenerating(true);
-    const desc = await generatePropertyDescription(formData.features, formData.type, formData.location);
+    const contextType = `${formData.type} para ${formData.listingType === 'sale' ? 'Venda' : 'Locação'}`;
+    const desc = await generatePropertyDescription(formData.features, contextType, formData.location);
     setFormData(prev => ({ ...prev, description: desc }));
     setIsGenerating(false);
   };
@@ -203,12 +205,41 @@ const ListingForm: React.FC = () => {
                 </div>
             </div>
 
+            {/* Finalidade Toggle */}
+            <div>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Finalidade do Anúncio</label>
+                <div className="flex gap-4">
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${formData.listingType === 'sale' ? 'bg-blue-50 border-blue-500 text-blue-700 shadow-sm' : 'bg-white border-gray-200 text-slate-500 hover:border-blue-300'}`}>
+                        <input 
+                            type="radio" 
+                            name="listingType"
+                            className="hidden"
+                            checked={formData.listingType === 'sale'} 
+                            onChange={() => setFormData({...formData, listingType: 'sale'})} 
+                        />
+                        <TrendingUp className="w-4 h-4" />
+                        <span className="font-bold">Venda</span>
+                    </label>
+                    <label className={`flex-1 flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${formData.listingType === 'rent' ? 'bg-purple-50 border-purple-500 text-purple-700 shadow-sm' : 'bg-white border-gray-200 text-slate-500 hover:border-purple-300'}`}>
+                        <input 
+                            type="radio" 
+                            name="listingType"
+                            className="hidden"
+                            checked={formData.listingType === 'rent'} 
+                            onChange={() => setFormData({...formData, listingType: 'rent'})} 
+                        />
+                        <Key className="w-4 h-4" />
+                        <span className="font-bold">Locação / Aluguel</span>
+                    </label>
+                </div>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">Título do Anúncio</label>
               <input 
                 type="text" 
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all font-medium text-lg"
-                placeholder="Ex: Espetacular Cobertura no Jardins"
+                placeholder={formData.listingType === 'sale' ? "Ex: Espetacular Cobertura no Jardins" : "Ex: Apartamento para Alugar no Centro"}
                 value={formData.title}
                 onChange={e => setFormData({...formData, title: e.target.value})}
               />
@@ -216,7 +247,7 @@ const ListingForm: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Tipo</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">Tipo do Imóvel</label>
                 <select 
                   className="w-full border border-gray-300 rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 outline-none bg-white"
                   value={formData.type}
@@ -229,7 +260,9 @@ const ListingForm: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Valor de Venda</label>
+                <label className="block text-sm font-medium text-slate-700 mb-2">
+                    {formData.listingType === 'sale' ? 'Valor de Venda' : 'Valor do Aluguel (Mensal)'}
+                </label>
                 <div className="relative">
                     <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">R$</span>
                     <input 

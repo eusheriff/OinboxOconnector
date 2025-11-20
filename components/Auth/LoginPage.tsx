@@ -1,24 +1,30 @@
+
 import React, { useState } from 'react';
-import { Building2, Lock, Mail, Loader2, ArrowRight } from 'lucide-react';
+import { Building2, Lock, Mail, Loader2, ArrowRight, HelpCircle } from 'lucide-react';
 
 interface LoginPageProps {
-  onLogin: () => void;
+  onLogin: (email: string, pass: string) => Promise<void>;
   onBack: () => void;
+  onRegisterClick?: () => void;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
+const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simula autenticação
-    setTimeout(() => {
-      setIsLoading(false);
-      onLogin();
-    }, 1500);
+    
+    try {
+        // Chama a função de login real do App
+        await onLogin(email, password);
+        // Se der sucesso, o componente será desmontado pelo App.tsx, não precisamos fazer nada.
+    } catch (error) {
+        // Se der erro, paramos o loading para o usuário tentar de novo
+        setIsLoading(false);
+    }
   };
 
   return (
@@ -26,8 +32,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
         <div 
           onClick={onBack}
-          className="mx-auto bg-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4 cursor-pointer hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
-        >
+          className="mx-auto bg-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4 cursor-pointer hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
           <Building2 className="w-7 h-7 text-white" />
         </div>
         <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
@@ -115,7 +120,29 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack }) => {
             </div>
           </form>
           
-          {/* Social Login removed as requested for closed platform access */}
+          <div className="mt-6">
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-300" />
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-white text-gray-500">
+                  Área do Cliente
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-100 flex gap-3 items-start">
+              <HelpCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-slate-600">
+                <p className="font-bold text-slate-800 mb-1">Não tem acesso ainda?</p>
+                <p>
+                    Você pode <button onClick={onRegisterClick} className="text-blue-600 font-bold hover:underline">Solicitar Acesso Aqui</button> ou entrar em contato com nosso time comercial.
+                </p>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>

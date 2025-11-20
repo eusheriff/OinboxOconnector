@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send, Bot, Loader2, Sparkles } from 'lucide-react';
 import { askGlobalAgent } from '../../services/geminiService';
@@ -105,7 +106,7 @@ const GlobalChatbot: React.FC = () => {
               </button>
             </div>
             <div className="text-[10px] text-center text-gray-400 mt-2">
-              Powered by Google Gemini 3.0 Pro
+              Powered by OConnector AI
             </div>
           </div>
         </div>

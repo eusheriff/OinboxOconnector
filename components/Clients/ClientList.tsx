@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Client } from '../../types';
-import { Search, Plus, MoreVertical, Phone, Mail, User, X } from 'lucide-react';
+import { Search, Plus, MoreVertical, Phone, Mail, User, X, Flame, Snowflake, ThermometerSun } from 'lucide-react';
 
 interface ClientListProps {
   clients: Client[];
@@ -28,7 +28,9 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient }) => {
       status: newClient.status as any || 'Novo',
       budget: newClient.budget,
       notes: newClient.notes,
-      registeredAt: new Date()
+      registeredAt: new Date(),
+      leadScore: 50, // Default score
+      temperature: 'Warm'
     };
 
     onAddClient(client);
@@ -40,6 +42,14 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient }) => {
     c.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     c.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const getTempIcon = (temp?: string) => {
+      switch(temp) {
+          case 'Hot': return <Flame className="w-4 h-4 text-red-500 fill-current" />;
+          case 'Cold': return <Snowflake className="w-4 h-4 text-blue-400" />;
+          default: return <ThermometerSun className="w-4 h-4 text-orange-400" />;
+      }
+  }
 
   return (
     <div className="flex-1 bg-gray-50 p-8 overflow-y-auto h-full">
@@ -83,10 +93,11 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient }) => {
           <table className="w-full text-left border-collapse">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
+                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Temp.</th>
                 <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Cliente</th>
                 <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Contatos</th>
                 <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Orçamento</th>
+                <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Score IA</th>
                 <th className="p-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Cadastro</th>
                 <th className="p-4"></th>
               </tr>
@@ -94,6 +105,11 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient }) => {
             <tbody className="divide-y divide-gray-100">
               {filteredClients.map((client) => (
                 <tr key={client.id} className="hover:bg-blue-50/50 transition-colors group">
+                  <td className="p-4">
+                     <div className="flex justify-center" title={`Temperatura: ${client.temperature}`}>
+                        {getTempIcon(client.temperature)}
+                     </div>
+                  </td>
                   <td className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 font-bold">
@@ -125,7 +141,18 @@ const ClientList: React.FC<ClientListProps> = ({ clients, onAddClient }) => {
                     </span>
                   </td>
                   <td className="p-4">
-                    <span className="text-sm font-semibold text-slate-700">{client.budget || '-'}</span>
+                    <div className="flex items-center gap-2">
+                        <div className="w-16 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div 
+                                style={{width: `${client.leadScore || 0}%`}} 
+                                className={`h-full ${
+                                    (client.leadScore || 0) > 70 ? 'bg-red-500' : 
+                                    (client.leadScore || 0) > 40 ? 'bg-orange-400' : 'bg-blue-400'
+                                }`}
+                            ></div>
+                        </div>
+                        <span className="text-xs font-bold text-slate-600">{client.leadScore || 0}</span>
+                    </div>
                   </td>
                   <td className="p-4">
                     <span className="text-xs text-gray-500">{client.registeredAt.toLocaleDateString()}</span>

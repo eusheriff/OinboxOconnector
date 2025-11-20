@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { AppView, Conversation, Message, Client, Property, Platform } from './types';
-import { MOCK_CONVERSATIONS, MOCK_CLIENTS, MOCK_PROPERTIES } from './constants';
+import { AppView, Conversation, Message, Client, Property, Platform, ToastNotification, Deal } from './types';
+import { MOCK_CONVERSATIONS, MOCK_CLIENTS, MOCK_PROPERTIES, MOCK_DEALS } from './constants';
 import Sidebar from './components/Sidebar';
 import ChatList from './components/Inbox/ChatList';
 import ChatWindow from './components/Inbox/ChatWindow';
@@ -14,24 +14,41 @@ import PropertyMap from './components/Map/PropertyMap';
 import Pipeline from './components/CRM/Pipeline';
 import LandingPage from './components/Landing/LandingPage';
 import LoginPage from './components/Auth/LoginPage';
+import RegisterPage from './components/Auth/RegisterPage'; // Re-importado
+import RealEstateAgentChat from './components/AI/RealEstateAgentChat';
+import DashboardHome from './components/Dashboard/DashboardHome';
+import ToastContainer from './components/UI/ToastContainer';
+import CalendarView from './components/Calendar/CalendarView';
+import FinancialCalculator from './components/Tools/FinancialCalculator';
+import MarketingStudio from './components/Marketing/MarketingStudio'; 
+import CampaignManager from './components/Marketing/CampaignManager'; 
+import ContractGenerator from './components/Tools/ContractGenerator'; 
+import SuperAdminDashboard from './components/Admin/SuperAdminDashboard';
 import { fastAgentResponse } from './services/geminiService';
+import { apiService } from './services/apiService'; 
 import { Smartphone, CheckCircle2 } from 'lucide-react';
 
 const App: React.FC = () => {
   // Auth State
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
+  const [authView, setAuthView] = useState<'none' | 'login' | 'register'>('none');
+  const [userRole, setUserRole] = useState<'client' | 'admin'>('client');
+  const [selectedPlan, setSelectedPlan] = useState<string | undefined>(undefined);
 
   // Dashboard State
-  const [currentView, setCurrentView] = useState<AppView>(AppView.INBOX);
+  const [currentView, setCurrentView] = useState<AppView>(AppView.DASHBOARD);
   const [conversations, setConversations] = useState<Conversation[]>(MOCK_CONVERSATIONS);
   const [activeChatId, setActiveChatId] = useState<string | null>(null);
   
-  // Data Management State (Multi-tenant simulation)
+  // Data Management State
   const [clients, setClients] = useState<Client[]>(MOCK_CLIENTS);
   const [properties, setProperties] = useState<Property[]>(MOCK_PROPERTIES);
+  const [deals, setDeals] = useState<Deal[]>(MOCK_DEALS);
+  
+  // Toast System
+  const [toasts, setToasts] = useState<ToastNotification[]>([]);
 
-  // Integration State (Lifted from Settings)
+  // Integration State
   const [integrationStatus, setIntegrationStatus] = useState<Record<string, 'connected' | 'disconnected' | 'loading'>>({
     whatsapp: 'disconnected',
     instagram: 'disconnected',
@@ -45,45 +62,65 @@ const App: React.FC = () => {
     ? conversations.find(c => c.id === activeChatId) || null 
     : null;
 
-  // --- AI AGENT AUTONOMOUS LOOP ---
-  // Simula o comportamento do backend: Escuta mensagens do WhatsApp e responde automaticamente
+  // --- FETCH INITIAL DATA FROM BACKEND ---
   useEffect(() => {
-    if (integrationStatus.whatsapp !== 'connected') return;
+    if (isAuthenticated && userRole === 'client') {
+        const fetchData = async () => {
+            try {
+                // Tenta buscar do backend real
+                const dbClients = await apiService.getClients();
+                if (dbClients.length > 0) setClients(dbClients);
 
-    // Intervalo para simular atividade recebida (Webhooks)
+                const dbProperties = await apiService.getProperties();
+                if (dbProperties.length > 0) setProperties(dbProperties);
+                
+                // Stats do dashboard podem ser carregados aqui também
+            } catch (e) {
+                console.log("Usando dados mockados (Backend não disponível)");
+            }
+        };
+        fetchData();
+    }
+  }, [isAuthenticated, userRole]);
+
+  // --- TOAST HELPER ---
+  const addToast = (type: 'success' | 'error' | 'info' | 'warning', message: string) => {
+    const id = Date.now().toString();
+    setToasts(prev => [...prev, { id, type, message }]);
+    setTimeout(() => {
+      setToasts(prev => prev.filter(t => t.id !== id));
+    }, 4000);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  };
+
+  // --- AI AGENT AUTONOMOUS LOOP ---
+  useEffect(() => {
+    if (integrationStatus.whatsapp !== 'connected' || userRole === 'admin') return;
+
     const simulationInterval = setInterval(() => {
-      // 1. Escolhe aleatoriamente uma conversa de WhatsApp para simular interação do cliente
       const whatsappConvs = conversations.filter(c => c.platform === Platform.WHATSAPP);
       if (whatsappConvs.length === 0) return;
       
       const randomConv = whatsappConvs[Math.floor(Math.random() * whatsappConvs.length)];
-      
-      // Apenas simula se a ultima mensagem foi do Staff (para o cliente responder) ou se faz muito tempo
       const lastMsg = randomConv.messages[randomConv.messages.length - 1];
       
       if (lastMsg.isStaff && Math.random() > 0.7) {
-         // Cliente responde
          const clientMessages = [
-             "Ainda está disponível?", 
-             "Aceita financiamento?", 
-             "Pode me mandar mais fotos?", 
-             "Qual o valor do IPTU?",
-             "Gostaria de agendar uma visita."
+             "Ainda está disponível?", "Aceita financiamento?", "Pode me mandar mais fotos?", "Qual o valor do IPTU?", "Gostaria de agendar uma visita."
          ];
          const randomText = clientMessages[Math.floor(Math.random() * clientMessages.length)];
-         
          handleIncomingMessage(randomConv.id, randomText);
-         
-         // IA Responde automaticamente após 3 segundos
          setTimeout(() => {
              handleAutoAgentReply(randomConv.id, randomText, randomConv.contactName);
          }, 3000);
       }
-
-    }, 15000); // Tenta simular atividade a cada 15 segundos
+    }, 15000);
 
     return () => clearInterval(simulationInterval);
-  }, [integrationStatus.whatsapp, conversations]);
+  }, [integrationStatus.whatsapp, conversations, userRole]);
 
 
   const handleIncomingMessage = (convId: string, text: string) => {
@@ -92,7 +129,8 @@ const App: React.FC = () => {
           senderId: 'contact',
           text: text,
           timestamp: new Date(),
-          isStaff: false
+          isStaff: false,
+          type: 'text'
       };
 
       setConversations(prev => prev.map(conv => {
@@ -107,20 +145,21 @@ const App: React.FC = () => {
           }
           return conv;
       }));
+      
+      addToast('info', `Nova mensagem recebida.`);
   };
 
   const handleAutoAgentReply = async (convId: string, triggerText: string, clientName: string) => {
-      // Chama o Gemini Lite
       const aiResponse = await fastAgentResponse(triggerText, clientName, "Cliente interessado vindo do WhatsApp");
-      
       if (!aiResponse) return;
 
       const botMessage: Message = {
           id: Date.now().toString(),
           senderId: 'bot',
-          text: `🤖 ${aiResponse}`, // Prefixo indicando bot
+          text: `🤖 ${aiResponse}`,
           timestamp: new Date(),
-          isStaff: true
+          isStaff: true,
+          type: 'text'
       };
 
       setConversations(prev => prev.map(conv => {
@@ -129,7 +168,7 @@ const App: React.FC = () => {
                   ...conv,
                   lastMessage: `🤖 ${aiResponse}`,
                   lastMessageTime: new Date(),
-                  unreadCount: 0, // Bot leu a mensagem
+                  unreadCount: 0,
                   messages: [...conv.messages, botMessage]
               };
           }
@@ -137,18 +176,16 @@ const App: React.FC = () => {
       }));
   };
 
-  // Handlers
   const handleSendMessage = (text: string) => {
     if (!activeChatId) return;
-
     const newMessage: Message = {
       id: Date.now().toString(),
       senderId: 'staff',
       text,
       timestamp: new Date(),
-      isStaff: true
+      isStaff: true,
+      type: 'text'
     };
-
     setConversations(prev => prev.map(conv => {
       if (conv.id === activeChatId) {
         return {
@@ -167,42 +204,129 @@ const App: React.FC = () => {
     setCurrentView(AppView.INBOX);
   };
 
-  const handleAddClient = (newClient: Client) => {
+  const handleAddClient = async (newClient: Client) => {
     setClients(prev => [newClient, ...prev]);
+    addToast('success', `Cliente ${newClient.name} cadastrado com sucesso!`);
+    try {
+        await apiService.createClient(newClient);
+    } catch (e) {
+        console.error("Erro ao salvar no backend", e);
+    }
   };
 
-  const handleDeleteProperty = (id: string) => {
+  const handleDeleteProperty = async (id: string) => {
     if (window.confirm('Tem certeza que deseja excluir este imóvel?')) {
         setProperties(prev => prev.filter(p => p.id !== id));
+        addToast('success', 'Imóvel removido com sucesso.');
+        try {
+            await apiService.deleteProperty(id);
+        } catch(e) {
+            console.error("Erro ao deletar no backend", e);
+        }
     }
   };
 
   const toggleIntegration = (id: string, newStatus: 'connected' | 'disconnected' | 'loading') => {
       setIntegrationStatus(prev => ({...prev, [id]: newStatus}));
+      if (newStatus === 'connected') {
+          addToast('success', 'Canal conectado com sucesso!');
+      } else if (newStatus === 'disconnected') {
+          addToast('info', 'Canal desconectado.');
+      }
   };
+
+  const handleLogin = async (email: string, pass: string) => {
+      try {
+          // Chama o serviço de API com as credenciais digitadas pelo usuário
+          const response = await apiService.login(email, pass);
+          
+          if (response.tenantId) {
+              localStorage.setItem('oconnector_tenant_id', response.tenantId);
+          }
+          
+          // Define o papel baseado na resposta do backend (admin ou client)
+          const role = response.user?.role || 'client';
+          
+          setUserRole(role);
+          setIsAuthenticated(true);
+          addToast('success', role === 'admin' ? 'Acesso Super Admin Concedido' : 'Bem-vindo ao OConnector!');
+      } catch (error) {
+          addToast('error', 'Falha no login. Verifique suas credenciais.');
+          throw error; // Re-throw para que o LoginPage saiba que falhou
+      }
+  }
+  
+  const handleLogout = () => {
+      setIsAuthenticated(false);
+      setAuthView('none');
+      setUserRole('client');
+      localStorage.removeItem('oconnector_tenant_id');
+  }
 
   // --- ROUTING LOGIC ---
 
   if (!isAuthenticated) {
-    if (showLogin) {
+    if (authView === 'login') {
       return (
         <LoginPage 
-          onLogin={() => setIsAuthenticated(true)} 
-          onBack={() => setShowLogin(false)} 
+          onLogin={handleLogin} 
+          onBack={() => setAuthView('none')} 
+          onRegisterClick={() => setAuthView('register')}
         />
       );
     }
-    return <LandingPage onNavigateLogin={() => setShowLogin(true)} />;
+    if (authView === 'register') {
+        return (
+            <RegisterPage 
+                onSwitchToLogin={() => setAuthView('login')}
+                selectedPlan={selectedPlan}
+            />
+        );
+    }
+    return <LandingPage 
+        onNavigateLogin={() => setAuthView('login')} 
+        onNavigateRegister={(planName) => {
+            setSelectedPlan(planName);
+            setAuthView('register');
+        }}
+    />;
   }
 
-  // --- DASHBOARD RENDER ---
+  // --- SUPER ADMIN VIEW ---
+  if (userRole === 'admin') {
+      return <SuperAdminDashboard onLogout={handleLogout} />;
+  }
 
+  // --- CLIENT DASHBOARD RENDER ---
   const renderContent = () => {
     switch (currentView) {
+      case AppView.DASHBOARD:
+        return <DashboardHome 
+            clients={clients} 
+            deals={deals} 
+            properties={properties} 
+            conversations={conversations}
+            onNavigate={setCurrentView}
+        />;
+        
+      case AppView.CALENDAR: 
+        return <CalendarView />;
+
+      case AppView.CALCULATOR:
+        return <FinancialCalculator />;
+
+      case AppView.MARKETING:
+        return <MarketingStudio />;
+
+      case AppView.CAMPAIGNS: 
+        return <CampaignManager />;
+
+      case AppView.CONTRACTS:
+        return <ContractGenerator />;
+
       case AppView.INBOX:
         return (
           <div className="flex h-screen w-full overflow-hidden">
-            {/* List is hidden on mobile if chat is active, but visible on desktop */}
             <div className={`${activeChatId ? 'hidden md:flex' : 'flex'} h-full flex-shrink-0`}>
                <ChatList 
                  conversations={conversations} 
@@ -210,8 +334,6 @@ const App: React.FC = () => {
                  onSelect={setActiveChatId} 
                />
             </div>
-            
-            {/* Chat Window is visible on mobile only if active, always on desktop */}
             <div className={`${!activeChatId ? 'hidden md:flex' : 'flex'} flex-1 flex-col h-full relative`}>
                {activeChatId && (
                  <button 
@@ -226,8 +348,6 @@ const App: React.FC = () => {
                  onSendMessage={handleSendMessage} 
                />
             </div>
-
-            {/* Details panel only on large screens */}
             <ClientDetails conversation={activeConversation} />
           </div>
         );
@@ -251,6 +371,9 @@ const App: React.FC = () => {
       case AppView.MAP:
         return <PropertyMap />;
 
+      case AppView.AI_CONSULTANT:
+        return <RealEstateAgentChat />;
+
       case AppView.SETTINGS:
         return <IntegrationsSettings status={integrationStatus} onStatusChange={toggleIntegration} />;
       
@@ -263,6 +386,10 @@ const App: React.FC = () => {
     <div className="flex h-screen bg-gray-100 font-sans">
       <Sidebar currentView={currentView} onViewChange={setCurrentView} />
       <main className="flex-1 overflow-hidden flex flex-col relative">
+        
+        {/* Toast Container Overlay */}
+        <ToastContainer toasts={toasts} removeToast={removeToast} />
+
         {/* Global Status Bar if WhatsApp Agent is Active */}
         {integrationStatus.whatsapp === 'connected' && (
             <div className="absolute top-0 left-0 right-0 bg-green-600 text-white text-[10px] py-1 px-4 flex justify-center items-center gap-2 z-[60] shadow-md">

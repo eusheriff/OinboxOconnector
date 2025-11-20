@@ -1,13 +1,36 @@
+
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Conversation, Property } from '../../types';
 import { MOCK_PROPERTIES } from '../../constants';
 import { getPlatformIcon } from '../../constants';
-import { Send, Paperclip, Sparkles, Loader2, MoreVertical, Bot, MapPin, ExternalLink, X, Zap } from 'lucide-react';
+import { Send, Paperclip, Sparkles, Loader2, MoreVertical, Bot, MapPin, ExternalLink, X, Zap, Mic, Play, Pause } from 'lucide-react';
 import { suggestReply, summarizeConversation, askLocationAssistant, GroundingSource, fastAgentResponse } from '../../services/geminiService';
 
 interface ChatWindowProps {
   conversation: Conversation | null;
   onSendMessage: (text: string) => void;
+}
+
+const AudioPlayerBubble: React.FC<{ duration: string }> = ({ duration }) => {
+    const [isPlaying, setIsPlaying] = useState(false);
+    
+    return (
+        <div className="flex items-center gap-3 min-w-[160px]">
+            <button 
+                onClick={() => setIsPlaying(!isPlaying)}
+                className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-300 transition-colors"
+            >
+                {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
+            </button>
+            <div className="flex-1">
+                <div className="h-1 bg-slate-300 rounded-full w-full overflow-hidden">
+                    <div className={`h-full bg-slate-500 ${isPlaying ? 'w-2/3' : 'w-0'} transition-all duration-1000`}></div>
+                </div>
+            </div>
+            <span className="text-xs font-mono text-slate-500">{duration}</span>
+        </div>
+    )
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) => {
@@ -16,6 +39,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
   const [summary, setSummary] = useState<string | null>(null);
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [groundingSources, setGroundingSources] = useState<GroundingSource[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -71,6 +95,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
     setInputText('');
     setGroundingSources([]); // Clear sources after sending
   };
+
+  const toggleRecording = () => {
+      if (isRecording) {
+          setIsRecording(false);
+          onSendMessage("🎤 [Áudio - 0:15]");
+      } else {
+          setIsRecording(true);
+      }
+  }
 
   const handleAiAssist = async (tone: 'formal' | 'friendly') => {
     setIsGenerating(true);
@@ -171,7 +204,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
                 ? 'bg-blue-600 text-white rounded-br-none' 
                 : 'bg-white text-slate-800 rounded-bl-none border border-gray-100'
             }`}>
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+              {msg.type === 'audio' ? (
+                  <AudioPlayerBubble duration={msg.audioDuration || "0:00"} />
+              ) : (
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+              )}
+              
               <span className={`text-[10px] block mt-1 text-right opacity-70 ${msg.isStaff ? 'text-blue-100' : 'text-gray-400'}`}>
                 {msg.timestamp.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
               </span>
@@ -248,26 +286,34 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
           <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
             <Paperclip className="w-5 h-5" />
           </button>
+          
           <input 
             type="text"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-            placeholder={isGenerating ? "Agente Flash está escrevendo..." : "Digite sua mensagem..."}
-            disabled={isGenerating}
-            className="flex-1 bg-transparent focus:outline-none text-slate-700 placeholder-gray-400"
+            placeholder={isGenerating ? "Agente Flash está escrevendo..." : (isRecording ? "Gravando áudio..." : "Digite sua mensagem...")}
+            disabled={isGenerating || isRecording}
+            className={`flex-1 bg-transparent focus:outline-none text-slate-700 placeholder-gray-400 ${isRecording ? 'animate-pulse text-red-500 font-medium' : ''}`}
           />
-          <button 
-            onClick={handleSend}
-            disabled={!inputText.trim() || isGenerating}
-            className={`p-2 rounded-lg transition-all duration-200 ${
-              inputText.trim() 
-                ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-md' 
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            <Send className="w-5 h-5" />
-          </button>
+
+          {/* Botão de Audio / Send */}
+          {inputText.trim() ? (
+              <button 
+                onClick={handleSend}
+                disabled={isGenerating}
+                className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all duration-200"
+              >
+                <Send className="w-5 h-5" />
+              </button>
+          ) : (
+              <button 
+                onClick={toggleRecording}
+                className={`p-2 rounded-lg transition-all duration-200 ${isRecording ? 'bg-red-500 text-white shadow-md scale-110' : 'bg-gray-200 text-gray-500 hover:bg-gray-300'}`}
+              >
+                {isRecording ? <div className="w-2 h-2 bg-white rounded animate-spin" /> : <Mic className="w-5 h-5" />}
+              </button>
+          )}
         </div>
       </div>
     </div>

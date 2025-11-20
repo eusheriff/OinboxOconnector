@@ -1,16 +1,16 @@
 
 import React, { useState } from 'react';
-import { Building2, MessageCircle, Zap, Globe, CheckCircle2, ArrowRight, LayoutDashboard, ShieldCheck, Check, X as XIcon, FileText, Users, Mail, Lock, HelpCircle, CreditCard } from 'lucide-react';
+import { Building2, MessageCircle, Zap, Globe, CheckCircle2, ArrowRight, LayoutDashboard, ShieldCheck, Check, X as XIcon, FileText, Users, Mail, Lock, HelpCircle, CreditCard, Palette, Megaphone, Mic, Calculator, TrendingUp, Loader2 } from 'lucide-react';
 import GlobalChatbot from './GlobalChatbot';
-import { processStripeSubscription } from '../../services/integrationService';
 
 interface LandingPageProps {
   onNavigateLogin: () => void;
+  onNavigateRegister: (planName?: string) => void;
 }
 
 type FooterPageKey = 'about' | 'blog' | 'careers' | 'contact' | 'terms' | 'privacy' | null;
 
-const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin, onNavigateRegister }) => {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
   const [activeFooterPage, setActiveFooterPage] = useState<FooterPageKey>(null);
 
@@ -32,8 +32,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
       openPage({} as any, 'contact');
       return;
     }
-    // Chama o serviço de integração Stripe
-    processStripeSubscription(planName, billingCycle);
+    // Redireciona para a tela de cadastro com o plano selecionado
+    onNavigateRegister(planName);
   };
 
   // Conteúdo das páginas do Footer
@@ -45,7 +45,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
             <div className="space-y-4 text-slate-600">
                 <p>A <strong>OConnector</strong> nasceu em 2024 com uma missão clara: libertar corretores e imobiliárias da burocracia digital.</p>
                 <p>Percebemos que profissionais do setor perdiam até 4 horas por dia alternando entre WhatsApp, portais de anúncios e planilhas de Excel. Nossa solução unifica tudo isso em um único "Sistema Operacional Imobiliário".</p>
-                <p>Com sede em São Paulo e tecnologia de ponta baseada em Google Gemini AI, atendemos hoje mais de 800 imobiliárias em todo o Brasil, processando milhões de reais em VGV mensalmente.</p>
+                <p>Com sede em São Paulo e tecnologia de ponta baseada em Inteligência Artificial Generativa, atendemos hoje mais de 800 imobiliárias em todo o Brasil, processando milhões de reais em VGV mensalmente.</p>
             </div>
         )
     },
@@ -152,48 +152,49 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
   const plans = [
     {
       name: "Autônomo",
-      price: billingCycle === 'monthly' ? "149" : "119",
-      description: "Para corretores independentes que querem profissionalizar o atendimento.",
+      price: billingCycle === 'monthly' ? "149" : "129",
+      description: "Para corretores independentes que querem profissionalizar o atendimento com IA.",
       features: [
         "1 Usuário",
-        "Até 50 Imóveis",
+        "Até 100 Imóveis",
         "Inbox Unificado (WhatsApp/Insta)",
-        "Publicação em 3 Portais",
-        "Site Básico",
+        "Marketing Studio (Básico)",
+        "Publicação em Portais",
         "Suporte por Email"
       ],
-      notIncluded: ["Agente de IA Personalizado", "CRM Avançado", "API de Integração"],
+      notIncluded: ["Agentes de IA 24/7", "Hub Jurídico/Financeiro", "Campanhas em Massa"],
       highlight: false,
-      cta: "Começar Grátis"
+      cta: "Solicitar Acesso"
     },
     {
       name: "Business",
-      price: billingCycle === 'monthly' ? "399" : "329",
-      description: "A escolha ideal para imobiliárias em crescimento.",
+      price: billingCycle === 'monthly' ? "497" : "397",
+      description: "O sistema operacional completo para imobiliárias em crescimento.",
       features: [
-        "Até 5 Usuários",
+        "Até 5 Corretores",
         "Imóveis Ilimitados",
-        "Inbox + Agentes de IA (Gemini)",
-        "Publicação em 50+ Portais",
-        "CRM Visual (Kanban)",
-        "Visão Computacional p/ Fotos",
-        "Suporte Prioritário"
+        "Inbox + Agentes de IA (Flash)",
+        "Marketing Studio Completo",
+        "Hub Jurídico & Financeiro",
+        "CRM Visual + Voice Notes",
+        "Campanhas Inteligentes (Match)",
+        "Suporte Prioritário WhatsApp"
       ],
-      notIncluded: ["Acesso à API"],
+      notIncluded: ["API Aberta para ERP"],
       highlight: true,
-      cta: "Testar Business"
+      cta: "Solicitar Business"
     },
     {
       name: "Enterprise",
       price: "Consultar",
-      description: "Para redes, franquias e grandes operações imobiliárias.",
+      description: "Para redes, franquias e grandes operações que precisam de escala.",
       features: [
         "Usuários Ilimitados",
-        "Múltiplas Filiais",
+        "Múltiplas Filiais (Multi-tenant)",
         "API Aberta & Webhooks",
         "Gestor de Conta Dedicado",
-        "Treinamento In-Company",
-        "Personalização White-label",
+        "Campanhas White-label",
+        "LLM Treinada Exclusiva",
         "SLA de 99.9%"
       ],
       notIncluded: [],
@@ -232,7 +233,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
               onClick={onNavigateLogin}
               className="bg-slate-900 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-slate-800 transition-colors"
             >
-              Acessar Plataforma
+              Área do Cliente
             </button>
           </div>
         </div>
@@ -244,25 +245,21 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
         <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-blue-400 opacity-20 blur-[100px]"></div>
         
         <div className="container mx-auto max-w-5xl text-center">
-          <div className="inline-flex items-center rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-sm font-medium text-blue-800 mb-6">
-            <span className="flex h-2 w-2 rounded-full bg-blue-600 mr-2 animate-pulse"></span>
-            Novo: Gemini 3.0 Pro Integrado
-          </div>
           <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 tracking-tight mb-6 leading-tight">
             Centralize Vendas Imobiliárias com <span className="text-blue-600">Inteligência Artificial</span>
           </h1>
-          <p className="text-lg md:text-xl text-slate-600 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Inbox unificado (WhatsApp, Instagram, Portais), CRM automatizado e criação de anúncios em segundos. O sistema operacional da imobiliária moderna.
+          <p className="text-lg md:text-xl text-slate-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+            Atenda WhatsApp, Instagram e Portais em uma única tela. Automatize o CRM, crie anúncios em segundos e foque no que importa: vender.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
             <button 
-              onClick={onNavigateLogin}
+              onClick={(e) => scrollToSection(e, 'pricing')}
               className="h-12 px-8 rounded-lg bg-blue-600 text-white font-bold text-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/25 flex items-center justify-center gap-2"
             >
-              Começar Agora <ArrowRight className="w-5 h-5" />
+              Ver Planos <ArrowRight className="w-5 h-5" />
             </button>
             <button 
-              onClick={(e) => openPage(e, 'contact')}
+              onClick={() => onNavigateRegister()}
               className="h-12 px-8 rounded-lg border border-slate-200 bg-white text-slate-900 font-bold text-lg hover:bg-slate-50 transition-all"
             >
               Agendar Demo
@@ -284,32 +281,47 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
               {
                 icon: MessageCircle,
                 title: "Inbox Unificado",
-                desc: "Receba leads do WhatsApp, Instagram e Email em uma única tela. Nunca mais perca uma conversa."
+                desc: "WhatsApp, Instagram e Emails em uma única tela. Responda mais rápido e nunca perca uma oportunidade."
               },
               {
-                icon: Globe,
-                title: "Multi-postagem",
-                desc: "Crie um anúncio uma vez e publique em +50 portais (Zap, OLX, VivaReal) com um clique."
+                icon: Palette,
+                title: "Marketing Studio",
+                desc: "Crie artes para Stories e Posts do Instagram automaticamente com os dados e fotos dos seus imóveis."
               },
               {
-                icon: Zap,
-                title: "Agentes de IA",
-                desc: "Responda clientes instantaneamente 24/7. Nossa IA qualifica o lead e agenda visitas automaticamente."
+                icon: Megaphone,
+                title: "Campanhas IA",
+                desc: "Nossa IA cruza sua carteira de imóveis com sua base de leads e dispara ofertas via WhatsApp para quem tem fit."
+              },
+              {
+                icon: Calculator,
+                title: "Hub Financeiro",
+                desc: "Simulador de crédito imobiliário conectado às taxas reais (Selic/TR) para apresentar parcelas na hora."
+              },
+              {
+                icon: FileText,
+                title: "Jurídico Automático",
+                desc: "Gerador de contratos de Compra, Venda e Locação. Preenchimento automático e pronto para assinatura."
               },
               {
                 icon: LayoutDashboard,
                 title: "CRM Visual",
-                desc: "Pipeline Kanban integrado. Arraste cards de 'Novo Lead' até 'Venda Fechada' sem sair do chat."
+                desc: "Pipeline Kanban integrado ao chat. Mova cards de 'Novo Lead' até 'Fechado' com um simples arrastar."
+              },
+              {
+                icon: Mic,
+                title: "Voice-to-CRM",
+                desc: "Dite o relatório pós-visita e a IA transcreve, atualiza o perfil do cliente e agenda o próximo passo."
               },
               {
                 icon: CheckCircle2,
                 title: "Visão Computacional",
-                desc: "Faça upload da foto do imóvel e a IA preenche as características e cria a descrição de venda."
+                desc: "Faça upload da foto do imóvel e a IA preenche as características (piso, luz, cômodos) sozinha."
               },
               {
-                icon: ShieldCheck,
-                title: "Segurança Enterprise",
-                desc: "Dados criptografados, permissões granulares e conformidade com LGPD para sua tranquilidade."
+                icon: Zap,
+                title: "Agentes de IA",
+                desc: "Assistentes virtuais que trabalham 24/7 qualificando leads, respondendo dúvidas e agendando visitas."
               }
             ].map((feature, idx) => (
               <div key={idx} className="bg-white p-6 rounded-xl border border-slate-200 hover:shadow-lg transition-shadow group">
@@ -317,7 +329,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
                   <feature.icon className="w-6 h-6 text-blue-600" />
                 </div>
                 <h3 className="text-xl font-bold text-slate-900 mb-2">{feature.title}</h3>
-                <p className="text-slate-600 leading-relaxed">{feature.desc}</p>
+                <p className="text-slate-600 leading-relaxed text-sm">{feature.desc}</p>
               </div>
             ))}
           </div>
@@ -329,7 +341,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
         <div className="container mx-auto px-4 md:px-6">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-slate-900 mb-4">Planos flexíveis para o seu negócio</h2>
-            <p className="text-slate-600 max-w-xl mx-auto mb-8">Comece pequeno e escale conforme suas vendas aumentam. Sem surpresas.</p>
+            <p className="text-slate-600 max-w-xl mx-auto mb-8">Comece pequeno e escale conforme suas vendas aumentam. Substitua custos de CRM, Design e IA por uma única assinatura.</p>
             
             {/* Billing Toggle */}
             <div className="inline-flex items-center p-1 bg-slate-100 rounded-lg relative">
@@ -412,6 +424,35 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin }) => {
                 </button>
               </div>
             ))}
+          </div>
+
+          {/* Value Proposition / Economy */}
+          <div className="mt-16 max-w-4xl mx-auto bg-slate-900 rounded-2xl p-8 text-center relative overflow-hidden">
+             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
+             <h3 className="text-xl font-bold text-white mb-4">Por que o plano Business vale a pena?</h3>
+             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-slate-300">
+                <div className="p-4 bg-slate-800 rounded-xl">
+                    <span className="block text-xs uppercase text-slate-500 mb-1">Você economiza em</span>
+                    <strong className="text-white block mb-1">CRM Imobiliário</strong>
+                    <span className="text-green-400 text-xs">~R$ 120/mês</span>
+                </div>
+                <div className="p-4 bg-slate-800 rounded-xl">
+                    <span className="block text-xs uppercase text-slate-500 mb-1">Você economiza em</span>
+                    <strong className="text-white block mb-1">Chatbot / IA</strong>
+                    <span className="text-green-400 text-xs">~R$ 250/mês</span>
+                </div>
+                <div className="p-4 bg-slate-800 rounded-xl">
+                    <span className="block text-xs uppercase text-slate-500 mb-1">Você economiza em</span>
+                    <strong className="text-white block mb-1">Designer (Posts)</strong>
+                    <span className="text-green-400 text-xs">~R$ 1000/mês</span>
+                </div>
+                <div className="p-4 bg-slate-800 rounded-xl border border-green-600/30 relative">
+                    <div className="absolute -top-2 right-2 bg-green-600 text-white text-[10px] px-2 rounded-full font-bold">TOTAL</div>
+                    <span className="block text-xs uppercase text-slate-500 mb-1">Economia Real</span>
+                    <strong className="text-white block mb-1">Mais de</strong>
+                    <span className="text-green-400 font-bold text-lg">R$ 1.500/mês</span>
+                </div>
+             </div>
           </div>
         </div>
       </section>

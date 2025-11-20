@@ -1,28 +1,32 @@
 
-// URL do seu Cloudflare Worker (Configure isso no .env local ou hardcode para testes)
-// Exemplo: https://oconnector-backend.suaconta.workers.dev
+// Helper to access env vars safe for both Vite (Browser) and Node (Worker) environments
 const getEnvVar = (key: string, fallback: string) => {
+  // Vite Support
+  // @ts-ignore
+  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env[`VITE_${key}`]) {
+    // @ts-ignore
+    return import.meta.env[`VITE_${key}`];
+  }
+  
+  // Process/Node Support
   try {
     if (typeof process !== 'undefined' && process.env && process.env[key]) {
       return process.env[key];
     }
   } catch (e) {
-    // Ignore errors if process is not defined
+    // Ignore errors
   }
   return fallback;
 };
 
-const API_BASE_URL = getEnvVar('REACT_APP_API_URL', 'http://localhost:8787'); 
-const STRIPE_PUBLIC_KEY = getEnvVar('REACT_APP_STRIPE_PUBLIC_KEY', 'pk_live_placeholder');
+const API_BASE_URL = getEnvVar('API_URL', '/api'); // Relativo para usar proxy do Vite
 
 export const uploadImageToCloudflare = async (file: File): Promise<string> => {
   try {
-    console.log(`[Upload] Enviando ${file.name} para o Worker em ${API_BASE_URL}...`);
-
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await fetch(`${API_BASE_URL}/api/upload-image`, {
+    const response = await fetch(`${API_BASE_URL}/upload-image`, {
       method: 'POST',
       body: formData,
     });
@@ -39,26 +43,21 @@ export const uploadImageToCloudflare = async (file: File): Promise<string> => {
     console.error("Erro no upload Cloudflare:", error);
     
     // Fallback APENAS para demonstração visual caso o Worker não esteja rodando
-    console.warn("Usando fallback local (Worker não respondeu ou erro de rede).");
     return URL.createObjectURL(file);
   }
 };
 
 export const processStripeSubscription = async (planName: string, cycle: 'monthly' | 'yearly') => {
-  console.log(`[Checkout] Iniciando checkout para: ${planName} (${cycle})`);
-
   try {
     // Passo 1: Pedir ao Worker para criar a sessão de checkout (Seguro)
-    const response = await fetch(`${API_BASE_URL}/api/create-checkout`, {
+    const response = await fetch(`${API_BASE_URL}/create-checkout`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ planName, cycle })
     });
 
     if (!response.ok) {
-        // Se o worker falhar (ou não existir), mostramos erro ou fallback
-        console.warn("Backend não respondeu. Modo demonstração.");
-        alert(`[Modo Demo] O sistema redirecionaria para o Stripe Checkout (Plano: ${planName}). \n\nVerifique se o Worker está rodando em ${API_BASE_URL}`);
+        alert(`[Modo Demo] O sistema redirecionaria para o Stripe Checkout (Plano: ${planName}). \n\nVerifique se o Worker está rodando.`);
         return;
     }
 
