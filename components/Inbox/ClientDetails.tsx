@@ -273,9 +273,13 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
                          </div>
                          <div className="flex items-center gap-1">
                              {doc.status === 'approved' ? (
-                                 <Check className="w-4 h-4 text-green-500" title="Aprovado" />
+                                 <div title="Aprovado">
+                                    <Check className="w-4 h-4 text-green-500" />
+                                 </div>
                              ) : doc.status === 'rejected' ? (
-                                 <AlertCircle className="w-4 h-4 text-red-500" title="Rejeitado" />
+                                 <div title="Rejeitado">
+                                    <AlertCircle className="w-4 h-4 text-red-500" />
+                                 </div>
                              ) : (
                                  <div className="w-2 h-2 bg-yellow-400 rounded-full" title="Pendente"></div>
                              )}

@@ -107,6 +107,7 @@ const App: React.FC = () => {
       const randomConv = whatsappConvs[Math.floor(Math.random() * whatsappConvs.length)];
       const lastMsg = randomConv.messages[randomConv.messages.length - 1];
       
+      // Simula o cliente falando para a Manú responder
       if (lastMsg.isStaff && Math.random() > 0.7) {
          const clientMessages = [
              "Ainda está disponível?", "Aceita financiamento?", "Pode me mandar mais fotos?", "Qual o valor do IPTU?", "Gostaria de agendar uma visita."
@@ -115,7 +116,7 @@ const App: React.FC = () => {
          handleIncomingMessage(randomConv.id, randomText);
          setTimeout(() => {
              handleAutoAgentReply(randomConv.id, randomText, randomConv.contactName);
-         }, 3000);
+         }, 3000); // Manú 'digitando...'
       }
     }, 15000);
 
@@ -146,11 +147,14 @@ const App: React.FC = () => {
           return conv;
       }));
       
-      addToast('info', `Nova mensagem recebida.`);
+      addToast('info', `Nova mensagem recebida no WhatsApp.`);
   };
 
   const handleAutoAgentReply = async (convId: string, triggerText: string, clientName: string) => {
-      const aiResponse = await fastAgentResponse(triggerText, clientName, "Cliente interessado vindo do WhatsApp");
+      // Aqui injetamos a Persona MANÚ
+      const agentPersona = "Você é a Manú, assistente virtual da OConnector. Simpática, eficiente e usa emojis.";
+      
+      const aiResponse = await fastAgentResponse(triggerText, clientName, "Cliente interessado vindo do WhatsApp", agentPersona);
       if (!aiResponse) return;
 
       const botMessage: Message = {
@@ -229,7 +233,8 @@ const App: React.FC = () => {
   const toggleIntegration = (id: string, newStatus: 'connected' | 'disconnected' | 'loading') => {
       setIntegrationStatus(prev => ({...prev, [id]: newStatus}));
       if (newStatus === 'connected') {
-          addToast('success', 'Canal conectado com sucesso!');
+          if (id === 'whatsapp') addToast('success', 'Manú conectada com sucesso! 🤖');
+          else addToast('success', 'Canal conectado com sucesso!');
       } else if (newStatus === 'disconnected') {
           addToast('info', 'Canal desconectado.');
       }
@@ -394,8 +399,8 @@ const App: React.FC = () => {
         {integrationStatus.whatsapp === 'connected' && (
             <div className="absolute top-0 left-0 right-0 bg-green-600 text-white text-[10px] py-1 px-4 flex justify-center items-center gap-2 z-[60] shadow-md">
                 <Smartphone className="w-3 h-3" />
-                <span className="font-bold">OConnector Agent Ativo</span>
-                <span className="opacity-80">Respondendo automaticamente em +55 (22) 99236-3462</span>
+                <span className="font-bold">Agente Manú Ativa</span>
+                <span className="opacity-80">Respondendo em +55 (22) 99236-3462</span>
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse ml-1"></span>
             </div>
         )}

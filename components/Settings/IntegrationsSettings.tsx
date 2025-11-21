@@ -232,7 +232,17 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
                         {status[item.id] === 'connected' && <span className="text-[10px] font-bold bg-green-50 text-green-600 px-2 py-1 rounded-full border border-green-100 flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> Ativo</span>}
                     </div>
                     <h3 className="font-bold text-slate-800 mb-1">{item.name}</h3>
-                    <p className="text-sm text-gray-500 mb-6">{item.description}</p>
+                    
+                    {/* Display Specific Manú Info when connected */}
+                    {item.id === 'whatsapp' && status[item.id] === 'connected' ? (
+                        <p className="text-sm text-slate-600 mb-6 bg-gray-50 p-2 rounded border border-gray-100">
+                           <span className="font-bold block">Agente: Manú 🤖</span>
+                           +55 (22) 99236-3462
+                        </p>
+                    ) : (
+                        <p className="text-sm text-gray-500 mb-6">{item.description}</p>
+                    )}
+
                     <button 
                         onClick={() => { setActiveIntegration(item); if (item.authMethod === 'qr') setQrProgress(0); }}
                         className={`w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-all ${status[item.id] === 'connected' ? 'bg-white border border-red-200 text-red-600 hover:bg-red-50' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
@@ -287,8 +297,9 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
                   <h3 className="text-xl font-bold text-slate-800 mb-2">Conectar {activeIntegration.name}</h3>
                   
                   {activeIntegration.authMethod === 'qr' && (
-                      <div className="bg-white p-4 border rounded-lg flex justify-center mb-4">
-                          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Auth" className="opacity-80" />
+                      <div className="bg-white p-4 border rounded-lg flex flex-col items-center justify-center mb-4">
+                          <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=Auth" className="opacity-80 mb-2" />
+                          <p className="text-xs text-gray-400 text-center">Escaneie para ativar a Agente Manú (+55 22...)</p>
                       </div>
                   )}
                   

@@ -38,6 +38,26 @@ export interface GroundingSource {
   uri: string;
 }
 
+// --- PERSONA MANÚ (SYSTEM PROMPT) ---
+const MANU_SYSTEM_PROMPT = `
+### SYSTEM INSTRUCTION ###
+Manú - Corretora Digital
+Especialista em qualificação de leads e agendamento de visitas imobiliárias.
+
+VOCÊ É:
+Manú, a Consultora Imobiliária Virtual da imobiliária OConnector. Você é uma corretora sênior, especialista em encontrar o imóvel perfeito e guiar o cliente com segurança.
+
+SEU OBJETIVO:
+Engajar o cliente em uma conversa natural, entender o que ele busca (qualificação), tirar dúvidas sobre os imóveis listados e, SEMPRE que possível, converter a conversa em um agendamento de visita ou proposta.
+
+ESTILO DE RESPOSTA:
+- Use português brasileiro natural e empático.
+- Responda como se estivesse no WhatsApp (frases curtas, diretas).
+- Use emojis moderadamente (🏠, 😊, 📅, ✅) para dar tom.
+- NUNCA invente dados do imóvel. Se não souber, diga que vai verificar.
+- Se o cliente quiser visitar, ofereça duas opções de horário.
+`;
+
 // --- OLLAMA API CLIENT ---
 const callOllamaAPI = async (model: string, prompt: string, imageBase64?: string, jsonMode: boolean = false) => {
   const config = getAIConfig();
@@ -206,9 +226,21 @@ export const analyzeClientProfile = async (messages: {sender: string, text: stri
   }
 };
 
-export const fastAgentResponse = async (lastMessage: string, clientName: string, profileSummary: string): Promise<string> => {
+// --- FUNÇÃO PRINCIPAL DA AGENTE MANÚ ---
+export const fastAgentResponse = async (lastMessage: string, clientName: string, profileSummary: string, persona?: string): Promise<string> => {
   const config = getAIConfig();
-  const prompt = `Você é assistente pessoal de ${clientName}. Perfil: ${profileSummary}. Msg dele: "${lastMessage}". Responda curto e rápido (max 1 frase).`;
+  
+  // Constrói o prompt com a Persona Manú + Contexto do Cliente
+  const prompt = `
+  ${MANU_SYSTEM_PROMPT}
+
+  CONTEXTO DO CLIENTE:
+  - Nome: ${clientName}
+  - Perfil Resumido: ${profileSummary}
+  
+  ÚLTIMA MENSAGEM DO CLIENTE: "${lastMessage}"
+  
+  SUA RESPOSTA COMO MANÚ (Curta, amigável e focada em converter):`;
 
   if (config.provider === 'ollama') {
     return await callOllamaAPI(config.selectedModel, prompt);
@@ -220,8 +252,6 @@ export const fastAgentResponse = async (lastMessage: string, clientName: string,
 };
 
 // --- FERRAMENTAS ESPECÍFICAS (MAPS, SEARCH) ---
-// Estas permanecem no Gemini pois Ollama não tem ferramentas de busca nativas integradas facilmente via API REST padrão sem plugins.
-// Se estiver em modo Ollama, retornamos um aviso ou fallback textual.
 
 export const askLocationAssistant = async (location: string, queryType: string): Promise<{text: string, sources: GroundingSource[]}> => {
   const config = getAIConfig();
@@ -235,7 +265,6 @@ export const askLocationAssistant = async (location: string, queryType: string):
 
   if (!API_KEY) return { text: "Erro: API Key", sources: [] };
   
-  // Mantém implementação Gemini original com Tools
   try {
       const response = await ai.models.generateContent({
         model: 'gemini-2.5-flash',
