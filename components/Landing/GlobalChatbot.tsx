@@ -7,24 +7,33 @@ const GlobalChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', text: string}[]>([
-    { role: 'assistant', text: 'Olá! Sou a IA da OConnector. Posso ajudar você a entender como nossa plataforma revoluciona vendas imobiliárias?' }
+    { role: 'assistant', text: 'Olá! Sou a IA da Euimob. Posso ajudar você a entender como nossa plataforma revoluciona vendas imobiliárias?' }
   ]);
   const [isTyping, setIsTyping] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // Tenta carregar o sessionId do localStorage
+    let currentSessionId = localStorage.getItem('oconnector_chatbot_session_id');
+    if (!currentSessionId) {
+      // Se não existir, gera um novo e salva no localStorage
+      currentSessionId = crypto.randomUUID();
+      localStorage.setItem('oconnector_chatbot_session_id', currentSessionId);
+    }
+    setSessionId(currentSessionId);
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, isOpen]);
+  }, [messages, isOpen]); // Removido sessionId das dependências para evitar loop
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || !sessionId) return;
 
     const userMsg = input;
     setInput('');
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setIsTyping(true);
 
-    const response = await askGlobalAgent(userMsg, messages);
+    const response = await askGlobalAgent(userMsg, messages, sessionId);
     
     setMessages(prev => [...prev, { role: 'assistant', text: response }]);
     setIsTyping(false);
@@ -36,7 +45,7 @@ const GlobalChatbot: React.FC = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`fixed bottom-6 right-6 z-50 p-4 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 ${
-          isOpen ? 'bg-slate-800 text-white rotate-90' : 'bg-blue-600 text-white'
+          isOpen ? 'bg-card text-white rotate-90' : 'bg-primary text-white'
         }`}
       >
         {isOpen ? <X className="w-6 h-6" /> : <MessageCircle className="w-6 h-6" />}
@@ -47,13 +56,13 @@ const GlobalChatbot: React.FC = () => {
         <div className="fixed bottom-24 right-6 z-50 w-[90vw] md:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden animate-scale-in origin-bottom-right h-[500px]">
           
           {/* Header */}
-          <div className="bg-slate-900 p-4 flex items-center gap-3">
-            <div className="bg-blue-600 p-2 rounded-lg">
+          <div className="bg-background p-4 flex items-center gap-3">
+            <div className="bg-primary p-2 rounded-lg">
               <Bot className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-sm">OConnector AI</h3>
-              <p className="text-xs text-slate-400 flex items-center gap-1">
+              <h3 className="font-bold text-white text-sm">Euimob AI</h3>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                 Online agora
               </p>
@@ -67,7 +76,7 @@ const GlobalChatbot: React.FC = () => {
                 <div 
                   className={`max-w-[80%] rounded-2xl p-3 text-sm ${
                     msg.role === 'user' 
-                      ? 'bg-blue-600 text-white rounded-br-none' 
+                      ? 'bg-primary text-white rounded-br-none' 
                       : 'bg-white text-slate-700 border border-gray-200 rounded-bl-none shadow-sm'
                   }`}
                 >
@@ -88,25 +97,25 @@ const GlobalChatbot: React.FC = () => {
 
           {/* Input */}
           <div className="p-3 bg-white border-t border-gray-100">
-            <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2 border border-gray-200 focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-white transition-all">
+            <div className="flex items-center gap-2 bg-gray-50 rounded-xl px-3 py-2 border border-gray-200 focus-within:ring-2 focus-within:ring-primary focus-within:bg-white transition-all">
               <input 
                 type="text" 
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Pergunte sobre o OConnector..."
-                className="flex-1 bg-transparent outline-none text-sm text-slate-800 placeholder-gray-400"
+                placeholder="Pergunte sobre o Euimob..."
+                className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder-gray-400"
               />
               <button 
                 onClick={handleSend}
                 disabled={!input.trim() || isTyping}
-                className="text-blue-600 hover:text-blue-700 disabled:opacity-50"
+                className="text-primary hover:text-blue-700 disabled:opacity-50"
               >
                 {isTyping ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
               </button>
             </div>
             <div className="text-[10px] text-center text-gray-400 mt-2">
-              Powered by OConnector AI
+              Powered by Euimob AI
             </div>
           </div>
         </div>

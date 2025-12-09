@@ -11,15 +11,15 @@ interface ChatListProps {
 
 const ChatList: React.FC<ChatListProps> = ({ conversations, activeId, onSelect }) => {
   return (
-    <div className="flex flex-col h-full border-r border-gray-200 bg-white w-full md:w-80 lg:w-96">
-      <div className="p-4 border-b border-gray-200">
-        <h2 className="text-xl font-bold text-slate-800 mb-4">Mensagens</h2>
+    <div className="flex flex-col h-full border-r border-border bg-card w-full md:w-80 lg:w-96">
+      <div className="p-4 border-b border-border">
+        <h2 className="text-xl font-bold text-foreground mb-4">Mensagens</h2>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
           <input 
             type="text" 
             placeholder="Buscar cliente ou imóvel..." 
-            className="w-full pl-10 pr-4 py-2 bg-gray-100 border-transparent rounded-lg focus:bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-sm"
+            className="w-full pl-10 pr-4 py-2 bg-gray-100 border-transparent rounded-lg focus:bg-card focus:ring-2 focus:ring-primary focus:outline-none transition-all text-sm"
           />
         </div>
       </div>
@@ -35,7 +35,7 @@ const ChatList: React.FC<ChatListProps> = ({ conversations, activeId, onSelect }
           >
             <div className="flex justify-between items-start mb-1">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-slate-800 truncate max-w-[140px]">
+                <span className="font-semibold text-foreground truncate max-w-[140px]">
                   {conv.contactName}
                 </span>
                 {conv.unreadCount > 0 && (
@@ -60,7 +60,7 @@ const ChatList: React.FC<ChatListProps> = ({ conversations, activeId, onSelect }
 
             <div className="flex gap-1 flex-wrap">
               {conv.tags.map(tag => (
-                <span key={tag} className="text-[10px] bg-slate-100 text-slate-600 px-2 py-1 rounded-md font-medium">
+                <span key={tag} className="text-[10px] bg-slate-100 text-foreground px-2 py-1 rounded-md font-medium">
                   {tag}
                 </span>
               ))}

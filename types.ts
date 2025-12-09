@@ -22,7 +22,7 @@ export interface User {
   id: string;
   name: string;
   avatar: string;
-  role?: 'admin' | 'client'; // Novo
+  role?: 'admin' | 'client' | 'super_admin'; // Novo
 }
 
 export interface Tenant {
@@ -69,15 +69,16 @@ export interface Client {
   leadScore?: number; // 0 a 100
   temperature?: 'Cold' | 'Warm' | 'Hot';
   lastInteraction?: Date;
+  aiSummary?: string;
 }
 
 export interface ClientDocument {
-    id: string;
-    name: string;
-    type: 'pdf' | 'image' | 'doc';
-    status: 'pending' | 'approved' | 'rejected';
-    url?: string;
-    uploadedAt?: Date;
+  id: string;
+  name: string;
+  type: 'pdf' | 'image' | 'doc';
+  status: 'pending' | 'approved' | 'rejected';
+  url?: string;
+  uploadedAt?: Date;
 }
 
 export interface Conversation {
@@ -129,13 +130,13 @@ export interface Deal {
 }
 
 export interface Appointment {
-    id: string;
-    title: string;
-    date: Date;
-    type: 'visit' | 'meeting' | 'call';
-    clientName: string;
-    propertyId?: string;
-    location: string;
+  id: string;
+  title: string;
+  date: Date;
+  type: 'visit' | 'meeting' | 'call';
+  clientName: string;
+  propertyId?: string;
+  location: string;
 }
 
 export interface Campaign {
@@ -163,7 +164,7 @@ export enum AppView {
   AI_CONSULTANT = 'AI_CONSULTANT',
   CALCULATOR = 'CALCULATOR',
   MARKETING = 'MARKETING',
-  CAMPAIGNS = 'CAMPAIGNS', 
+  CAMPAIGNS = 'CAMPAIGNS',
   CONTRACTS = 'CONTRACTS',
   // Views do Super Admin
   SUPER_ADMIN_OVERVIEW = 'SUPER_ADMIN_OVERVIEW',

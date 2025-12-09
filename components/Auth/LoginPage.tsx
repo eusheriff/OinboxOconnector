@@ -32,14 +32,14 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
         <div 
           onClick={onBack}
-          className="mx-auto bg-blue-600 w-12 h-12 rounded-xl flex items-center justify-center mb-4 cursor-pointer hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20">
+          className="mx-auto bg-primary w-12 h-12 rounded-xl flex items-center justify-center mb-4 cursor-pointer hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
           <Building2 className="w-7 h-7 text-white" />
         </div>
-        <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+        <h2 className="text-3xl font-extrabold text-foreground tracking-tight">
           Acesse sua conta
         </h2>
-        <p className="mt-2 text-sm text-slate-600">
-          Ou <button onClick={onBack} className="font-medium text-blue-600 hover:text-blue-500">volte para a página inicial</button>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Ou <button onClick={onBack} className="font-medium text-primary hover:text-blue-500">volte para a página inicial</button>
         </p>
       </div>
 
@@ -47,7 +47,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
         <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200 sm:rounded-xl sm:px-10 border border-gray-200">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
-              <label htmlFor="email" className="block text-sm font-bold text-slate-800">
+              <label htmlFor="email" className="block text-sm font-bold text-foreground">
                 Email corporativo
               </label>
               <div className="mt-1 relative">
@@ -61,14 +61,14 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all bg-white text-slate-900 font-medium"
+                  className="appearance-none block w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm transition-all bg-white text-foreground font-medium"
                   placeholder="voce@imobiliaria.com"
                 />
               </div>
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-bold text-slate-800">
+              <label htmlFor="password" className="block text-sm font-bold text-foreground">
                 Senha
               </label>
               <div className="mt-1 relative">
@@ -82,7 +82,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent sm:text-sm transition-all bg-white text-slate-900 font-medium"
+                  className="appearance-none block w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm transition-all bg-white text-foreground font-medium"
                   placeholder="••••••••"
                 />
               </div>
@@ -94,7 +94,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded bg-white"
+                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded bg-white"
                 />
                 <label htmlFor="remember-me" className="ml-2 block text-sm text-slate-700 font-medium">
                   Lembrar
@@ -102,7 +102,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-bold text-blue-600 hover:text-blue-500">
+                <a href="#" className="font-bold text-primary hover:text-blue-500">
                   Esqueceu a senha?
                 </a>
               </div>
@@ -112,7 +112,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-md shadow-slate-900/10 text-sm font-bold text-white bg-slate-900 hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all disabled:opacity-70"
+                className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-md shadow-slate-900/10 text-sm font-bold text-white bg-background hover:bg-accent focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-900 transition-all disabled:opacity-70"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Entrar no Dashboard'} 
                 {!isLoading && <ArrowRight className="w-4 h-4" />}
@@ -133,11 +133,11 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
             </div>
 
             <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-100 flex gap-3 items-start">
-              <HelpCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-slate-600">
-                <p className="font-bold text-slate-800 mb-1">Não tem acesso ainda?</p>
+              <HelpCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
+              <div className="text-sm text-muted-foreground">
+                <p className="font-bold text-foreground mb-1">Não tem acesso ainda?</p>
                 <p>
-                    Você pode <button onClick={onRegisterClick} className="text-blue-600 font-bold hover:underline">Solicitar Acesso Aqui</button> ou entrar em contato com nosso time comercial.
+                    Você pode <button onClick={onRegisterClick} className="text-primary font-bold hover:underline">Solicitar Acesso Aqui</button> ou entrar em contato com nosso time comercial.
                 </p>
               </div>
             </div>

@@ -32,8 +32,8 @@ const PropertyMap: React.FC = () => {
       
       {/* Header overlay */}
       <div className="absolute top-6 left-6 z-10 bg-white/90 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-white/50">
-        <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-            <Navigation className="w-5 h-5 text-blue-600" /> Mapa de Oportunidades
+        <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <Navigation className="w-5 h-5 text-primary" /> Mapa de Oportunidades
         </h1>
         <p className="text-xs text-gray-500 mt-1">Visualize seus {MOCK_PROPERTIES.length} imóveis ativos.</p>
       </div>
@@ -62,14 +62,14 @@ const PropertyMap: React.FC = () => {
                 }}
             >
                 <div className={`relative flex flex-col items-center ${selectedProperty?.id === property.id ? 'scale-110' : ''}`}>
-                    <div className={`p-2 rounded-full shadow-lg border-2 border-white ${selectedProperty?.id === property.id ? 'bg-blue-600' : 'bg-red-500'}`}>
+                    <div className={`p-2 rounded-full shadow-lg border-2 border-white ${selectedProperty?.id === property.id ? 'bg-primary' : 'bg-red-500'}`}>
                         <Building2 className="w-5 h-5 text-white" />
                     </div>
                     <div className="w-0.5 h-3 bg-gray-800/30"></div>
                     <div className="w-8 h-1.5 bg-black/20 rounded-full blur-[2px]"></div>
                     
                     {/* Tooltip on hover */}
-                    <div className="absolute bottom-full mb-2 opacity-0 group-hover/pin:opacity-100 transition-opacity bg-slate-900 text-white text-xs px-2 py-1 rounded whitespace-nowrap pointer-events-none">
+                    <div className="absolute bottom-full mb-2 opacity-0 group-hover/pin:opacity-100 transition-opacity bg-background text-white text-xs px-2 py-1 rounded whitespace-nowrap pointer-events-none">
                         R$ {property.price.toLocaleString('pt-BR')}
                     </div>
                 </div>
@@ -89,14 +89,14 @@ const PropertyMap: React.FC = () => {
               >
                 <X className="w-4 h-4" />
               </button>
-              <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-slate-800">
+              <div className="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-2 py-1 rounded text-xs font-bold text-foreground">
                  {selectedProperty.location}
               </div>
            </div>
 
            <div className="p-6 flex-1 overflow-y-auto">
-              <h2 className="text-xl font-bold text-slate-800 mb-1">{selectedProperty.title}</h2>
-              <p className="text-blue-600 font-bold text-lg mb-4">R$ {selectedProperty.price.toLocaleString('pt-BR')}</p>
+              <h2 className="text-xl font-bold text-foreground mb-1">{selectedProperty.title}</h2>
+              <p className="text-primary font-bold text-lg mb-4">R$ {selectedProperty.price.toLocaleString('pt-BR')}</p>
               
               <div className="flex flex-wrap gap-2 mb-6">
                 {selectedProperty.features.map(feat => (
@@ -162,7 +162,7 @@ const PropertyMap: React.FC = () => {
            </div>
 
            <div className="p-4 border-t border-gray-100 bg-gray-50">
-             <button className="w-full py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-slate-800 transition-colors">
+             <button className="w-full py-3 bg-background text-white rounded-lg font-medium hover:bg-accent transition-colors">
                 Ver Ficha Completa
              </button>
            </div>

@@ -38,19 +38,19 @@ const Pipeline: React.FC<PipelineProps> = ({ onNavigateToChat }) => {
   return (
     <div className="flex-1 flex flex-col h-full bg-gray-100 overflow-hidden">
       {/* Header */}
-      <div className="px-8 py-6 bg-white border-b border-gray-200 flex justify-between items-center flex-shrink-0">
+      <div className="px-8 py-6 bg-card border-b border-border flex justify-between items-center flex-shrink-0">
         <div>
-          <h1 className="text-2xl font-bold text-slate-800">Pipeline de Vendas</h1>
+          <h1 className="text-2xl font-bold text-foreground">Pipeline de Vendas</h1>
           <p className="text-gray-500 text-sm">Gerencie o fluxo de negociações da imobiliária.</p>
         </div>
         <div className="flex gap-4">
             <div className="text-right">
                 <span className="text-xs text-gray-500 uppercase font-bold">Total em Pipeline</span>
-                <p className="text-xl font-bold text-slate-900">
+                <p className="text-xl font-bold text-foreground">
                     R$ {deals.reduce((acc, curr) => acc + curr.value, 0).toLocaleString('pt-BR')}
                 </p>
             </div>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
+            <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
                 <Plus className="w-4 h-4" /> Novo Negócio
             </button>
         </div>
@@ -62,14 +62,14 @@ const Pipeline: React.FC<PipelineProps> = ({ onNavigateToChat }) => {
           {columns.map((col) => (
             <div key={col.id} className="flex-1 flex flex-col min-w-[280px] h-full">
               {/* Column Header */}
-              <div className={`p-3 rounded-t-xl bg-white border-t-4 ${col.color} shadow-sm mb-2 flex justify-between items-center`}>
+              <div className={`p-3 rounded-t-xl bg-card border-t-4 ${col.color} shadow-sm mb-2 flex justify-between items-center`}>
                 <div>
                     <h3 className="font-bold text-slate-700 text-sm uppercase tracking-wide">{col.label}</h3>
                     <span className="text-xs text-gray-400 font-medium">
                         {deals.filter(d => d.stage === col.id).length} leads
                     </span>
                 </div>
-                <div className="text-xs font-bold text-slate-600 bg-gray-100 px-2 py-1 rounded">
+                <div className="text-xs font-bold text-muted-foreground bg-gray-100 px-2 py-1 rounded">
                    {calculateColumnTotal(col.id) > 0 ? 
                      `R$ ${(calculateColumnTotal(col.id) / 1000).toFixed(0)}k` : 'R$ 0'}
                 </div>
@@ -84,12 +84,12 @@ const Pipeline: React.FC<PipelineProps> = ({ onNavigateToChat }) => {
                     if (!conversation || !property) return null;
 
                     return (
-                        <div key={deal.id} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-all group relative">
+                        <div key={deal.id} className="bg-card p-4 rounded-lg shadow-sm border border-border hover:shadow-md transition-all group relative">
                             <div className="flex justify-between items-start mb-3">
                                 <div className="flex items-center gap-2">
                                     <img src={conversation.contactAvatar} className="w-8 h-8 rounded-full" alt="" />
                                     <div>
-                                        <p className="font-bold text-sm text-slate-800">{conversation.contactName}</p>
+                                        <p className="font-bold text-sm text-foreground">{conversation.contactName}</p>
                                         <div className="flex items-center gap-1 text-[10px] text-gray-500">
                                             {getPlatformIcon(conversation.platform)} 
                                             {conversation.platform}
@@ -106,7 +106,7 @@ const Pipeline: React.FC<PipelineProps> = ({ onNavigateToChat }) => {
                                     <span className="font-semibold text-slate-700">Interesse:</span> 
                                     <span className="truncate">{property.title}</span>
                                 </div>
-                                <div className="flex items-center gap-1 font-bold text-slate-800 text-sm">
+                                <div className="flex items-center gap-1 font-bold text-foreground text-sm">
                                     <DollarSign className="w-3 h-3 text-green-600" />
                                     R$ {deal.value.toLocaleString('pt-BR')}
                                 </div>
@@ -121,7 +121,7 @@ const Pipeline: React.FC<PipelineProps> = ({ onNavigateToChat }) => {
                                 {col.id !== DealStage.CLOSED && (
                                     <button 
                                         onClick={() => moveCard(deal.id, col.id)}
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity bg-blue-50 text-blue-600 p-1.5 rounded hover:bg-blue-100"
+                                        className="opacity-0 group-hover:opacity-100 transition-opacity bg-blue-50 text-primary p-1.5 rounded hover:bg-blue-100"
                                         title="Avançar Etapa"
                                     >
                                         <ArrowRight className="w-4 h-4" />

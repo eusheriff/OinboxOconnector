@@ -28,11 +28,11 @@ const ToastContainer: React.FC<ToastContainerProps> = ({ toasts, removeToast }) 
             {toast.type === 'info' && <Info className="w-5 h-5 text-blue-500" />}
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-slate-800 leading-snug">{toast.message}</p>
+            <p className="text-sm font-medium text-foreground leading-snug">{toast.message}</p>
           </div>
           <button 
             onClick={() => removeToast(toast.id)}
-            className="ml-3 text-gray-400 hover:text-slate-600 transition-colors"
+            className="ml-3 text-gray-400 hover:text-muted-foreground transition-colors"
           >
             <X className="w-4 h-4" />
           </button>

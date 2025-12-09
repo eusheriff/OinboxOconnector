@@ -20,7 +20,7 @@ interface BankOption {
 }
 
 const BANKS: BankOption[] = [
-  { id: 'caixa', name: 'Caixa Econômica', color: 'text-blue-600', logoBg: 'bg-blue-100', baseRate: 8.99, adminFee: 25.00, insuranceRate: 0.035 },
+  { id: 'caixa', name: 'Caixa Econômica', color: 'text-primary', logoBg: 'bg-blue-100', baseRate: 8.99, adminFee: 25.00, insuranceRate: 0.035 },
   { id: 'itau', name: 'Itaú Personalité', color: 'text-orange-600', logoBg: 'bg-orange-100', baseRate: 10.49, adminFee: 0, insuranceRate: 0.042 },
   { id: 'bradesco', name: 'Bradesco Prime', color: 'text-red-600', logoBg: 'bg-red-100', baseRate: 10.20, adminFee: 0, insuranceRate: 0.040 },
   { id: 'santander', name: 'Santander Select', color: 'text-red-700', logoBg: 'bg-red-50', baseRate: 10.99, adminFee: 0, insuranceRate: 0.038 },
@@ -96,8 +96,8 @@ const FinancialCalculator: React.FC = () => {
                     <Landmark className="w-6 h-6" />
                 </div>
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">Hub de Crédito Imobiliário</h1>
-                    <p className="text-slate-500 text-sm flex items-center gap-1">
+                    <h1 className="text-2xl font-bold text-foreground">Hub de Crédito Imobiliário</h1>
+                    <p className="text-muted-foreground text-sm flex items-center gap-1">
                         <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                         Conectado às taxas de mercado (B3/Bacen)
                     </p>
@@ -107,13 +107,13 @@ const FinancialCalculator: React.FC = () => {
             {/* Ticker */}
             <div className="flex gap-4 bg-white p-2 rounded-lg border border-gray-200 shadow-sm text-xs font-mono">
                 <div className="px-3 py-1 bg-gray-50 rounded">
-                    <span className="text-gray-500">SELIC:</span> <span className="font-bold text-slate-800">{MARKET_INDICES.selic}%</span>
+                    <span className="text-gray-500">SELIC:</span> <span className="font-bold text-foreground">{MARKET_INDICES.selic}%</span>
                 </div>
                 <div className="px-3 py-1 bg-gray-50 rounded">
-                    <span className="text-gray-500">IPCA:</span> <span className="font-bold text-slate-800">{MARKET_INDICES.ipca}%</span>
+                    <span className="text-gray-500">IPCA:</span> <span className="font-bold text-foreground">{MARKET_INDICES.ipca}%</span>
                 </div>
                 <div className="px-3 py-1 bg-gray-50 rounded">
-                    <span className="text-gray-500">TR:</span> <span className="font-bold text-slate-800">+{MARKET_INDICES.tr}%</span>
+                    <span className="text-gray-500">TR:</span> <span className="font-bold text-foreground">+{MARKET_INDICES.tr}%</span>
                 </div>
             </div>
         </div>
@@ -123,20 +123,20 @@ const FinancialCalculator: React.FC = () => {
           {/* Left: Simulation Form */}
           <div className="lg:col-span-4 space-y-6">
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-              <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
-                 <Calculator className="w-5 h-5 text-blue-600" /> Dados do Financiamento
+              <h3 className="font-bold text-foreground mb-6 flex items-center gap-2">
+                 <Calculator className="w-5 h-5 text-primary" /> Dados do Financiamento
               </h3>
               
               <div className="space-y-5">
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">Valor do Imóvel</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">R$</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">R$</span>
                     <input 
                       type="number" 
                       value={propertyValue}
                       onChange={e => setPropertyValue(Number(e.target.value))}
-                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-800 text-lg"
+                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary outline-none font-bold text-foreground text-lg"
                     />
                   </div>
                 </div>
@@ -144,16 +144,16 @@ const FinancialCalculator: React.FC = () => {
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">Entrada</label>
                   <div className="relative">
-                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold">R$</span>
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold">R$</span>
                     <input 
                       type="number" 
                       value={downPayment}
                       onChange={e => setDownPayment(Number(e.target.value))}
-                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-800"
+                      className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary outline-none font-bold text-foreground"
                     />
                   </div>
                   <div className="flex justify-between mt-2 text-xs">
-                      <span className="text-slate-500 font-medium">Mínimo sugerido: 20%</span>
+                      <span className="text-muted-foreground font-medium">Mínimo sugerido: 20%</span>
                       <span className={`font-bold ${downPayment / propertyValue < 0.2 ? 'text-red-500' : 'text-green-600'}`}>
                           {((downPayment/propertyValue)*100).toFixed(1)}%
                       </span>
@@ -163,11 +163,11 @@ const FinancialCalculator: React.FC = () => {
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-2 uppercase">Prazo de Pagamento</label>
                   <div className="relative">
-                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5" />
+                    <Calendar className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
                     <select 
                         value={years} 
                         onChange={e => setYears(Number(e.target.value))}
-                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none font-bold text-slate-800 appearance-none"
+                        className="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-primary outline-none font-bold text-foreground appearance-none"
                     >
                         <option value={10}>10 anos (120 meses)</option>
                         <option value={15}>15 anos (180 meses)</option>
@@ -198,7 +198,7 @@ const FinancialCalculator: React.FC = () => {
           {/* Center: Bank Selector */}
           <div className="lg:col-span-8 space-y-6">
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-               <h3 className="font-bold text-slate-800 mb-4 text-sm uppercase tracking-wide">Selecione a Instituição Financeira</h3>
+               <h3 className="font-bold text-foreground mb-4 text-sm uppercase tracking-wide">Selecione a Instituição Financeira</h3>
                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
                    {BANKS.map(bank => (
                        <button
@@ -213,7 +213,7 @@ const FinancialCalculator: React.FC = () => {
                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${bank.logoBg}`}>
                                <Building2 className={`w-5 h-5 ${bank.color}`} />
                            </div>
-                           <span className={`text-xs font-bold ${selectedBank === bank.id ? 'text-slate-900' : 'text-gray-500'}`}>
+                           <span className={`text-xs font-bold ${selectedBank === bank.id ? 'text-foreground' : 'text-gray-500'}`}>
                                {bank.name}
                            </span>
                            <span className="text-[10px] text-gray-400 font-mono">{bank.baseRate}% a.a.</span>
@@ -228,24 +228,24 @@ const FinancialCalculator: React.FC = () => {
                 {isCalculating && (
                     <div className="absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex items-center justify-center">
                         <div className="flex flex-col items-center gap-2">
-                             <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
-                             <span className="text-sm font-bold text-blue-600">Consultando taxas vigentes...</span>
+                             <RefreshCw className="w-8 h-8 text-primary animate-spin" />
+                             <span className="text-sm font-bold text-primary">Consultando taxas vigentes...</span>
                         </div>
                     </div>
                 )}
 
                 {/* Top Banner */}
-                <div className="bg-slate-900 p-6 text-white flex justify-between items-center">
+                <div className="bg-background p-6 text-white flex justify-between items-center">
                     <div>
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Resultado Simulado</p>
+                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-1">Resultado Simulado</p>
                         <h2 className="text-xl font-bold flex items-center gap-2">
                             {result.bankName} 
                             <CheckCircle2 className="w-5 h-5 text-green-400" />
                         </h2>
                     </div>
                     <div className="text-right">
-                        <p className="text-xs text-slate-400">Custo Efetivo Total (CET)</p>
-                        <p className="text-2xl font-bold text-yellow-400">{result.cet}% <span className="text-sm font-normal text-slate-400">a.a.</span></p>
+                        <p className="text-xs text-muted-foreground">Custo Efetivo Total (CET)</p>
+                        <p className="text-2xl font-bold text-yellow-400">{result.cet}% <span className="text-sm font-normal text-muted-foreground">a.a.</span></p>
                     </div>
                 </div>
 
@@ -255,7 +255,7 @@ const FinancialCalculator: React.FC = () => {
                         <div className="space-y-4">
                             <div className="bg-green-50 p-4 rounded-xl border border-green-100">
                                 <p className="text-xs font-bold text-green-700 uppercase mb-1">Primeira Parcela</p>
-                                <p className="text-3xl font-extrabold text-slate-800">
+                                <p className="text-3xl font-extrabold text-foreground">
                                     R$ {result.firstInstallment.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                                 </p>
                                 <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
@@ -294,7 +294,7 @@ const FinancialCalculator: React.FC = () => {
                             <Share2 className="w-5 h-5" /> Gerar PDF para Cliente
                         </button>
                         <button className="flex-1 bg-white border border-gray-300 text-slate-700 py-3 rounded-xl font-bold hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
-                            <Landmark className="w-5 h-5 text-slate-500" /> Solicitar Análise de Crédito
+                            <Landmark className="w-5 h-5 text-muted-foreground" /> Solicitar Análise de Crédito
                         </button>
                     </div>
                     

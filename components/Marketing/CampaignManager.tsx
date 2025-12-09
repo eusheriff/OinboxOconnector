@@ -58,8 +58,8 @@ const CampaignManager: React.FC = () => {
   const renderCreateView = () => (
       <div className="animate-in fade-in slide-in-from-right duration-300">
           <div className="flex items-center gap-2 mb-6">
-             <button onClick={() => setView('list')} className="text-sm text-gray-500 hover:text-slate-800 hover:underline">← Voltar</button>
-             <h2 className="text-xl font-bold text-slate-800">Nova Campanha Inteligente</h2>
+             <button onClick={() => setView('list')} className="text-sm text-gray-500 hover:text-foreground hover:underline">← Voltar</button>
+             <h2 className="text-xl font-bold text-foreground">Nova Campanha Inteligente</h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -67,7 +67,7 @@ const CampaignManager: React.FC = () => {
               {/* Left: Property Selector */}
               <div className="space-y-6">
                   <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                      <h3 className="text-sm font-bold text-slate-500 uppercase mb-4 flex items-center gap-2">
+                      <h3 className="text-sm font-bold text-muted-foreground uppercase mb-4 flex items-center gap-2">
                           <Target className="w-4 h-4" /> 1. Selecione o Imóvel Alvo
                       </h3>
                       <div className="space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar pr-2">
@@ -75,13 +75,13 @@ const CampaignManager: React.FC = () => {
                               <div 
                                   key={prop.id}
                                   onClick={() => runAiMatchmaker(prop)}
-                                  className={`flex items-center gap-4 p-3 rounded-xl border cursor-pointer transition-all ${selectedProperty?.id === prop.id ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500' : 'border-gray-200 hover:bg-gray-50'}`}
+                                  className={`flex items-center gap-4 p-3 rounded-xl border cursor-pointer transition-all ${selectedProperty?.id === prop.id ? 'border-blue-500 bg-blue-50 ring-1 ring-primary' : 'border-gray-200 hover:bg-gray-50'}`}
                               >
                                   <img src={prop.image} className="w-16 h-16 rounded-lg object-cover" alt="" />
                                   <div>
-                                      <p className="font-bold text-slate-800">{prop.title}</p>
+                                      <p className="font-bold text-foreground">{prop.title}</p>
                                       <p className="text-xs text-gray-500">{prop.location}</p>
-                                      <p className="text-xs font-bold text-blue-600 mt-1">R$ {prop.price.toLocaleString('pt-BR')}</p>
+                                      <p className="text-xs font-bold text-primary mt-1">R$ {prop.price.toLocaleString('pt-BR')}</p>
                                   </div>
                               </div>
                           ))}
@@ -92,7 +92,7 @@ const CampaignManager: React.FC = () => {
               {/* Right: AI Match & Compose */}
               <div className="space-y-6">
                    <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm min-h-[200px]">
-                       <h3 className="text-sm font-bold text-slate-500 uppercase mb-4 flex items-center gap-2">
+                       <h3 className="text-sm font-bold text-muted-foreground uppercase mb-4 flex items-center gap-2">
                            <Sparkles className="w-4 h-4 text-purple-600" /> 2. AI Matchmaker
                        </h3>
 
@@ -115,7 +115,7 @@ const CampaignManager: React.FC = () => {
                                </div>
                                <div className="flex -space-x-2 mb-4 overflow-hidden">
                                    {matchedClients.map(c => (
-                                       <div key={c.id} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-xs font-bold text-slate-600" title={c.name}>
+                                       <div key={c.id} className="w-10 h-10 rounded-full border-2 border-white bg-slate-200 flex items-center justify-center text-xs font-bold text-muted-foreground" title={c.name}>
                                            {c.name.charAt(0)}
                                        </div>
                                    ))}
@@ -158,14 +158,14 @@ const CampaignManager: React.FC = () => {
       <div>
         <div className="flex justify-between items-center mb-8">
             <div>
-                <h1 className="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
                     <Megaphone className="w-8 h-8 text-orange-500" /> Campanhas
                 </h1>
-                <p className="text-slate-500">Disparos individuais em massa para leads segmentados.</p>
+                <p className="text-muted-foreground">Disparos individuais em massa para leads segmentados.</p>
             </div>
             <button 
                 onClick={() => setView('create')}
-                className="bg-slate-900 hover:bg-slate-800 text-white px-5 py-2.5 rounded-lg font-bold shadow-lg transition-all flex items-center gap-2"
+                className="bg-background hover:bg-accent text-white px-5 py-2.5 rounded-lg font-bold shadow-lg transition-all flex items-center gap-2"
             >
                 <Sparkles className="w-4 h-4 text-yellow-400" /> Nova Campanha IA
             </button>
@@ -174,18 +174,18 @@ const CampaignManager: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Total Disparado (Mês)</h3>
-                <p className="text-3xl font-bold text-slate-800">1.240</p>
+                <p className="text-3xl font-bold text-foreground">1.240</p>
                 <p className="text-xs text-green-600 font-bold mt-1 flex items-center gap-1"><Target className="w-3 h-3"/> Alta precisão</p>
             </div>
             <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Taxa de Abertura</h3>
-                <p className="text-3xl font-bold text-slate-800">68%</p>
+                <p className="text-3xl font-bold text-foreground">68%</p>
                 <p className="text-xs text-gray-500 mt-1">Média do mercado: 45%</p>
             </div>
             <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-2">Vendas Geradas</h3>
-                <p className="text-3xl font-bold text-slate-800">R$ 2.4M</p>
-                <p className="text-xs text-blue-600 font-bold mt-1">Origem: WhatsApp</p>
+                <p className="text-3xl font-bold text-foreground">R$ 2.4M</p>
+                <p className="text-xs text-primary font-bold mt-1">Origem: WhatsApp</p>
             </div>
         </div>
 
@@ -197,11 +197,11 @@ const CampaignManager: React.FC = () => {
                 {activeCampaigns.map(camp => (
                     <div key={camp.id} className="p-4 flex items-center justify-between hover:bg-gray-50 transition-colors">
                         <div className="flex items-center gap-4">
-                            <div className={`p-3 rounded-full ${camp.type === 'whatsapp' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-blue-600'}`}>
+                            <div className={`p-3 rounded-full ${camp.type === 'whatsapp' ? 'bg-green-100 text-green-600' : 'bg-blue-100 text-primary'}`}>
                                 {camp.type === 'whatsapp' ? <MessageCircle className="w-5 h-5" /> : <Mail className="w-5 h-5" />}
                             </div>
                             <div>
-                                <p className="font-bold text-slate-800">{camp.name}</p>
+                                <p className="font-bold text-foreground">{camp.name}</p>
                                 <p className="text-xs text-gray-500 flex items-center gap-1">
                                     {camp.createdAt.toLocaleDateString()} • <Users className="w-3 h-3" /> {camp.targetAudienceCount} leads
                                 </p>
@@ -225,7 +225,7 @@ const CampaignManager: React.FC = () => {
                                 <p className="text-[10px] font-bold text-gray-400 uppercase">Abertura</p>
                                 <p className="font-bold text-slate-700">{camp.openRate}%</p>
                             </div>
-                            <button className="text-sm font-bold text-blue-600 hover:underline">
+                            <button className="text-sm font-bold text-primary hover:underline">
                                 Ver Relatório
                             </button>
                         </div>

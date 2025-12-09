@@ -1,13 +1,12 @@
-
-import { GoogleGenAI } from "@google/genai";
 import { AIConfig } from "../types";
+import { apiService } from "./apiService";
 
 // --- CONFIGURAÇÃO DE IA ---
 // Gerencia a troca entre Gemini (Nuvem) e Ollama (Local)
 const getAIConfig = (): AIConfig => {
   const stored = localStorage.getItem('oconnector_ai_config');
   if (stored) return JSON.parse(stored);
-  
+
   return {
     provider: 'gemini', // Default
     ollamaBaseUrl: 'http://localhost:11434',
@@ -16,21 +15,27 @@ const getAIConfig = (): AIConfig => {
   };
 };
 
-// Helper seguro para API Key do Gemini
-const getApiKey = () => {
-  // @ts-ignore
-  if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_KEY) {
-    // @ts-ignore
-    return import.meta.env.VITE_API_KEY;
-  }
-  if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-    return process.env.API_KEY;
-  }
-  return '';
-};
+// Helper para chamar o Backend (Router Inteligente)
+const callBackendAI = async (prompt: string, systemPrompt?: string, session_id?: string) => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://oconnector-saas.xerifegomes-e71.workers.dev/api'}/ai/generate`, {
+      method: 'POST',
+      headers: apiService.getHeaders(),
+      body: JSON.stringify({ prompt, systemPrompt, session_id })
+    });
 
-const API_KEY = getApiKey();
-const ai = new GoogleGenAI({ apiKey: API_KEY });
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error((err as any).error || 'Erro na IA');
+    }
+
+    const data = await response.json();
+    return (data as any).text;
+  } catch (e) {
+    console.error("AI Error:", e);
+    return "Erro ao processar solicitação de IA. Tente novamente mais tarde.";
+  }
+};
 
 // Export GroundingSource interface for use in components
 export interface GroundingSource {
@@ -38,37 +43,12 @@ export interface GroundingSource {
   uri: string;
 }
 
-// --- PERSONA MANÚ (SYSTEM PROMPT) ---
-const MANU_SYSTEM_PROMPT = `
-### SYSTEM INSTRUCTION ###
-Manú - Corretora Digital
-Especialista em qualificação de leads e agendamento de visitas imobiliárias.
-
-VOCÊ É:
-Manú, a Consultora Imobiliária Virtual da imobiliária OConnector. Você é uma corretora sênior, especialista em encontrar o imóvel perfeito e guiar o cliente com segurança.
-
-SEU OBJETIVO:
-Engajar o cliente em uma conversa natural, entender o que ele busca (qualificação), tirar dúvidas sobre os imóveis listados e, SEMPRE que possível, converter a conversa em um agendamento de visita ou proposta.
-
-ESTILO DE RESPOSTA:
-- Use português brasileiro natural e empático.
-- Responda como se estivesse no WhatsApp (frases curtas, diretas).
-- Use emojis moderadamente (🏠, 😊, 📅, ✅) para dar tom.
-- NUNCA invente dados do imóvel. Se não souber, diga que vai verificar.
-- Se o cliente quiser visitar, ofereça duas opções de horário.
-`;
-
-// --- OLLAMA API CLIENT ---
+// --- OLLAMA API CLIENT (Local Fallback) ---
 const callOllamaAPI = async (model: string, prompt: string, imageBase64?: string, jsonMode: boolean = false) => {
   const config = getAIConfig();
-  
   try {
     const messages: any[] = [{ role: "user", content: prompt }];
-    
-    // Se houver imagem, adiciona ao payload (Ollama suporta array de imagens)
-    if (imageBase64) {
-      messages[0].images = [imageBase64];
-    }
+    if (imageBase64) messages[0].images = [imageBase64];
 
     const response = await fetch(`${config.ollamaBaseUrl}/api/chat`, {
       method: "POST",
@@ -82,10 +62,8 @@ const callOllamaAPI = async (model: string, prompt: string, imageBase64?: string
     });
 
     if (!response.ok) throw new Error("Falha ao conectar com Ollama");
-
     const data = await response.json();
-    return data.message?.content || "";
-
+    return (data as any).message?.content || "";
   } catch (error) {
     console.error("Ollama Error:", error);
     return "";
@@ -98,7 +76,6 @@ export const fileToGenerativePart = async (file: File): Promise<string> => {
     const reader = new FileReader();
     reader.onloadend = () => {
       const result = reader.result as string;
-      // Remove header data:image/png;base64, para ficar apenas a string
       const base64String = result.split(',')[1];
       resolve(base64String);
     };
@@ -122,24 +99,18 @@ export const analyzePropertyImage = async (file: File): Promise<{ features: stri
 
   try {
     let text = "";
-
     if (config.provider === 'ollama') {
-      // Usa modelo de visão local (qwen3-vl ou llava)
       text = await callOllamaAPI(config.visionModel || 'qwen3-vl:8b', prompt, base64, true);
     } else {
-      // Usa Gemini
-      if (!API_KEY) return { features: "Erro: API Key", description: "Configure Gemini." };
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: { parts: [{ inlineData: { data: base64, mimeType: file.type } }, { text: prompt }] }
-      });
-      text = response.text || "{}";
+      // Para imagens, ainda usamos o backend se suportar, ou mantemos local se for complexo enviar imagem grande
+      // Simplificação: Envia para backend apenas texto por enquanto, imagem requer multipart
+      // TODO: Implementar envio de imagem para backend AI
+      return { features: "Análise de imagem via backend em breve", description: "Funcionalidade em migração." };
     }
 
     const cleanJson = text.replace(/```json|```/g, '').trim();
     return JSON.parse(cleanJson);
   } catch (error) {
-    console.error("Image Analysis Error:", error);
     return { features: "", description: "Erro na análise da imagem." };
   }
 };
@@ -152,50 +123,46 @@ export const generatePropertyDescription = async (features: string, type: string
       Máximo 300 caracteres.
   `;
 
-  if (config.provider === 'ollama') {
-    return await callOllamaAPI(config.selectedModel, prompt);
-  }
-
-  if (!API_KEY) return "Erro: API Key ausente.";
-  const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
-  return response.text || "Erro.";
+  if (config.provider === 'ollama') return await callOllamaAPI(config.selectedModel, prompt);
+  return await callBackendAI(prompt, "Você é um copywriter imobiliário.");
 };
 
-export const summarizeConversation = async (messages: {sender: string, text: string}[]): Promise<string> => {
+export const summarizeConversation = async (messages: { sender: string, text: string }[]): Promise<string> => {
   const config = getAIConfig();
   const prompt = `
       Resuma esta conversa imobiliária em 2 frases. Identifique o interesse e status.
       Conversa: ${messages.map(m => `${m.sender}: ${m.text}`).join('\n')}
   `;
 
-  if (config.provider === 'ollama') {
-    return await callOllamaAPI(config.selectedModel, prompt);
-  }
-
-  if (!API_KEY) return "";
-  const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
-  return response.text || "";
+  if (config.provider === 'ollama') return await callOllamaAPI(config.selectedModel, prompt);
+  return await callBackendAI(prompt);
 };
 
-export const suggestReply = async (
-    conversationHistory: string[], 
-    tone: 'formal' | 'friendly', 
-    propertyContext?: string
-): Promise<string> => {
+export const suggestReply = async (conversationHistory: string[], tone: 'formal' | 'friendly', propertyContext?: string): Promise<string> => {
   const config = getAIConfig();
   let prompt = `Aja como um corretor. Sugira resposta ${tone} e curta. Histórico: ${conversationHistory.slice(-5).join('\n')}`;
   if (propertyContext) prompt += `\nContexto Imóvel: ${propertyContext}`;
 
-  if (config.provider === 'ollama') {
-    return await callOllamaAPI(config.selectedModel, prompt);
-  }
-
-  if (!API_KEY) return "Erro Config.";
-  const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
-  return response.text || "Erro.";
+  if (config.provider === 'ollama') return await callOllamaAPI(config.selectedModel, prompt);
+  return await callBackendAI(prompt);
 };
 
-export const analyzeClientProfile = async (messages: {sender: string, text: string}[]): Promise<any> => {
+export const generateMarketingCaption = async (propertyTitle: string, location: string, price: string, templateType: string): Promise<string> => {
+  const config = getAIConfig();
+  const prompt = `
+      Crie uma legenda curta e engajadora para Instagram/Facebook sobre este imóvel:
+      Imóvel: ${propertyTitle}
+      Local: ${location}
+      Preço: ${price}
+      Estilo do Post: ${templateType} (Ex: Vendido, Oportunidade, Luxo)
+      Use emojis, hashtags e uma Call to Action (CTA) no final.
+  `;
+
+  if (config.provider === 'ollama') return await callOllamaAPI(config.selectedModel, prompt);
+  return await callBackendAI(prompt);
+};
+
+export const analyzeClientProfile = async (messages: { sender: string, text: string }[]): Promise<any> => {
   const config = getAIConfig();
   const prompt = `
     Analise a conversa e extraia JSON: { "budget": "", "urgency": "", "preferences": [], "sentiment": "", "summary": "" }.
@@ -205,20 +172,11 @@ export const analyzeClientProfile = async (messages: {sender: string, text: stri
   try {
     let text = "";
     if (config.provider === 'ollama') {
-      // Se tiver deepseek-r1, é melhor para raciocínio, senão usa o padrão
-      const model = config.selectedModel.includes('deepseek') ? config.selectedModel : 'llama3.1:8b';
-      text = await callOllamaAPI(model, prompt, undefined, true);
+      text = await callOllamaAPI(config.selectedModel, prompt, undefined, true);
     } else {
-      if (!API_KEY) return null;
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-lite',
-        contents: prompt,
-        config: { responseMimeType: "application/json" }
-      });
-      text = response.text || "{}";
+      text = await callBackendAI(prompt, "Você é um analista de dados. Retorne APENAS JSON.");
     }
-    
-    // Limpeza extra para Ollama que às vezes manda texto antes do JSON
+
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     return jsonMatch ? JSON.parse(jsonMatch[0]) : {};
   } catch (error) {
@@ -227,114 +185,46 @@ export const analyzeClientProfile = async (messages: {sender: string, text: stri
 };
 
 // --- FUNÇÃO PRINCIPAL DA AGENTE MANÚ ---
-export const fastAgentResponse = async (lastMessage: string, clientName: string, profileSummary: string, persona?: string): Promise<string> => {
+export const fastAgentResponse = async (lastMessage: string, clientName: string, profileSummary: string, session_id: string, persona?: string): Promise<string> => {
   const config = getAIConfig();
-  
-  // Constrói o prompt com a Persona Manú + Contexto do Cliente
-  const prompt = `
-  ${MANU_SYSTEM_PROMPT}
 
+  // O Backend agora injeta a "Persona Manú" e a "Base de Conhecimento" automaticamente.
+  // Aqui enviamos apenas o contexto específico da sessão atual.
+  const prompt = `
   CONTEXTO DO CLIENTE:
   - Nome: ${clientName}
   - Perfil Resumido: ${profileSummary}
   
   ÚLTIMA MENSAGEM DO CLIENTE: "${lastMessage}"
-  
-  SUA RESPOSTA COMO MANÚ (Curta, amigável e focada em converter):`;
+  `;
 
-  if (config.provider === 'ollama') {
-    return await callOllamaAPI(config.selectedModel, prompt);
-  }
+  // System Prompt simplificado para o Frontend (o Backend adiciona o pesado)
+  const systemPrompt = `Você é Manú, corretora da Euimob.`;
 
-  if (!API_KEY) return "";
-  const response = await ai.models.generateContent({ model: 'gemini-2.5-flash-lite', contents: prompt });
-  return response.text || "";
+  if (config.provider === 'ollama') return await callOllamaAPI(config.selectedModel, prompt);
+  return await callBackendAI(prompt, systemPrompt, session_id);
 };
 
 // --- FERRAMENTAS ESPECÍFICAS (MAPS, SEARCH) ---
 
-export const askLocationAssistant = async (location: string, queryType: string): Promise<{text: string, sources: GroundingSource[]}> => {
-  const config = getAIConfig();
-  
-  if (config.provider === 'ollama') {
-     // Fallback sem Google Maps
-     const prompt = `Liste pontos de interesse genéricos sobre ${queryType} em ${location}. (Modo Offline/Local)`;
-     const text = await callOllamaAPI(config.selectedModel, prompt);
-     return { text, sources: [] };
-  }
-
-  if (!API_KEY) return { text: "Erro: API Key", sources: [] };
-  
-  try {
-      const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        contents: `Info sobre ${queryType} em ${location}.`,
-        config: { tools: [{ googleMaps: {} }] }
-      });
-      
-      let sources: GroundingSource[] = [];
-      const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
-      
-      if (groundingChunks) {
-         groundingChunks.forEach((chunk: any) => {
-             if (chunk.web?.uri) {
-                 sources.push({ title: chunk.web.title || 'Fonte Web', uri: chunk.web.uri });
-             }
-             if (chunk.maps?.uri) {
-                  sources.push({ title: chunk.maps.title || 'Google Maps', uri: chunk.maps.uri });
-             }
-         });
-      }
-
-      return { text: response.text || "", sources }; 
-  } catch(e) { return { text: "Erro", sources: [] } }
+// Funções que dependem de ferramentas complexas (Maps, Voice) mantidas simplificadas ou removidas temporariamente para focar no core
+export const askLocationAssistant = async (location: string, queryType: string): Promise<{ text: string, sources: any[] }> => {
+  return { text: "Funcionalidade em manutenção para migração de backend.", sources: [] };
 };
 
-export const askGlobalAgent = async (message: string, history: any[]): Promise<string> => {
-    const config = getAIConfig();
-    const prompt = `Você é a IA do OConnector. Responda dúvidas sobre a plataforma imobiliária. Msg: ${message}`;
-    
-    if (config.provider === 'ollama') {
-        return await callOllamaAPI(config.selectedModel, prompt);
-    }
-    if (!API_KEY) return "Erro.";
-    const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
-    return response.text || "";
+export const askGlobalAgent = async (message: string, history: any[], session_id?: string): Promise<string> => {
+  return await callBackendAI(message, "Você é a IA do Euimob.", session_id);
 }
 
-export const askMarketExpert = async (message: string, history: any[]): Promise<string> => {
-    const config = getAIConfig();
-    const prompt = `Você é um Corretor Sênior Especialista. Responda sobre mercado imobiliário. Pergunta: ${message}`;
-    
-    if (config.provider === 'ollama') {
-        // Deepseek R1 é excelente para especialistas
-        const model = config.selectedModel.includes('deepseek') ? 'deepseek-r1:7b' : config.selectedModel;
-        return await callOllamaAPI(model, prompt);
-    }
-    
-    if (!API_KEY) return "Erro.";
-    const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: prompt });
-    return response.text || "";
+export const askMarketExpert = async (message: string, history: any[], session_id?: string): Promise<string> => {
+  const config = getAIConfig();
+  const prompt = `Pergunta: ${message}`;
+  const systemPrompt = `Você é um Corretor Sênior Especialista. Responda sobre mercado imobiliário com autoridade e clareza.`;
+
+  if (config.provider === 'ollama') return await callOllamaAPI(config.selectedModel, prompt);
+  return await callBackendAI(prompt, systemPrompt, session_id);
 };
 
 export const processVoiceNote = async (audioTranscription: string): Promise<any> => {
-    const config = getAIConfig();
-    const prompt = `Extraia JSON do texto: "${audioTranscription}". Formato: { "summary": "", "actionItem": "", "clientMood": "", "budgetUpdate": "" }`;
-
-    try {
-        let text = "";
-        if (config.provider === 'ollama') {
-             text = await callOllamaAPI(config.selectedModel, prompt, undefined, true);
-        } else {
-             if (!API_KEY) return null;
-             const response = await ai.models.generateContent({
-                model: 'gemini-2.5-flash',
-                contents: prompt,
-                config: { responseMimeType: "application/json" }
-            });
-            text = response.text || "{}";
-        }
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        return jsonMatch ? JSON.parse(jsonMatch[0]) : {};
-    } catch (e) { return null; }
+  return {};
 }

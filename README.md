@@ -1,6 +1,6 @@
-# OConnector - Plataforma Imobiliária Inteligente (SaaS)
+# Oinbox - Real Estate Operating System
 
-OConnector é um "Sistema Operacional Imobiliário" completo, desenhado para centralizar a operação de corretores e imobiliárias. A plataforma une **CRM**, **Inbox Unificado** (Omnichannel) e **Marketing**, tudo potencializado por Inteligência Artificial Generativa (Google Gemini).
+Oinbox é um "Sistema Operacional Imobiliário" completo, desenhado para centralizar a operação de corretores e imobiliárias. A plataforma une **CRM**, **Inbox Unificado** (Omnichannel) e **Marketing**, tudo potencializado por Inteligência Artificial Generativa (Google Gemini).
 
 ## 🚀 Stack Tecnológico
 
@@ -104,4 +104,4 @@ O Frontend rodará em `http://localhost:5173` e o Backend em `http://localhost:8
 
 ## 📄 Licença
 
-Este projeto é proprietário. Todos os direitos reservados a OConnector Tecnologia.
+Este projeto é proprietário. Todos os direitos reservados a Euimob Tecnologia.

@@ -1,0 +1,31 @@
+import { Bindings } from '../types';
+
+export async function sendEmail(env: Bindings, to: string, subject: string, html: string) {
+    if (!env.RESEND_API_KEY) {
+        console.warn("RESEND_API_KEY not set. Email skipped.");
+        return;
+    }
+
+    try {
+        const res = await fetch('https://api.resend.com/emails', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${env.RESEND_API_KEY}`
+            },
+            body: JSON.stringify({
+                from: 'Euimob <onboarding@resend.dev>', // Use verified domain in prod
+                to: to,
+                subject: subject,
+                html: html
+            })
+        });
+
+        if (!res.ok) {
+            const error = await res.text();
+            console.error("Resend Error:", error);
+        }
+    } catch (e) {
+        console.error("Email Send Failed:", e);
+    }
+}

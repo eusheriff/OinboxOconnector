@@ -1,415 +1,151 @@
-
-import React, { useState, useEffect, useRef } from 'react';
-import { AppView, Conversation, Message, Client, Property, Platform, ToastNotification, Deal } from './types';
-import { MOCK_CONVERSATIONS, MOCK_CLIENTS, MOCK_PROPERTIES, MOCK_DEALS } from './constants';
-import Sidebar from './components/Sidebar';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import ClientLayout from './src/layouts/ClientLayout';
+import AdminLayout from './src/layouts/AdminLayout';
+import { LogIn } from 'lucide-react';
+import { apiService } from './services/apiService';
+import { User, Property, Client } from './types';
+import LoginPage from './components/Auth/LoginPage';
+import RegisterPage from './components/Auth/RegisterPage';
+import LandingPage from './components/Landing/LandingPage';
+import DashboardHome from './components/Dashboard/DashboardHome';
+import Pipeline from './components/CRM/Pipeline';
 import ChatList from './components/Inbox/ChatList';
-import ChatWindow from './components/Inbox/ChatWindow';
-import ClientDetails from './components/Inbox/ClientDetails';
-import ListingForm from './components/Listings/ListingForm';
 import PropertyList from './components/Properties/PropertyList';
 import ClientList from './components/Clients/ClientList';
-import IntegrationsSettings from './components/Settings/IntegrationsSettings';
-import PropertyMap from './components/Map/PropertyMap';
-import Pipeline from './components/CRM/Pipeline';
-import LandingPage from './components/Landing/LandingPage';
-import LoginPage from './components/Auth/LoginPage';
-import RegisterPage from './components/Auth/RegisterPage'; // Re-importado
-import RealEstateAgentChat from './components/AI/RealEstateAgentChat';
-import DashboardHome from './components/Dashboard/DashboardHome';
-import ToastContainer from './components/UI/ToastContainer';
 import CalendarView from './components/Calendar/CalendarView';
-import FinancialCalculator from './components/Tools/FinancialCalculator';
-import MarketingStudio from './components/Marketing/MarketingStudio'; 
-import CampaignManager from './components/Marketing/CampaignManager'; 
-import ContractGenerator from './components/Tools/ContractGenerator'; 
-import SuperAdminDashboard from './components/Admin/SuperAdminDashboard';
-import { fastAgentResponse } from './services/geminiService';
-import { apiService } from './services/apiService'; 
-import { Smartphone, CheckCircle2 } from 'lucide-react';
+import AdminDashboard from './src/pages/admin/AdminDashboard';
+import TenantsList from './src/pages/admin/TenantsList';
+import AIControlPanel from './src/pages/admin/AIControlPanel';
+import WhatsAppManager from './src/pages/admin/WhatsAppManager';
+import FinanceDashboard from './src/pages/admin/FinanceDashboard';
+import AuditLogs from './src/pages/admin/AuditLogs';
+import FeatureManager from './src/pages/admin/FeatureManager';
+import BroadcastManager from './src/pages/admin/BroadcastManager';
+import AIAnalytics from './src/pages/admin/AIAnalytics';
+import SystemHealth from './src/pages/admin/SystemHealth';
+import SubscriptionManager from './src/pages/admin/SubscriptionManager';
+import SettingsPage from './src/pages/admin/SettingsPage';
 
-const App: React.FC = () => {
-  // Auth State
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [authView, setAuthView] = useState<'none' | 'login' | 'register'>('none');
-  const [userRole, setUserRole] = useState<'client' | 'admin'>('client');
-  const [selectedPlan, setSelectedPlan] = useState<string | undefined>(undefined);
+// New Client Pages
+import AIConsultant from './src/pages/client/AIConsultant';
+import NewListing from './src/pages/client/NewListing';
+import Calculator from './src/pages/client/Calculator';
+import ClientSettings from './src/pages/client/SettingsPage';
+import Campaigns from './src/pages/client/Campaigns';
+import MarketingStudio from './src/pages/client/MarketingStudio';
+import Contracts from './src/pages/client/Contracts';
+import MapPage from './src/pages/client/MapPage';
 
-  // Dashboard State
-  const [currentView, setCurrentView] = useState<AppView>(AppView.DASHBOARD);
-  const [conversations, setConversations] = useState<Conversation[]>(MOCK_CONVERSATIONS);
-  const [activeChatId, setActiveChatId] = useState<string | null>(null);
-  
-  // Data Management State
-  const [clients, setClients] = useState<Client[]>(MOCK_CLIENTS);
-  const [properties, setProperties] = useState<Property[]>(MOCK_PROPERTIES);
-  const [deals, setDeals] = useState<Deal[]>(MOCK_DEALS);
-  
-  // Toast System
+import AdminInbox from './src/pages/admin/AdminInbox';
+import InboxPage from './src/pages/client/InboxPage';
+import ToastContainer from './components/UI/ToastContainer';
+import { ToastNotification } from './types';
+
+function App() {
+  const [user, setUser] = useState<User | null>(null);
   const [toasts, setToasts] = useState<ToastNotification[]>([]);
 
-  // Integration State
-  const [integrationStatus, setIntegrationStatus] = useState<Record<string, 'connected' | 'disconnected' | 'loading'>>({
-    whatsapp: 'disconnected',
-    instagram: 'disconnected',
-    email: 'connected',
-    zap: 'disconnected',
-    olx: 'disconnected',
-    facebook_marketplace: 'disconnected'
-  });
-
-  const activeConversation = activeChatId 
-    ? conversations.find(c => c.id === activeChatId) || null 
-    : null;
-
-  // --- FETCH INITIAL DATA FROM BACKEND ---
-  useEffect(() => {
-    if (isAuthenticated && userRole === 'client') {
-        const fetchData = async () => {
-            try {
-                // Tenta buscar do backend real
-                const dbClients = await apiService.getClients();
-                if (dbClients.length > 0) setClients(dbClients);
-
-                const dbProperties = await apiService.getProperties();
-                if (dbProperties.length > 0) setProperties(dbProperties);
-                
-                // Stats do dashboard podem ser carregados aqui também
-            } catch (e) {
-                console.log("Usando dados mockados (Backend não disponível)");
-            }
-        };
-        fetchData();
-    }
-  }, [isAuthenticated, userRole]);
-
-  // --- TOAST HELPER ---
-  const addToast = (type: 'success' | 'error' | 'info' | 'warning', message: string) => {
-    const id = Date.now().toString();
-    setToasts(prev => [...prev, { id, type, message }]);
+  const addToast = (type: 'success' | 'error' | 'info', message: string) => {
+    const id = Math.random().toString(36).substr(2, 9);
+    setToasts((prev) => [...prev, { id, type, message }]);
     setTimeout(() => {
-      setToasts(prev => prev.filter(t => t.id !== id));
-    }, 4000);
+      setToasts((prev) => prev.filter((t) => t.id !== id));
+    }, 3000);
   };
 
-  const removeToast = (id: string) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
+  const handleLogin = (userData: User) => {
+    setUser(userData);
+    localStorage.setItem('user', JSON.stringify(userData));
+    addToast('success', `Bem-vindo, ${userData.name}!`);
   };
 
-  // --- AI AGENT AUTONOMOUS LOOP ---
-  useEffect(() => {
-    if (integrationStatus.whatsapp !== 'connected' || userRole === 'admin') return;
-
-    const simulationInterval = setInterval(() => {
-      const whatsappConvs = conversations.filter(c => c.platform === Platform.WHATSAPP);
-      if (whatsappConvs.length === 0) return;
-      
-      const randomConv = whatsappConvs[Math.floor(Math.random() * whatsappConvs.length)];
-      const lastMsg = randomConv.messages[randomConv.messages.length - 1];
-      
-      // Simula o cliente falando para a Manú responder
-      if (lastMsg.isStaff && Math.random() > 0.7) {
-         const clientMessages = [
-             "Ainda está disponível?", "Aceita financiamento?", "Pode me mandar mais fotos?", "Qual o valor do IPTU?", "Gostaria de agendar uma visita."
-         ];
-         const randomText = clientMessages[Math.floor(Math.random() * clientMessages.length)];
-         handleIncomingMessage(randomConv.id, randomText);
-         setTimeout(() => {
-             handleAutoAgentReply(randomConv.id, randomText, randomConv.contactName);
-         }, 3000); // Manú 'digitando...'
-      }
-    }, 15000);
-
-    return () => clearInterval(simulationInterval);
-  }, [integrationStatus.whatsapp, conversations, userRole]);
-
-
-  const handleIncomingMessage = (convId: string, text: string) => {
-      const newMessage: Message = {
-          id: Date.now().toString(),
-          senderId: 'contact',
-          text: text,
-          timestamp: new Date(),
-          isStaff: false,
-          type: 'text'
-      };
-
-      setConversations(prev => prev.map(conv => {
-          if (conv.id === convId) {
-              return {
-                  ...conv,
-                  lastMessage: text,
-                  lastMessageTime: new Date(),
-                  unreadCount: conv.unreadCount + 1,
-                  messages: [...conv.messages, newMessage]
-              };
-          }
-          return conv;
-      }));
-      
-      addToast('info', `Nova mensagem recebida no WhatsApp.`);
-  };
-
-  const handleAutoAgentReply = async (convId: string, triggerText: string, clientName: string) => {
-      // Aqui injetamos a Persona MANÚ
-      const agentPersona = "Você é a Manú, assistente virtual da OConnector. Simpática, eficiente e usa emojis.";
-      
-      const aiResponse = await fastAgentResponse(triggerText, clientName, "Cliente interessado vindo do WhatsApp", agentPersona);
-      if (!aiResponse) return;
-
-      const botMessage: Message = {
-          id: Date.now().toString(),
-          senderId: 'bot',
-          text: `🤖 ${aiResponse}`,
-          timestamp: new Date(),
-          isStaff: true,
-          type: 'text'
-      };
-
-      setConversations(prev => prev.map(conv => {
-          if (conv.id === convId) {
-              return {
-                  ...conv,
-                  lastMessage: `🤖 ${aiResponse}`,
-                  lastMessageTime: new Date(),
-                  unreadCount: 0,
-                  messages: [...conv.messages, botMessage]
-              };
-          }
-          return conv;
-      }));
-  };
-
-  const handleSendMessage = (text: string) => {
-    if (!activeChatId) return;
-    const newMessage: Message = {
-      id: Date.now().toString(),
-      senderId: 'staff',
-      text,
-      timestamp: new Date(),
-      isStaff: true,
-      type: 'text'
-    };
-    setConversations(prev => prev.map(conv => {
-      if (conv.id === activeChatId) {
-        return {
-          ...conv,
-          lastMessage: text,
-          lastMessageTime: new Date(),
-          messages: [...conv.messages, newMessage]
-        };
-      }
-      return conv;
-    }));
-  };
-
-  const handleNavigateToChat = (conversationId: string) => {
-    setActiveChatId(conversationId);
-    setCurrentView(AppView.INBOX);
-  };
-
-  const handleAddClient = async (newClient: Client) => {
-    setClients(prev => [newClient, ...prev]);
-    addToast('success', `Cliente ${newClient.name} cadastrado com sucesso!`);
+  const handleAuthLogin = async (email: string, pass: string) => {
     try {
-        await apiService.createClient(newClient);
-    } catch (e) {
-        console.error("Erro ao salvar no backend", e);
-    }
-  };
-
-  const handleDeleteProperty = async (id: string) => {
-    if (window.confirm('Tem certeza que deseja excluir este imóvel?')) {
-        setProperties(prev => prev.filter(p => p.id !== id));
-        addToast('success', 'Imóvel removido com sucesso.');
-        try {
-            await apiService.deleteProperty(id);
-        } catch(e) {
-            console.error("Erro ao deletar no backend", e);
+      const data: any = await apiService.login(email, pass);
+      if (data.user) {
+        if (data.token) {
+          localStorage.setItem('oinbox_token', data.token);
         }
+        if (data.tenantId) {
+          localStorage.setItem('oinbox_tenant_id', data.tenantId);
+        }
+        handleLogin(data.user);
+      }
+    } catch (error) {
+      addToast('error', 'Falha no login. Verifique suas credenciais.');
+      throw error;
     }
   };
 
-  const toggleIntegration = (id: string, newStatus: 'connected' | 'disconnected' | 'loading') => {
-      setIntegrationStatus(prev => ({...prev, [id]: newStatus}));
-      if (newStatus === 'connected') {
-          if (id === 'whatsapp') addToast('success', 'Manú conectada com sucesso! 🤖');
-          else addToast('success', 'Canal conectado com sucesso!');
-      } else if (newStatus === 'disconnected') {
-          addToast('info', 'Canal desconectado.');
-      }
-  };
-
-  const handleLogin = async (email: string, pass: string) => {
-      try {
-          // Chama o serviço de API com as credenciais digitadas pelo usuário
-          const response = await apiService.login(email, pass);
-          
-          if (response.tenantId) {
-              localStorage.setItem('oconnector_tenant_id', response.tenantId);
-          }
-          
-          // Define o papel baseado na resposta do backend (admin ou client)
-          const role = response.user?.role || 'client';
-          
-          setUserRole(role);
-          setIsAuthenticated(true);
-          addToast('success', role === 'admin' ? 'Acesso Super Admin Concedido' : 'Bem-vindo ao OConnector!');
-      } catch (error) {
-          addToast('error', 'Falha no login. Verifique suas credenciais.');
-          throw error; // Re-throw para que o LoginPage saiba que falhou
-      }
-  }
-  
   const handleLogout = () => {
-      setIsAuthenticated(false);
-      setAuthView('none');
-      setUserRole('client');
-      localStorage.removeItem('oconnector_tenant_id');
-  }
-
-  // --- ROUTING LOGIC ---
-
-  if (!isAuthenticated) {
-    if (authView === 'login') {
-      return (
-        <LoginPage 
-          onLogin={handleLogin} 
-          onBack={() => setAuthView('none')} 
-          onRegisterClick={() => setAuthView('register')}
-        />
-      );
-    }
-    if (authView === 'register') {
-        return (
-            <RegisterPage 
-                onSwitchToLogin={() => setAuthView('login')}
-                selectedPlan={selectedPlan}
-            />
-        );
-    }
-    return <LandingPage 
-        onNavigateLogin={() => setAuthView('login')} 
-        onNavigateRegister={(planName) => {
-            setSelectedPlan(planName);
-            setAuthView('register');
-        }}
-    />;
-  }
-
-  // --- SUPER ADMIN VIEW ---
-  if (userRole === 'admin') {
-      return <SuperAdminDashboard onLogout={handleLogout} />;
-  }
-
-  // --- CLIENT DASHBOARD RENDER ---
-  const renderContent = () => {
-    switch (currentView) {
-      case AppView.DASHBOARD:
-        return <DashboardHome 
-            clients={clients} 
-            deals={deals} 
-            properties={properties} 
-            conversations={conversations}
-            onNavigate={setCurrentView}
-        />;
-        
-      case AppView.CALENDAR: 
-        return <CalendarView />;
-
-      case AppView.CALCULATOR:
-        return <FinancialCalculator />;
-
-      case AppView.MARKETING:
-        return <MarketingStudio />;
-
-      case AppView.CAMPAIGNS: 
-        return <CampaignManager />;
-
-      case AppView.CONTRACTS:
-        return <ContractGenerator />;
-
-      case AppView.INBOX:
-        return (
-          <div className="flex h-screen w-full overflow-hidden">
-            <div className={`${activeChatId ? 'hidden md:flex' : 'flex'} h-full flex-shrink-0`}>
-               <ChatList 
-                 conversations={conversations} 
-                 activeId={activeChatId} 
-                 onSelect={setActiveChatId} 
-               />
-            </div>
-            <div className={`${!activeChatId ? 'hidden md:flex' : 'flex'} flex-1 flex-col h-full relative`}>
-               {activeChatId && (
-                 <button 
-                   onClick={() => setActiveChatId(null)}
-                   className="md:hidden absolute top-4 left-4 z-10 bg-white p-2 rounded-full shadow-md text-sm font-bold text-gray-600"
-                 >
-                   ← Voltar
-                 </button>
-               )}
-               <ChatWindow 
-                 conversation={activeConversation} 
-                 onSendMessage={handleSendMessage} 
-               />
-            </div>
-            <ClientDetails conversation={activeConversation} />
-          </div>
-        );
-      
-      case AppView.CRM:
-        return <Pipeline onNavigateToChat={handleNavigateToChat} />;
-
-      case AppView.LISTINGS_FORM:
-        return <ListingForm />;
-      
-      case AppView.MY_CLIENTS:
-        return <ClientList clients={clients} onAddClient={handleAddClient} />;
-        
-      case AppView.MY_PROPERTIES:
-        return <PropertyList 
-            properties={properties} 
-            onNavigateToCreate={() => setCurrentView(AppView.LISTINGS_FORM)}
-            onDeleteProperty={handleDeleteProperty}
-        />;
-
-      case AppView.MAP:
-        return <PropertyMap />;
-
-      case AppView.AI_CONSULTANT:
-        return <RealEstateAgentChat />;
-
-      case AppView.SETTINGS:
-        return <IntegrationsSettings status={integrationStatus} onStatusChange={toggleIntegration} />;
-      
-      default:
-        return null;
-    }
+    setUser(null);
+    localStorage.removeItem('user');
+    localStorage.removeItem('oinbox_token');
+    localStorage.removeItem('oinbox_tenant_id');
+    addToast('info', 'Você saiu do sistema.');
   };
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+  }, []);
 
   return (
-    <div className="flex h-screen bg-gray-100 font-sans">
-      <Sidebar currentView={currentView} onViewChange={setCurrentView} />
-      <main className="flex-1 overflow-hidden flex flex-col relative">
-        
-        {/* Toast Container Overlay */}
-        <ToastContainer toasts={toasts} removeToast={removeToast} />
+    <Router>
+      <div className="app-container">
+        <ToastContainer toasts={toasts} removeToast={(id) => setToasts(prev => prev.filter(t => t.id !== id))} />
+        <Routes>
+          <Route path="/" element={<LandingPage onNavigateLogin={() => window.location.href = '/login'} onNavigateRegister={() => window.location.href = '/register'} />} />
+          <Route path="/login" element={user ? (user.role === 'super_admin' ? <Navigate to="/admin" /> : <Navigate to="/app" />) : <LoginPage onLogin={handleAuthLogin} onBack={() => window.location.href = '/'} onRegisterClick={() => window.location.href = '/register'} />} />
+          <Route path="/register" element={user ? <Navigate to="/app" /> : <RegisterPage onSwitchToLogin={() => window.location.href = '/login'} />} />
 
-        {/* Global Status Bar if WhatsApp Agent is Active */}
-        {integrationStatus.whatsapp === 'connected' && (
-            <div className="absolute top-0 left-0 right-0 bg-green-600 text-white text-[10px] py-1 px-4 flex justify-center items-center gap-2 z-[60] shadow-md">
-                <Smartphone className="w-3 h-3" />
-                <span className="font-bold">Agente Manú Ativa</span>
-                <span className="opacity-80">Respondendo em +55 (22) 99236-3462</span>
-                <span className="w-2 h-2 bg-white rounded-full animate-pulse ml-1"></span>
-            </div>
-        )}
-        <div className={`flex-1 overflow-hidden flex flex-col ${integrationStatus.whatsapp === 'connected' ? 'pt-6' : ''}`}>
-             {renderContent()}
-        </div>
-      </main>
-    </div>
+          {/* Admin Routes */}
+          <Route path="/admin" element={user && user.role === 'super_admin' ? <AdminLayout user={user} onLogout={handleLogout} /> : <Navigate to="/login" />}>
+            <Route index element={<AdminDashboard />} />
+            <Route path="tenants" element={<TenantsList />} />
+            <Route path="inbox" element={<AdminInbox />} />
+            <Route path="ai" element={<AIControlPanel />} />
+            <Route path="whatsapp" element={<WhatsAppManager />} />
+            <Route path="finance" element={<FinanceDashboard />} />
+            <Route path="audit-logs" element={<AuditLogs />} />
+            <Route path="features" element={<FeatureManager />} />
+            <Route path="broadcasts" element={<BroadcastManager />} />
+            <Route path="ai-analytics" element={<AIAnalytics />} />
+            <Route path="health" element={<SystemHealth />} />
+            <Route path="subscriptions" element={<SubscriptionManager />} />
+            <Route path="settings" element={<SettingsPage />} />
+          </Route>
+
+          {/* Client App Routes */}
+          <Route path="/app" element={user ? <ClientLayout user={user} onLogout={handleLogout} /> : <Navigate to="/login" />}>
+            <Route index element={<DashboardHome clients={[]} deals={[]} properties={[]} conversations={[]} onNavigate={() => { }} />} />
+            <Route path="pipeline" element={<Pipeline onNavigateToChat={() => { }} />} />
+import InboxPage from './src/pages/client/InboxPage';
+            <Route path="inbox" element={<InboxPage />} />
+            <Route path="properties" element={<PropertyList properties={[]} onNavigateToCreate={() => { }} onDeleteProperty={() => { }} />} />
+            <Route path="clients" element={<ClientList clients={[]} onAddClient={() => { }} />} />
+            <Route path="calendar" element={<CalendarView />} />
+
+            {/* New Pages */}
+            <Route path="ai-consultant" element={<AIConsultant />} />
+            <Route path="listings/new" element={<NewListing />} />
+            <Route path="campaigns" element={<Campaigns />} />
+            <Route path="marketing" element={<MarketingStudio />} />
+            <Route path="contracts" element={<Contracts />} />
+            <Route path="calculator" element={<Calculator />} />
+            <Route path="map" element={<MapPage />} />
+            <Route path="settings" element={<ClientSettings />} />
+          </Route>
+
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </div>
+    </Router>
   );
-};
+}
 
 export default App;

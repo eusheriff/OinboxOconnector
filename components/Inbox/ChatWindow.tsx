@@ -2,9 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Conversation, Property } from '../../types';
-import { MOCK_PROPERTIES } from '../../constants';
 import { getPlatformIcon } from '../../constants';
 import { Send, Paperclip, Sparkles, Loader2, MoreVertical, Bot, MapPin, ExternalLink, X, Zap, Mic, Play, Pause } from 'lucide-react';
+import { apiService } from '../../services/apiService';
 import { suggestReply, summarizeConversation, askLocationAssistant, GroundingSource, fastAgentResponse } from '../../services/geminiService';
 
 interface ChatWindowProps {
@@ -19,7 +19,7 @@ const AudioPlayerBubble: React.FC<{ duration: string }> = ({ duration }) => {
         <div className="flex items-center gap-3 min-w-[160px]">
             <button 
                 onClick={() => setIsPlaying(!isPlaying)}
-                className="w-8 h-8 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center hover:bg-slate-300 transition-colors"
+                className="w-8 h-8 rounded-full bg-slate-200 text-muted-foreground flex items-center justify-center hover:bg-slate-300 transition-colors"
             >
                 {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4 ml-0.5" />}
             </button>
@@ -28,7 +28,7 @@ const AudioPlayerBubble: React.FC<{ duration: string }> = ({ duration }) => {
                     <div className={`h-full bg-slate-500 ${isPlaying ? 'w-2/3' : 'w-0'} transition-all duration-1000`}></div>
                 </div>
             </div>
-            <span className="text-xs font-mono text-slate-500">{duration}</span>
+            <span className="text-xs font-mono text-muted-foreground">{duration}</span>
         </div>
     )
 }
@@ -40,23 +40,29 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [groundingSources, setGroundingSources] = useState<GroundingSource[]>([]);
   const [isRecording, setIsRecording] = useState(false);
+  const [propertyContext, setPropertyContext] = useState<Property | null>(null);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // Load property details if associated
-  const propertyContext = conversation?.associatedPropertyId 
-    ? MOCK_PROPERTIES.find(p => p.id === conversation.associatedPropertyId)
-    : null;
-
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    setSummary(null); // Reset summary on chat change
-    setGroundingSources([]); // Reset sources
-    setInputText('');
     
-    // Auto-generate summary for conversations with > 3 messages
-    if (conversation && conversation.messages.length > 2 && !conversation.aiSummary) {
-      generateSummary();
+    // Reset state when conversation changes
+    setSummary(null);
+    setGroundingSources([]);
+    setInputText('');
+    setPropertyContext(null);
+
+    if (conversation) {
+        // Auto-generate summary for conversations with > 3 messages
+        if (conversation.messages.length > 2 && !conversation.aiSummary) {
+          generateSummary();
+        }
+
+        // Fetch associated property details from the API
+        if (conversation.associatedPropertyId) {
+            apiService.getPropertyById(conversation.associatedPropertyId).then(setPropertyContext);
+        }
     }
   }, [conversation?.id]);
 
@@ -106,6 +112,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
   }
 
   const handleAiAssist = async (tone: 'formal' | 'friendly') => {
+    if (!conversation) return;
     setIsGenerating(true);
     setGroundingSources([]);
     const history = conversation.messages.map(m => `${m.isStaff ? 'Eu' : 'Cliente'}: ${m.text}`);
@@ -121,6 +128,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
   };
 
   const handleFastAgent = async () => {
+    if (!conversation) return;
     setIsGenerating(true);
     setGroundingSources([]);
     
@@ -130,7 +138,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
     const response = await fastAgentResponse(
         lastMsg.text, 
         conversation.contactName, 
-        profileContext
+        profileContext,
+        conversation.id // Using conversation ID as the session ID
     );
     
     setInputText(response);
@@ -160,12 +169,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
         <div className="flex items-center gap-3">
           <img src={conversation.contactAvatar} alt={conversation.contactName} className="w-10 h-10 rounded-full object-cover ring-2 ring-offset-1 ring-gray-200" />
           <div>
-            <h3 className="font-bold text-slate-800 leading-tight">{conversation.contactName}</h3>
+            <h3 className="font-bold text-foreground leading-tight">{conversation.contactName}</h3>
             <div className="flex items-center gap-1.5 text-xs text-gray-500">
               <span className="bg-gray-100 p-0.5 rounded">{getPlatformIcon(conversation.platform)}</span>
               <span>{conversation.platform}</span>
               {propertyContext && (
-                 <span className="text-blue-600 font-medium ml-1">• Interessado em: {propertyContext.title.substring(0, 20)}...</span>
+                 <span className="text-primary font-medium ml-1">• Interessado em: {propertyContext.title.substring(0, 20)}...</span>
               )}
             </div>
           </div>
@@ -185,7 +194,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
                     <Bot className="w-4 h-4" /> Resumo Inteligente
                 </div>
                 {loadingSummary ? (
-                    <div className="flex items-center gap-2 text-sm text-blue-600">
+                    <div className="flex items-center gap-2 text-sm text-primary">
                         <Loader2 className="w-3 h-3 animate-spin" /> Analisando histórico da conversa...
                     </div>
                 ) : (
@@ -201,8 +210,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
           >
             <div className={`max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-3 shadow-sm relative group ${
               msg.isStaff 
-                ? 'bg-blue-600 text-white rounded-br-none' 
-                : 'bg-white text-slate-800 rounded-bl-none border border-gray-100'
+                ? 'bg-primary text-primary-foreground rounded-br-none' 
+                : 'bg-white text-foreground rounded-bl-none border border-gray-100'
             }`}>
               {msg.type === 'audio' ? (
                   <AudioPlayerBubble duration={msg.audioDuration || "0:00"} />
@@ -240,7 +249,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
                             href={source.uri} 
                             target="_blank" 
                             rel="noreferrer"
-                            className="flex items-center gap-1 text-xs bg-white border border-gray-200 px-2 py-1 rounded-md text-blue-600 hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                            className="flex items-center gap-1 text-xs bg-white border border-gray-200 px-2 py-1 rounded-md text-primary hover:bg-blue-50 hover:border-blue-200 transition-colors"
                         >
                             {source.title} <ExternalLink className="w-3 h-3" />
                         </a>
@@ -282,7 +291,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
           </button>
         </div>
 
-        <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200 focus-within:ring-2 focus-within:ring-blue-500 focus-within:bg-white transition-all">
+        <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200 focus-within:ring-2 focus-within:ring-primary focus-within:bg-white transition-all">
           <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
             <Paperclip className="w-5 h-5" />
           </button>
@@ -302,7 +311,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
               <button 
                 onClick={handleSend}
                 disabled={isGenerating}
-                className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 shadow-md transition-all duration-200"
+                className="p-2 rounded-lg bg-primary text-white hover:bg-primary/90 shadow-md transition-all duration-200"
               >
                 <Send className="w-5 h-5" />
               </button>

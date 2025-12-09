@@ -22,11 +22,11 @@ const DashboardHome: React.FC<DashboardProps> = ({ clients, deals, properties, c
   const hotLeads = clients.filter(c => c.temperature === 'Hot' || (c.leadScore && c.leadScore > 70));
 
   const StatCard = ({ title, value, subtext, icon: Icon, color, trend }: any) => (
-    <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+    <div className="bg-card p-6 rounded-2xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
       <div className="flex justify-between items-start mb-4">
         <div>
           <p className="text-sm font-bold text-gray-500 uppercase tracking-wide">{title}</p>
-          <h3 className="text-2xl font-bold text-slate-800 mt-1">{value}</h3>
+          <h3 className="text-2xl font-bold text-foreground mt-1">{value}</h3>
         </div>
         <div className={`p-3 rounded-xl ${color}`}>
           <Icon className="w-6 h-6 text-white" />
@@ -49,10 +49,10 @@ const DashboardHome: React.FC<DashboardProps> = ({ clients, deals, properties, c
         {/* Welcome Header */}
         <div className="mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Visão Geral</h1>
+            <h1 className="text-2xl font-bold text-foreground">Visão Geral</h1>
             <p className="text-gray-500">Bem-vindo de volta! Aqui está o resumo da sua imobiliária hoje.</p>
           </div>
-          <div className="flex items-center gap-3 bg-white p-2 rounded-xl border border-gray-200 shadow-sm">
+          <div className="flex items-center gap-3 bg-card p-2 rounded-xl border border-gray-200 shadow-sm">
             <div className="px-4 py-2 bg-blue-50 text-blue-700 rounded-lg font-bold text-sm flex items-center gap-2">
                 <Calendar className="w-4 h-4" /> Hoje
             </div>
@@ -67,7 +67,7 @@ const DashboardHome: React.FC<DashboardProps> = ({ clients, deals, properties, c
             value={`R$ ${(totalPipelineValue / 1000000).toFixed(1)}M`} 
             subtext="vs. mês passado"
             icon={DollarSign} 
-            color="bg-blue-600" 
+            color="bg-primary" 
             trend={12.5} 
           />
           <StatCard 
@@ -99,28 +99,28 @@ const DashboardHome: React.FC<DashboardProps> = ({ clients, deals, properties, c
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* HOT LEADS RADAR (NEW WIDGET) */}
-            <div className="lg:col-span-2 bg-white rounded-2xl border border-red-100 shadow-sm overflow-hidden">
+            <div className="lg:col-span-2 bg-card rounded-2xl border border-red-100 shadow-sm overflow-hidden">
                 <div className="p-6 border-b border-red-50 bg-red-50/30 flex justify-between items-center">
                     <div className="flex items-center gap-2">
                         <div className="bg-red-100 p-2 rounded-full text-red-600 animate-pulse">
                             <Flame className="w-5 h-5" />
                         </div>
                         <div>
-                            <h3 className="font-bold text-slate-800">Radar de Oportunidades</h3>
+                            <h3 className="font-bold text-foreground">Radar de Oportunidades</h3>
                             <p className="text-xs text-red-600 font-medium">Atenção Prioritária Necessária</p>
                         </div>
                     </div>
-                    <span className="text-xs bg-white border border-red-100 text-red-600 px-2 py-1 rounded-full font-bold">
+                    <span className="text-xs bg-card border border-red-100 text-red-600 px-2 py-1 rounded-full font-bold">
                         {hotLeads.length} Leads Quentes
                     </span>
                 </div>
                 
                 <div className="p-4 space-y-3">
                     {hotLeads.length > 0 ? hotLeads.map(client => (
-                        <div key={client.id} className="flex items-center justify-between p-4 rounded-xl bg-white border border-gray-100 hover:border-red-200 hover:shadow-md transition-all group cursor-pointer" onClick={() => onNavigate('MY_CLIENTS')}>
+                        <div key={client.id} className="flex items-center justify-between p-4 rounded-xl bg-card border border-gray-100 hover:border-red-200 hover:shadow-md transition-all group cursor-pointer" onClick={() => onNavigate('MY_CLIENTS')}>
                             <div className="flex items-center gap-4">
                                 <div className="relative">
-                                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600">
+                                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-muted-foreground">
                                         {client.name.charAt(0)}
                                     </div>
                                     <div className="absolute -bottom-1 -right-1 bg-red-500 text-white text-[8px] p-1 rounded-full border-2 border-white">
@@ -128,7 +128,7 @@ const DashboardHome: React.FC<DashboardProps> = ({ clients, deals, properties, c
                                     </div>
                                 </div>
                                 <div>
-                                    <h4 className="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{client.name}</h4>
+                                    <h4 className="font-bold text-foreground text-primary transition-colors">{client.name}</h4>
                                     <p className="text-xs text-gray-500">{client.notes || 'Interesse alto detectado'}</p>
                                 </div>
                             </div>
@@ -160,8 +160,8 @@ const DashboardHome: React.FC<DashboardProps> = ({ clients, deals, properties, c
             {/* Quick Actions & Recent Leads */}
             <div className="space-y-6">
                 
-                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <h3 className="font-bold text-slate-800 mb-4">Acesso Rápido</h3>
+                <div className="bg-card p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h3 className="font-bold text-foreground mb-4">Acesso Rápido</h3>
                     <div className="grid grid-cols-2 gap-3">
                         <button onClick={() => onNavigate('LISTINGS_FORM')} className="p-3 bg-blue-50 hover:bg-blue-100 rounded-xl text-blue-700 text-xs font-bold flex flex-col items-center gap-2 transition-colors">
                             <Building2 className="w-5 h-5" /> Novo Imóvel
@@ -178,8 +178,8 @@ const DashboardHome: React.FC<DashboardProps> = ({ clients, deals, properties, c
                     </div>
                 </div>
 
-                <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                    <h3 className="font-bold text-slate-800 mb-4 flex justify-between items-center">
+                <div className="bg-card p-6 rounded-2xl border border-gray-200 shadow-sm">
+                    <h3 className="font-bold text-foreground mb-4 flex justify-between items-center">
                         Atividade Recente
                         <span className="text-xs bg-gray-100 px-2 py-1 rounded text-gray-500">Hoje</span>
                     </h3>
@@ -188,7 +188,7 @@ const DashboardHome: React.FC<DashboardProps> = ({ clients, deals, properties, c
                             <div key={conv.id} className="flex items-start gap-3">
                                 <img src={conv.contactAvatar} className="w-8 h-8 rounded-full object-cover" alt="" />
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-slate-800 truncate">
+                                    <p className="text-sm font-medium text-foreground truncate">
                                         <span className="font-bold">{conv.contactName}</span> enviou mensagem
                                     </p>
                                     <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5">

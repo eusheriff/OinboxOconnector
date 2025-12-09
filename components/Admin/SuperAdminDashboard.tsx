@@ -33,13 +33,13 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
   const totalUsers = tenants.reduce((acc, t) => acc + t.usersCount, 0);
 
   const renderSidebar = () => (
-    <aside className="w-64 bg-slate-900 text-white flex flex-col h-screen">
-      <div className="p-6 flex items-center gap-3 border-b border-slate-800">
+    <aside className="w-64 bg-background text-white flex flex-col h-screen">
+      <div className="p-6 flex items-center gap-3 border-b border-border">
         <div className="bg-purple-600 p-2 rounded-lg shadow-lg shadow-purple-900/50">
           <Activity className="w-6 h-6 text-white" />
         </div>
         <div>
-            <span className="font-bold text-lg tracking-tight block">OConnector</span>
+            <span className="font-bold text-lg tracking-tight block">Euimob</span>
             <span className="text-[10px] text-purple-400 font-bold uppercase tracking-wider">Super Admin</span>
         </div>
       </div>
@@ -47,46 +47,46 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
       <nav className="flex-1 py-6 flex flex-col gap-2 px-3">
         <button 
             onClick={() => setActiveView(AppView.SUPER_ADMIN_OVERVIEW)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeView === AppView.SUPER_ADMIN_OVERVIEW ? 'bg-purple-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeView === AppView.SUPER_ADMIN_OVERVIEW ? 'bg-purple-600 text-white' : 'text-muted-foreground hover:bg-accent hover:text-white'}`}
         >
             <LayoutDashboard className="w-5 h-5" /> Visão Global
         </button>
         <button 
             onClick={() => setActiveView(AppView.SUPER_ADMIN_TENANTS)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeView === AppView.SUPER_ADMIN_TENANTS ? 'bg-purple-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeView === AppView.SUPER_ADMIN_TENANTS ? 'bg-purple-600 text-white' : 'text-muted-foreground hover:bg-accent hover:text-white'}`}
         >
             <Users className="w-5 h-5" /> Gestão de Inquilinos
         </button>
         <button 
             onClick={() => setActiveView(AppView.SUPER_ADMIN_FINANCE)}
-            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeView === AppView.SUPER_ADMIN_FINANCE ? 'bg-purple-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}
+            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${activeView === AppView.SUPER_ADMIN_FINANCE ? 'bg-purple-600 text-white' : 'text-muted-foreground hover:bg-accent hover:text-white'}`}
         >
             <CreditCard className="w-5 h-5" /> Financeiro (Stripe)
         </button>
       </nav>
 
-      <div className="p-4 border-t border-slate-800">
-        <div className="bg-slate-800 rounded-lg p-3 mb-3">
+      <div className="p-4 border-t border-border">
+        <div className="bg-card rounded-lg p-3 mb-3">
             <div className="flex items-center gap-2 mb-2">
                 <Server className="w-4 h-4 text-green-400" />
                 <span className="text-xs text-slate-300 font-bold">Status do Sistema</span>
             </div>
             <div className="space-y-1">
-                <div className="flex justify-between text-[10px] text-slate-400">
+                <div className="flex justify-between text-[10px] text-muted-foreground">
                     <span>API Latency</span>
                     <span className="text-green-400">45ms</span>
                 </div>
-                <div className="flex justify-between text-[10px] text-slate-400">
+                <div className="flex justify-between text-[10px] text-muted-foreground">
                     <span>Cloudflare</span>
                     <span className="text-green-400">Operational</span>
                 </div>
-                <div className="flex justify-between text-[10px] text-slate-400">
+                <div className="flex justify-between text-[10px] text-muted-foreground">
                     <span>Gemini AI</span>
                     <span className="text-green-400">Operational</span>
                 </div>
             </div>
         </div>
-        <button onClick={onLogout} className="flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-red-400 w-full rounded-lg hover:bg-slate-800 transition-colors">
+        <button onClick={onLogout} className="flex items-center gap-3 px-4 py-3 text-muted-foreground hover:text-red-400 w-full rounded-lg hover:bg-accent transition-colors">
           <LogOut className="w-5 h-5" />
           <span className="font-medium">Sair</span>
         </button>
@@ -96,34 +96,34 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
 
   const renderOverview = () => (
     <div className="p-8">
-        <h1 className="text-2xl font-bold text-slate-800 mb-6">Visão Geral da Plataforma</h1>
+        <h1 className="text-2xl font-bold text-foreground mb-6">Visão Geral da Plataforma</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                 <p className="text-xs font-bold text-gray-400 uppercase mb-1">MRR (Receita Mensal)</p>
-                <h3 className="text-3xl font-bold text-slate-800">R$ {totalMRR.toLocaleString()}</h3>
+                <h3 className="text-3xl font-bold text-foreground">R$ {totalMRR.toLocaleString()}</h3>
                 <p className="text-xs text-green-600 font-bold mt-2 flex items-center gap-1"><TrendingUp className="w-3 h-3"/> +12% este mês</p>
             </div>
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                 <p className="text-xs font-bold text-gray-400 uppercase mb-1">Total de Inquilinos</p>
-                <h3 className="text-3xl font-bold text-slate-800">{tenants.length}</h3>
-                <p className="text-xs text-slate-500 mt-2">{activeTenants} ativos</p>
+                <h3 className="text-3xl font-bold text-foreground">{tenants.length}</h3>
+                <p className="text-xs text-muted-foreground mt-2">{activeTenants} ativos</p>
             </div>
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                 <p className="text-xs font-bold text-gray-400 uppercase mb-1">Usuários Totais</p>
-                <h3 className="text-3xl font-bold text-slate-800">{totalUsers}</h3>
-                <p className="text-xs text-slate-500 mt-2">Média de {Math.round(totalUsers / tenants.length)} por conta</p>
+                <h3 className="text-3xl font-bold text-foreground">{totalUsers}</h3>
+                <p className="text-xs text-muted-foreground mt-2">Média de {Math.round(totalUsers / tenants.length)} por conta</p>
             </div>
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
                 <p className="text-xs font-bold text-gray-400 uppercase mb-1">Consumo IA (Tokens)</p>
-                <h3 className="text-3xl font-bold text-slate-800">2.4M</h3>
+                <h3 className="text-3xl font-bold text-foreground">2.4M</h3>
                 <p className="text-xs text-purple-600 font-bold mt-2">Gemini Pro + Flash</p>
             </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                <h3 className="font-bold text-slate-800 mb-4">Últimos Cadastros</h3>
+                <h3 className="font-bold text-foreground mb-4">Últimos Cadastros</h3>
                 <div className="space-y-4">
                     {tenants.slice(0, 3).map(t => (
                         <div key={t.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -132,7 +132,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
                                     {t.name.charAt(0)}
                                 </div>
                                 <div>
-                                    <p className="font-bold text-sm text-slate-800">{t.name}</p>
+                                    <p className="font-bold text-sm text-foreground">{t.name}</p>
                                     <p className="text-xs text-gray-500">{t.plan}</p>
                                 </div>
                             </div>
@@ -143,7 +143,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
             </div>
 
             <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-                <h3 className="font-bold text-slate-800 mb-4">Saúde da Infraestrutura</h3>
+                <h3 className="font-bold text-foreground mb-4">Saúde da Infraestrutura</h3>
                 <div className="space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -178,7 +178,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
   const renderTenants = () => (
     <div className="p-8">
         <div className="flex justify-between items-center mb-6">
-            <h1 className="text-2xl font-bold text-slate-800">Gestão de Inquilinos (Tenants)</h1>
+            <h1 className="text-2xl font-bold text-foreground">Gestão de Inquilinos (Tenants)</h1>
             <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input type="text" placeholder="Buscar imobiliária..." className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-purple-500 outline-none" />
@@ -203,10 +203,10 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
                             <td className="p-4">
                                 <div className="flex items-center gap-3">
                                     <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center">
-                                        <Building2 className="w-4 h-4 text-slate-500" />
+                                        <Building2 className="w-4 h-4 text-muted-foreground" />
                                     </div>
                                     <div>
-                                        <p className="font-bold text-sm text-slate-800">{tenant.name}</p>
+                                        <p className="font-bold text-sm text-foreground">{tenant.name}</p>
                                         <p className="text-xs text-gray-500">{tenant.ownerName}</p>
                                     </div>
                                 </div>

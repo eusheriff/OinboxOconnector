@@ -5,10 +5,11 @@ import { askMarketExpert } from '../../services/geminiService';
 
 const RealEstateAgentChat: React.FC = () => {
   const [messages, setMessages] = useState<{role: 'user' | 'model', text: string}[]>([
-    { role: 'model', text: 'Olá! Sou o Consultor OConnector. Como posso ajudar você no mercado imobiliário hoje? Fale comigo sobre tendências, investimentos ou burocracia.' }
+    { role: 'model', text: 'Olá! Sou o Consultor Oinbox. Como posso ajudar você no mercado imobiliário hoje? Fale comigo sobre tendências, investimentos ou burocracia.' }
   ]);
   const [inputText, setInputText] = useState('');
   const [isThinking, setIsThinking] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const starterQuestions = [
@@ -23,18 +24,29 @@ const RealEstateAgentChat: React.FC = () => {
   };
 
   useEffect(() => {
+    // Tenta carregar o sessionId do localStorage para o Market Expert
+    let currentSessionId = localStorage.getItem('oconnector_market_expert_session_id');
+    if (!currentSessionId) {
+      // Se não existir, gera um novo e salva no localStorage
+      currentSessionId = crypto.randomUUID();
+      localStorage.setItem('oconnector_market_expert_session_id', currentSessionId);
+    }
+    setSessionId(currentSessionId);
+  }, []);
+
+  useEffect(() => {
     scrollToBottom();
   }, [messages]);
 
   const handleSend = async (text: string = inputText) => {
-    if (!text.trim()) return;
+    if (!text.trim() || !sessionId) return;
 
     const userMsg = text;
     setInputText('');
     setMessages(prev => [...prev, { role: 'user', text: userMsg }]);
     setIsThinking(true);
 
-    const response = await askMarketExpert(userMsg, messages);
+    const response = await askMarketExpert(userMsg, messages, sessionId);
     
     setMessages(prev => [...prev, { role: 'model', text: response }]);
     setIsThinking(false);
@@ -48,8 +60,8 @@ const RealEstateAgentChat: React.FC = () => {
             <Bot className="w-8 h-8" />
         </div>
         <div>
-            <h1 className="text-2xl font-bold text-slate-800">Consultor de Mercado IA</h1>
-            <p className="text-slate-500 text-sm">Tire dúvidas técnicas, jurídicas e de investimento com nossa IA especialista.</p>
+            <h1 className="text-2xl font-bold text-foreground">Consultor de Mercado IA</h1>
+            <p className="text-muted-foreground text-sm">Tire dúvidas técnicas, jurídicas e de investimento com nossa IA especialista.</p>
         </div>
       </div>
 
@@ -86,15 +98,15 @@ const RealEstateAgentChat: React.FC = () => {
                     
                     <div className={`max-w-[80%] rounded-2xl p-5 shadow-sm text-sm leading-relaxed whitespace-pre-wrap ${
                         msg.role === 'user' 
-                            ? 'bg-slate-800 text-white rounded-br-none' 
-                            : 'bg-white text-slate-800 border border-gray-100 rounded-bl-none'
+                            ? 'bg-card text-white rounded-br-none' 
+                            : 'bg-white text-foreground border border-gray-100 rounded-bl-none'
                     }`}>
                         {msg.text}
                     </div>
 
                     {msg.role === 'user' && (
                         <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center flex-shrink-0">
-                            <User className="w-5 h-5 text-slate-600" />
+                            <User className="w-5 h-5 text-muted-foreground" />
                         </div>
                     )}
                 </div>
@@ -121,7 +133,7 @@ const RealEstateAgentChat: React.FC = () => {
             <div className="flex gap-2 bg-gray-50 border border-gray-200 rounded-2xl p-2 focus-within:ring-2 focus-within:ring-indigo-500 focus-within:bg-white transition-all shadow-sm">
                 <input 
                     type="text"
-                    className="flex-1 bg-transparent border-none focus:ring-0 px-4 py-2 text-slate-800 placeholder-gray-400"
+                    className="flex-1 bg-transparent border-none focus:ring-0 px-4 py-2 text-foreground placeholder-gray-400"
                     placeholder="Pergunte sobre financiamento, bairros ou documentação..."
                     value={inputText}
                     onChange={(e) => setInputText(e.target.value)}

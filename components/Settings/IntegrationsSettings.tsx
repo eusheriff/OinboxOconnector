@@ -47,7 +47,7 @@ interface IntegrationItem {
 const MASTER_INTEGRATIONS_LIBRARY: IntegrationItem[] = [
   { id: 'whatsapp', name: 'WhatsApp Business', type: 'messaging', icon: MessageCircle, description: 'Conecte seu número via QR Code.', color: 'text-green-600 bg-green-50', authMethod: 'qr' },
   { id: 'instagram', name: 'Instagram', type: 'messaging', icon: Instagram, description: 'Gerencie Directs e comentários.', color: 'text-pink-600 bg-pink-50', authMethod: 'oauth' },
-  { id: 'facebook_page', name: 'Facebook Page', type: 'messaging', icon: Facebook, description: 'Messenger da sua Fanpage.', color: 'text-blue-600 bg-blue-50', authMethod: 'oauth' },
+  { id: 'facebook_page', name: 'Facebook Page', type: 'messaging', icon: Facebook, description: 'Messenger da sua Fanpage.', color: 'text-primary bg-blue-50', authMethod: 'oauth' },
   { id: 'email', name: 'Email Corporativo', type: 'messaging', icon: Mail, description: 'Conecte seu Gmail ou Outlook.', color: 'text-red-600 bg-red-50', authMethod: 'oauth' },
   { id: 'zap_viva', name: 'Zap / VivaReal', type: 'listing', icon: Building2, description: 'Sincronização automática de leads.', color: 'text-orange-600 bg-orange-50', authMethod: 'credentials', authFields: [{ label: 'Login', type: 'text', placeholder: 'Usuário' }, { label: 'Senha', type: 'password', placeholder: 'Senha' }] },
   { id: 'olx', name: 'OLX', type: 'listing', icon: Globe, description: 'Gestão de anúncios classificados.', color: 'text-purple-600 bg-purple-50', authMethod: 'oauth' }
@@ -116,11 +116,11 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
                   className={`p-6 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-4 ${aiConfig.provider === 'gemini' ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-gray-200 hover:bg-gray-50'}`}
               >
                   <div className="bg-white p-3 rounded-full shadow-sm">
-                      <SparklesIcon className="w-6 h-6 text-blue-600" />
+                      <SparklesIcon className="w-6 h-6 text-primary" />
                   </div>
                   <div>
-                      <h3 className="font-bold text-slate-800 text-lg">Google Gemini</h3>
-                      <p className="text-sm text-slate-500 mt-1">Nuvem (Cloud). Mais rápido, requer chave de API. Ideal para uso em produção web.</p>
+                      <h3 className="font-bold text-foreground text-lg">Google Gemini</h3>
+                      <p className="text-sm text-muted-foreground mt-1">Nuvem (Cloud). Mais rápido, requer chave de API. Ideal para uso em produção web.</p>
                       {aiConfig.provider === 'gemini' && <div className="mt-3 flex items-center gap-1 text-xs font-bold text-blue-700"><CheckCircle2 className="w-4 h-4" /> Selecionado</div>}
                   </div>
               </div>
@@ -133,8 +133,8 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
                       <Cpu className="w-6 h-6 text-orange-600" />
                   </div>
                   <div>
-                      <h3 className="font-bold text-slate-800 text-lg">Ollama (Local)</h3>
-                      <p className="text-sm text-slate-500 mt-1">Privacidade total. Roda no seu computador. Requer hardware compatível.</p>
+                      <h3 className="font-bold text-foreground text-lg">Ollama (Local)</h3>
+                      <p className="text-sm text-muted-foreground mt-1">Privacidade total. Roda no seu computador. Requer hardware compatível.</p>
                       {aiConfig.provider === 'ollama' && <div className="mt-3 flex items-center gap-1 text-xs font-bold text-orange-700"><CheckCircle2 className="w-4 h-4" /> Selecionado</div>}
                   </div>
               </div>
@@ -143,7 +143,7 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
           {/* Ollama Configuration */}
           {aiConfig.provider === 'ollama' && (
               <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
-                  <h3 className="font-bold text-slate-800 mb-6 flex items-center gap-2">
+                  <h3 className="font-bold text-foreground mb-6 flex items-center gap-2">
                       <Settings2 className="w-5 h-5 text-gray-500" /> Configuração Local
                   </h3>
 
@@ -221,7 +221,7 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
   const renderChannelsTab = () => (
     <div className="animate-in fade-in slide-in-from-right duration-300">
         <div className="mb-10">
-          <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+          <h2 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
             <MessageCircle className="w-4 h-4" /> Canais de Comunicação
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -231,11 +231,11 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
                         <div className={`p-3 rounded-lg ${item.color}`}><item.icon className="w-6 h-6" /></div>
                         {status[item.id] === 'connected' && <span className="text-[10px] font-bold bg-green-50 text-green-600 px-2 py-1 rounded-full border border-green-100 flex items-center gap-1"><CheckCircle2 className="w-3 h-3"/> Ativo</span>}
                     </div>
-                    <h3 className="font-bold text-slate-800 mb-1">{item.name}</h3>
+                    <h3 className="font-bold text-foreground mb-1">{item.name}</h3>
                     
                     {/* Display Specific Manú Info when connected */}
                     {item.id === 'whatsapp' && status[item.id] === 'connected' ? (
-                        <p className="text-sm text-slate-600 mb-6 bg-gray-50 p-2 rounded border border-gray-100">
+                        <p className="text-sm text-muted-foreground mb-6 bg-gray-50 p-2 rounded border border-gray-100">
                            <span className="font-bold block">Agente: Manú 🤖</span>
                            +55 (22) 99236-3462
                         </p>
@@ -245,13 +245,13 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
 
                     <button 
                         onClick={() => { setActiveIntegration(item); if (item.authMethod === 'qr') setQrProgress(0); }}
-                        className={`w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-all ${status[item.id] === 'connected' ? 'bg-white border border-red-200 text-red-600 hover:bg-red-50' : 'bg-slate-900 text-white hover:bg-slate-800'}`}
+                        className={`w-full py-2.5 px-4 rounded-lg font-medium text-sm transition-all ${status[item.id] === 'connected' ? 'bg-white border border-red-200 text-red-600 hover:bg-red-50' : 'bg-background text-white hover:bg-accent'}`}
                     >
                         {status[item.id] === 'connected' ? 'Desconectar' : 'Conectar'}
                     </button>
                 </div>
             ))}
-            <button onClick={() => setIsAddModalOpen(true)} className="border-2 border-dashed border-gray-300 rounded-xl p-5 flex flex-col items-center justify-center gap-3 text-gray-400 hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all min-h-[240px]">
+            <button onClick={() => setIsAddModalOpen(true)} className="border-2 border-dashed border-gray-300 rounded-xl p-5 flex flex-col items-center justify-center gap-3 text-gray-400 hover:border-blue-500 hover:text-primary hover:bg-blue-50 transition-all min-h-[240px]">
                 <Plus className="w-8 h-8" />
                 <span className="font-bold text-sm">Adicionar Canal</span>
             </button>
@@ -265,7 +265,7 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
     <div className="flex-1 bg-gray-50 p-6 md:p-10 overflow-y-auto h-full relative">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-slate-800">Configurações</h1>
+          <h1 className="text-2xl font-bold text-foreground">Configurações</h1>
           <p className="text-gray-500">Gerencie conexões externas e preferências de Inteligência Artificial.</p>
         </div>
 
@@ -273,13 +273,13 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
         <div className="flex gap-1 bg-gray-200 p-1 rounded-xl w-fit mb-8">
             <button 
                 onClick={() => setActiveTab('channels')}
-                className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${activeTab === 'channels' ? 'bg-white text-slate-800 shadow-sm' : 'text-gray-500 hover:text-slate-700'}`}
+                className={`px-4 py-2 text-sm font-bold rounded-lg transition-all ${activeTab === 'channels' ? 'bg-white text-foreground shadow-sm' : 'text-gray-500 hover:text-slate-700'}`}
             >
                 Integrações
             </button>
             <button 
                 onClick={() => setActiveTab('ai')}
-                className={`px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${activeTab === 'ai' ? 'bg-white text-slate-800 shadow-sm' : 'text-gray-500 hover:text-slate-700'}`}
+                className={`px-4 py-2 text-sm font-bold rounded-lg transition-all flex items-center gap-2 ${activeTab === 'ai' ? 'bg-white text-foreground shadow-sm' : 'text-gray-500 hover:text-slate-700'}`}
             >
                 <Bot className="w-4 h-4" /> Inteligência Artificial
             </button>
@@ -294,7 +294,7 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
               <div className="bg-white rounded-2xl p-6 w-full max-w-md animate-in zoom-in duration-200 relative">
                   <button onClick={() => setActiveIntegration(null)} className="absolute top-4 right-4 text-gray-400 hover:text-red-500"><X className="w-5 h-5"/></button>
                   <div className={`w-12 h-12 rounded-xl mb-4 flex items-center justify-center ${activeIntegration.color}`}><activeIntegration.icon className="w-6 h-6"/></div>
-                  <h3 className="text-xl font-bold text-slate-800 mb-2">Conectar {activeIntegration.name}</h3>
+                  <h3 className="text-xl font-bold text-foreground mb-2">Conectar {activeIntegration.name}</h3>
                   
                   {activeIntegration.authMethod === 'qr' && (
                       <div className="bg-white p-4 border rounded-lg flex flex-col items-center justify-center mb-4">
@@ -305,7 +305,7 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
                   
                   <button 
                     onClick={() => { onStatusChange(activeIntegration.id, 'connected'); setActiveIntegration(null); }}
-                    className="w-full py-3 bg-slate-900 text-white rounded-lg font-bold hover:bg-slate-800"
+                    className="w-full py-3 bg-background text-white rounded-lg font-bold hover:bg-accent"
                   >
                       {activeIntegration.authMethod === 'qr' ? 'Confirmar Leitura' : 'Autorizar Acesso'}
                   </button>

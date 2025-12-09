@@ -1,0 +1,31 @@
+app = "oinbox-evolution"
+primary_region = "gru"
+
+[build]
+  image = "atendai/evolution-api:latest"
+
+[env]
+  SERVER_URL = "https://oinbox-evolution.fly.dev"
+  AUTHENTICATION_TYPE = "apikey"
+  AUTHENTICATION_EXPOSE_IN_FETCH_INSTANCES = "true"
+  LOG_LEVEL = "ERROR"
+  LOG_COLOR = "true"
+  CONFIG_SESSION_PHONE_CLIENT = "Oinbox"
+  CONFIG_SESSION_PHONE_NAME = "Chrome"
+  QRCODE_LIMIT = "30"
+  QRCODE_COLOR = "#F97316"
+  DATABASE_ENABLED = "false"
+  CACHE_REDIS_ENABLED = "false"
+  CACHE_LOCAL_ENABLED = "true"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1

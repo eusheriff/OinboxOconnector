@@ -97,17 +97,17 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
           alt={conversation.contactName} 
           className="w-20 h-20 rounded-full mb-3 object-cover border-4 border-blue-50"
         />
-        <h2 className="text-lg font-bold text-slate-800">{conversation.contactName}</h2>
+        <h2 className="text-lg font-bold text-foreground">{conversation.contactName}</h2>
         <span className="text-sm text-gray-500 mb-4">Lead Quente</span>
         
         <div className="flex gap-2 mb-4">
-            <button className="p-2 bg-gray-100 rounded-full hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <button className="p-2 bg-gray-100 rounded-full hover:bg-blue-50 hover:text-primary transition-colors">
                 <Phone className="w-4 h-4" />
             </button>
-            <button className="p-2 bg-gray-100 rounded-full hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <button className="p-2 bg-gray-100 rounded-full hover:bg-blue-50 hover:text-primary transition-colors">
                 <Mail className="w-4 h-4" />
             </button>
-            <button className="p-2 bg-gray-100 rounded-full hover:bg-blue-50 hover:text-blue-600 transition-colors">
+            <button className="p-2 bg-gray-100 rounded-full hover:bg-blue-50 hover:text-primary transition-colors">
                 <Calendar className="w-4 h-4" />
             </button>
         </div>
@@ -116,13 +116,13 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
         <div className="flex bg-gray-100 p-1 rounded-lg w-full">
             <button 
                 onClick={() => setActiveTab('info')}
-                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'info' ? 'bg-white text-slate-800 shadow-sm' : 'text-gray-500'}`}
+                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'info' ? 'bg-white text-foreground shadow-sm' : 'text-gray-500'}`}
             >
                 Perfil
             </button>
             <button 
                 onClick={() => setActiveTab('docs')}
-                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'docs' ? 'bg-white text-slate-800 shadow-sm' : 'text-gray-500'}`}
+                className={`flex-1 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === 'docs' ? 'bg-white text-foreground shadow-sm' : 'text-gray-500'}`}
             >
                 Documentos
             </button>
@@ -156,10 +156,10 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
                         <p className="font-bold text-green-700 flex items-center gap-1 mb-2">
                             <Check className="w-3 h-3" /> CRM Atualizado!
                         </p>
-                        <p className="text-slate-600 mb-1"><strong>Resumo:</strong> {voiceNoteResult.summary}</p>
-                        <p className="text-slate-600 mb-1"><strong>Próximo Passo:</strong> {voiceNoteResult.actionItem}</p>
+                        <p className="text-muted-foreground mb-1"><strong>Resumo:</strong> {voiceNoteResult.summary}</p>
+                        <p className="text-muted-foreground mb-1"><strong>Próximo Passo:</strong> {voiceNoteResult.actionItem}</p>
                         {voiceNoteResult.budgetUpdate && (
-                            <p className="text-blue-600 font-bold">Orçamento ajustado para: {voiceNoteResult.budgetUpdate}</p>
+                            <p className="text-primary font-bold">Orçamento ajustado para: {voiceNoteResult.budgetUpdate}</p>
                         )}
                     </div>
                 )}
@@ -186,13 +186,13 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
                         <div className="grid grid-cols-2 gap-2">
                             <div className="bg-gray-50 p-2 rounded-lg">
                                 <span className="text-xs text-gray-400 font-bold block">Urgência</span>
-                                <span className={`font-bold ${profile.urgency === 'Alta' ? 'text-red-500' : 'text-slate-600'}`}>
+                                <span className={`font-bold ${profile.urgency === 'Alta' ? 'text-red-500' : 'text-muted-foreground'}`}>
                                     {profile.urgency || 'Desconhecida'}
                                 </span>
                             </div>
                             <div className="bg-gray-50 p-2 rounded-lg">
                                 <span className="text-xs text-gray-400 font-bold block">Humor</span>
-                                <span className="text-slate-600 font-medium">{profile.sentiment || 'Neutro'}</span>
+                                <span className="text-muted-foreground font-medium">{profile.sentiment || 'Neutro'}</span>
                             </div>
                         </div>
                         {profile.preferences && profile.preferences.length > 0 && (
@@ -200,7 +200,7 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
                                 <span className="text-xs text-gray-400 font-bold mb-1 block">Interesses Detectados:</span>
                                 <div className="flex flex-wrap gap-1">
                                     {profile.preferences.map((pref, idx) => (
-                                        <span key={idx} className="px-2 py-0.5 bg-white border border-gray-200 rounded-full text-[10px] text-slate-600 flex items-center gap-1">
+                                        <span key={idx} className="px-2 py-0.5 bg-white border border-gray-200 rounded-full text-[10px] text-muted-foreground flex items-center gap-1">
                                             <Tag className="w-2 h-2" /> {pref}
                                         </span>
                                     ))}
@@ -228,12 +228,12 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
                     </div>
                     </div>
                     <div className="p-3">
-                    <h4 className="font-semibold text-sm text-slate-800 mb-1 line-clamp-1">{property.title}</h4>
+                    <h4 className="font-semibold text-sm text-foreground mb-1 line-clamp-1">{property.title}</h4>
                     <div className="flex items-center gap-1 text-xs text-gray-500 mb-2">
                         <MapPin className="w-3 h-3" />
                         <span className="truncate">{property.location}</span>
                     </div>
-                    <button className="w-full text-xs flex items-center justify-center gap-1 py-1.5 border border-blue-100 text-blue-600 rounded-md hover:bg-blue-50 font-medium transition-colors">
+                    <button className="w-full text-xs flex items-center justify-center gap-1 py-1.5 border border-blue-100 text-primary rounded-md hover:bg-blue-50 font-medium transition-colors">
                         Ver Detalhes <ExternalLink className="w-3 h-3" />
                     </button>
                     </div>
@@ -251,7 +251,7 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Cofre Digital</h3>
                  <button 
                     onClick={handleFileUpload}
-                    className="text-xs flex items-center gap-1 text-blue-600 font-bold hover:underline"
+                    className="text-xs flex items-center gap-1 text-primary font-bold hover:underline"
                  >
                      <Upload className="w-3 h-3" /> Adicionar
                  </button>
@@ -261,11 +261,11 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
                  {documents.map(doc => (
                      <div key={doc.id} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-200 rounded-lg group">
                          <div className="flex items-center gap-3">
-                             <div className="bg-white p-2 rounded border border-gray-100 text-slate-500">
+                             <div className="bg-white p-2 rounded border border-gray-100 text-muted-foreground">
                                  <FileText className="w-4 h-4" />
                              </div>
                              <div>
-                                 <p className="text-sm font-medium text-slate-800">{doc.name}</p>
+                                 <p className="text-sm font-medium text-foreground">{doc.name}</p>
                                  <div className="flex items-center gap-1 text-[10px] text-gray-500">
                                      <span className="uppercase">{doc.type}</span> • {doc.uploadedAt?.toLocaleDateString()}
                                  </div>
@@ -283,7 +283,7 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
                              ) : (
                                  <div className="w-2 h-2 bg-yellow-400 rounded-full" title="Pendente"></div>
                              )}
-                             <button className="p-1 text-gray-300 hover:text-blue-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                             <button className="p-1 text-gray-300 hover:text-primary opacity-0 group-hover:opacity-100 transition-opacity">
                                  <Eye className="w-4 h-4" />
                              </button>
                          </div>
