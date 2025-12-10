@@ -27,6 +27,7 @@ app.use('/*', cors({
       'https://oconnector.tech',
       'https://www.oconnector.tech',
       'https://oconnector.pages.dev',
+      'https://oinbox.oconnector.tech',
     ];
     return allowedOrigins.includes(origin || '') ? origin : allowedOrigins[0];
   },

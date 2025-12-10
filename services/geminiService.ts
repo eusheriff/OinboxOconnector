@@ -214,7 +214,7 @@ export const askLocationAssistant = async (location: string, queryType: string):
 
 export const askGlobalAgent = async (message: string, history: any[], session_id?: string): Promise<string> => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://api.oconnector.tech'}/api/ai/public-chat`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://oinbox-backend.xerifegomes-e71.workers.dev'}/api/ai/public-chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
