@@ -3,7 +3,37 @@ import { authMiddleware } from '../middleware/auth';
 import { Bindings, Variables } from '../types';
 import { checkAndIncrementRateLimit, getRateLimitStatus, cleanupOldRateLimits } from '../utils/rateLimiter';
 
-export const aiRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+const aiRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+
+// PUBLIC ENDPOINT para chatbot da landing page (sem autenticação)
+aiRoutes.post('/public-chat', async (c) => {
+    try {
+        const { prompt, systemPrompt, session_id } = await c.req.json();
+
+        // 1. Buscar conhecimento público da base RAG
+        const { results } = await c.env.DB.prepare("SELECT content FROM knowledge_base WHERE tenant_id = 'public'")
+            .all();
+
+        const knowledge = results.map((r: any) => r.content).join('\n\n');
+
+        // 2. Montar prompt completo com contexto RAG
+        const fullPrompt = `${systemPrompt || 'Você é a IA do Oinbox.'}\n\nBase de conhecimento:\n${knowledge}\n\nPergunta do usuário: ${prompt}`;
+
+        // 3. Chamar Gemini Flash diretamente
+        let response = await callGeminiFlash(c.env.API_KEY, fullPrompt);
+
+        // Fallback para Cloudflare AI se Gemini falhar (retornar vazio)
+        if (!response) {
+            console.warn('Gemini Flash returned empty, falling back to Cloudflare AI');
+            response = await callCloudflareAI(c.env.AI, fullPrompt);
+        }
+
+        return c.json({ text: response });
+    } catch (error: any) {
+        console.error('Public chat error:', error);
+        return c.json({ error: 'Erro ao processar solicitação de IA. Tente novamente mais tarde.' }, 500);
+    }
+});
 
 aiRoutes.use('*', authMiddleware);
 
@@ -48,6 +78,10 @@ async function callGeminiFlash(apiKey: string, prompt: string): Promise<string> 
         }
     );
     const data: any = await response.json();
+    console.log('Gemini Flash Response:', JSON.stringify(data, null, 2));
+    if (data.error) {
+        console.error('Gemini API Error:', data.error);
+    }
     return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
 }
 
@@ -205,3 +239,7 @@ aiRoutes.post('/cleanup', async (c) => {
     const deleted = await cleanupOldRateLimits(c.env.DB);
     return c.json({ deleted, message: `Cleaned up ${deleted} old rate limit records` });
 });
+
+
+
+export { aiRoutes };

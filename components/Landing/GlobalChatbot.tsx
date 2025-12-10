@@ -7,7 +7,7 @@ const GlobalChatbot: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', text: string}[]>([
-    { role: 'assistant', text: 'Olá! Sou a IA da Euimob. Posso ajudar você a entender como nossa plataforma revoluciona vendas imobiliárias?' }
+    { role: 'assistant', text: 'Olá! Sou a IA do Oinbox. Posso ajudar você a entender como nossa plataforma revoluciona vendas imobiliárias com inteligência artificial?' }
   ]);
   const [isTyping, setIsTyping] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
@@ -15,11 +15,11 @@ const GlobalChatbot: React.FC = () => {
 
   useEffect(() => {
     // Tenta carregar o sessionId do localStorage
-    let currentSessionId = localStorage.getItem('oconnector_chatbot_session_id');
+    let currentSessionId = localStorage.getItem('oinbox_chatbot_session_id');
     if (!currentSessionId) {
       // Se não existir, gera um novo e salva no localStorage
       currentSessionId = crypto.randomUUID();
-      localStorage.setItem('oconnector_chatbot_session_id', currentSessionId);
+      localStorage.setItem('oinbox_chatbot_session_id', currentSessionId);
     }
     setSessionId(currentSessionId);
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -61,7 +61,7 @@ const GlobalChatbot: React.FC = () => {
               <Bot className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h3 className="font-bold text-white text-sm">Euimob AI</h3>
+              <h3 className="font-bold text-white text-sm">Oinbox AI</h3>
               <p className="text-xs text-muted-foreground flex items-center gap-1">
                 <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
                 Online agora
@@ -103,7 +103,7 @@ const GlobalChatbot: React.FC = () => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                placeholder="Pergunte sobre o Euimob..."
+                placeholder="Pergunte sobre o Oinbox..."
                 className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder-gray-400"
               />
               <button 
@@ -115,7 +115,7 @@ const GlobalChatbot: React.FC = () => {
               </button>
             </div>
             <div className="text-[10px] text-center text-gray-400 mt-2">
-              Powered by Euimob AI
+              Powered by Oinbox AI
             </div>
           </div>
         </div>

@@ -18,7 +18,7 @@ const getAIConfig = (): AIConfig => {
 // Helper para chamar o Backend (Router Inteligente)
 const callBackendAI = async (prompt: string, systemPrompt?: string, session_id?: string) => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://oconnector-saas.xerifegomes-e71.workers.dev/api'}/ai/generate`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://api.oconnector.tech/api'}/ai/generate`, {
       method: 'POST',
       headers: apiService.getHeaders(),
       body: JSON.stringify({ prompt, systemPrompt, session_id })
@@ -213,7 +213,27 @@ export const askLocationAssistant = async (location: string, queryType: string):
 };
 
 export const askGlobalAgent = async (message: string, history: any[], session_id?: string): Promise<string> => {
-  return await callBackendAI(message, "Você é a IA do Euimob.", session_id);
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://api.oconnector.tech'}/api/ai/public-chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        prompt: message, 
+        systemPrompt: "Você é a IA do Oinbox, uma plataforma de gestão imobiliária com inteligência artificial.",
+        session_id 
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error('API error');
+    }
+
+    const data: any = await response.json();
+    return data.text ||'Erro ao processar resposta.';
+  } catch (error) {
+    console.error('askGlobalAgent error:', error);
+    return 'Erro ao processar solicitação de IA. Tente novamente mais tarde.';
+  }
 }
 
 export const askMarketExpert = async (message: string, history: any[], session_id?: string): Promise<string> => {

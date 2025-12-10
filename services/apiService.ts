@@ -2,7 +2,7 @@
 import { Client, Property } from '../types';
 
 // URL Relativa. O Vite (local) ou Cloudflare Pages (prod) vai rotear /api para o Worker.
-let API_BASE_URL = import.meta.env.VITE_API_URL || 'https://oconnector-saas.xerifegomes-e71.workers.dev/api';
+let API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.oconnector.tech/api';
 
 // Fix: Força URL de produção se não estiver rodando localmente
 if (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {

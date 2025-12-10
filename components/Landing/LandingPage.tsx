@@ -247,6 +247,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin, onNavigateRe
         <div className="absolute left-0 right-0 top-0 -z-10 m-auto h-[310px] w-[310px] rounded-full bg-blue-400 opacity-20 blur-[100px]"></div>
 
         <div className="container mx-auto max-w-5xl text-center">
+          <span className="text-primary font-bold text-7xl md:text-9xl mb-4 block tracking-tight">Oinbox</span>
           <h1 className="text-4xl md:text-6xl font-extrabold text-foreground tracking-tight mb-6 leading-tight">
             Centralize Vendas Imobiliárias com <span className="text-primary">Inteligência Artificial</span>
           </h1>
@@ -583,7 +584,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin, onNavigateRe
       </section>
 
       {/* Footer */}
-      <footer className="bg-background text-slate-300 py-12">
+      <footer className="bg-white text-foreground py-12 border-t border-border">
         <div className="container mx-auto px-4 md:px-6">
           <div className="grid md:grid-cols-4 gap-8 border-b border-border pb-12">
             <div className="col-span-1 md:col-span-2">
@@ -591,15 +592,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin, onNavigateRe
                 <div className="bg-primary p-1.5 rounded-lg">
                   <Building2 className="w-5 h-5 text-white" />
                 </div>
-                <span className="text-xl font-bold text-white">Oinbox</span>
+                <span className="text-xl font-bold text-foreground">Oinbox</span>
               </div>
-              <p className="max-w-sm text-muted-foreground">
+              <p className="max-w-sm text-foreground/70">
                 Plataforma líder em gestão imobiliária com inteligência artificial. Transformando conversas em contratos.
               </p>
             </div>
             <div>
-              <h4 className="font-bold text-white mb-4">Produto</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="font-bold text-foreground mb-4">Produto</h4>
+              <ul className="space-y-2 text-sm text-foreground/80">
                 <li>
                   <a href="#features" onClick={(e) => scrollToSection(e, 'features')} className="hover:text-primary cursor-pointer">Features</a>
                 </li>
@@ -615,8 +616,8 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin, onNavigateRe
               </ul>
             </div>
             <div>
-              <h4 className="font-bold text-white mb-4">Empresa</h4>
-              <ul className="space-y-2 text-sm">
+              <h4 className="font-bold text-foreground mb-4">Empresa</h4>
+              <ul className="space-y-2 text-sm text-foreground/80">
                 <li><button onClick={(e) => openPage(e, 'about')} className="hover:text-primary text-left">Sobre</button></li>
                 <li><button onClick={(e) => openPage(e, 'blog')} className="hover:text-primary text-left">Blog</button></li>
                 <li><button onClick={(e) => openPage(e, 'careers')} className="hover:text-primary text-left">Carreiras</button></li>
@@ -624,15 +625,15 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin, onNavigateRe
               </ul>
             </div>
           </div>
-          <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted-foreground">
+          <div className="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-foreground/70">
             <div className="flex flex-col md:flex-row gap-4 items-center">
               <p>© 2025 Oinbox Tecnologia Ltda. Todos os direitos reservados.</p>
-              <span className="hidden md:block text-slate-700">•</span>
-              <p className="font-medium text-muted-foreground">Desenvolvido por <a href="https://oconnector.tech/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">OConnector Technology</a></p>
+              <span className="hidden md:block text-foreground/30">•</span>
+              <p className="font-medium text-foreground/70">Desenvolvido por <a href="https://oconnector.tech/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">OConnector Technology</a></p>
             </div>
-            <div className="flex gap-6">
-              <button onClick={(e) => openPage(e, 'terms')} className="hover:text-white">Termos de Uso</button>
-              <button onClick={(e) => openPage(e, 'privacy')} className="hover:text-white">Privacidade</button>
+            <div className="flex gap-6 text-foreground/80">
+              <button onClick={(e) => openPage(e, 'terms')} className="hover:text-primary">Termos de Uso</button>
+              <button onClick={(e) => openPage(e, 'privacy')} className="hover:text-primary">Privacidade</button>
             </div>
           </div>
         </div>

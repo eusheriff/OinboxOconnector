@@ -19,7 +19,7 @@ const getEnvVar = (key: string, fallback: string) => {
   return fallback;
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://oconnector-saas.xerifegomes-e71.workers.dev/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.oconnector.tech/api';
 
 export const uploadImageToCloudflare = async (file: File): Promise<string> => {
   try {
