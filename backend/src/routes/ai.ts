@@ -2,13 +2,23 @@ import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
 import { Bindings, Variables } from '../types';
 import { checkAndIncrementRateLimit, getRateLimitStatus, cleanupOldRateLimits } from '../utils/rateLimiter';
+import { createDatadogLogger } from '../utils/datadog';
 
 const aiRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // PUBLIC ENDPOINT para chatbot da landing page (sem autenticação)
 aiRoutes.post('/public-chat', async (c) => {
+    const startTime = Date.now();
+    const logger = createDatadogLogger(c.env);
+    
     try {
         const { prompt, systemPrompt, session_id } = await c.req.json();
+
+        await logger?.info('Public chat request received', {
+            session_id,
+            prompt_length: prompt.length,
+            has_system_prompt: !!systemPrompt
+        });
 
         // 1. Buscar conhecimento público da base RAG
         const { results } = await c.env.DB.prepare("SELECT content FROM knowledge_base WHERE tenant_id = 'public'")
@@ -21,15 +31,42 @@ aiRoutes.post('/public-chat', async (c) => {
 
         // 3. Chamar Gemini Flash diretamente
         let response = await callGeminiFlash(c.env.API_KEY, fullPrompt);
+        let provider = 'gemini';
 
         // Fallback para Cloudflare AI se Gemini falhar (retornar vazio)
         if (!response) {
-            console.warn('Gemini Flash returned empty, falling back to Cloudflare AI');
+            await logger?.warn('Gemini Flash returned empty, falling back to Cloudflare AI', {
+                session_id,
+                prompt_length: prompt.length
+            });
             response = await callCloudflareAI(c.env.AI, fullPrompt);
+            provider = 'cloudflare-ai';
         }
+
+        const duration = Date.now() - startTime;
+        
+        await logger?.info('Public chat request completed', {
+            session_id,
+            provider,
+            duration_ms: duration,
+            response_length: response.length
+        });
+
+        await logger?.metric('oinbox.ai.public_chat.duration', duration, [`provider:${provider}`]);
+        await logger?.metric('oinbox.ai.public_chat.success', 1, [`provider:${provider}`]);
 
         return c.json({ text: response });
     } catch (error: any) {
+        const duration = Date.now() - startTime;
+        
+        await logger?.error('Public chat error', {
+            error: error.message,
+            stack: error.stack,
+            duration_ms: duration
+        });
+
+        await logger?.metric('oinbox.ai.public_chat.error', 1, ['error_type:unknown']);
+        
         console.error('Public chat error:', error);
         return c.json({ error: 'Erro ao processar solicitação de IA. Tente novamente mais tarde.' }, 500);
     }

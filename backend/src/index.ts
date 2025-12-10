@@ -12,6 +12,7 @@ import billingRoutes from './routes/billing';
 import portalsRoutes from './routes/portals';
 import { aiRoutes } from './routes/ai';
 import whatsappRoutes from './routes/whatsapp';
+import { errorLoggingMiddleware, requestLoggingMiddleware } from './middleware/logging';
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -37,6 +38,10 @@ app.use('/*', cors({
   maxAge: 600,
   credentials: true,
 }));
+
+// Middlewares Globais de Logging e Erro (MONITORAMENTO TOTAL)
+app.use('/*', errorLoggingMiddleware);
+app.use('/*', requestLoggingMiddleware);
 
 // Routes
 app.route('/api/auth', authRoutes);
