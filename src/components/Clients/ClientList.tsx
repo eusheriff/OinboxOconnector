@@ -15,7 +15,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { apiService } from '../../services/apiService';
-import { useToast } from '../contexts/ToastContext';
+import { useToast } from '../../contexts/ToastContext';
 
 interface ClientListProps {
   clients: Client[];

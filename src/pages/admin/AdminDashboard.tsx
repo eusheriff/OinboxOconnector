@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-// import { apiService } from '../../../services/apiService';
+// import { apiService } from '../../services/apiService';
 import { DollarSign, Building2, Activity } from 'lucide-react';
 
 const AdminDashboard: React.FC = () => {

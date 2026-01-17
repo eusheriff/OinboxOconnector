@@ -18,8 +18,8 @@ import {
   Globe,
   Play
 } from 'lucide-react';
-import { Button } from '../components/UI/button';
-import { Badge } from '../components/UI/badge';
+import { Button } from '../UI/button';
+import { Badge } from '../UI/badge';
 import { PublicChatWidget } from '../PublicChatWidget';
 
 interface LandingPageProps {

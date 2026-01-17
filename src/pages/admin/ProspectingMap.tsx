@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import { apiService } from '../../../services/apiService';
+import { apiService } from '../../services/apiService';
 import { Search, Save, Bot, Loader2, MapPin } from 'lucide-react';
 import L from 'leaflet';
 

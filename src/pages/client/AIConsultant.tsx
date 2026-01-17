@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User as UserIcon, Loader2 } from 'lucide-react';
-import { apiService } from '../../../services/apiService';
+import { apiService } from '../../services/apiService';
 
 interface Message {
   id: string;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import ChatList from '../../../components/Inbox/ChatList';
-import ChatWindow from '../../../components/Inbox/ChatWindow';
-import { Conversation, Message, Platform } from '../../../types';
+import ChatList from '../../components/Inbox/ChatList';
+import ChatWindow from '../../components/Inbox/ChatWindow';
+import { Conversation, Message, Platform } from '../../types';
 
 const AdminInbox: React.FC = () => {
   const [activeId, setActiveId] = useState<string | null>('1');

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, DollarSign, MapPin, Home, FileText, Check, Sparkles } from 'lucide-react';
 import { useToast } from '../../contexts/ToastContext';
-import { apiService } from '../../../services/apiService';
+import { apiService } from '../../services/apiService';
 
 export default function NewListing() {
   const [loading, setLoading] = useState(false);

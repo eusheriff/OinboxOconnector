@@ -1,10 +1,16 @@
 import 'vitest/config';
 import { defineConfig } from 'vitest/config';
 import react from '@vitejs/plugin-react';
+import path from 'path';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: {
+      '@shared': path.resolve(__dirname, './shared'),
+    },
+  },
   server: {
     // Configura proxy para que chamadas /api locais vão para o Worker (porta 8787)
     proxy: {

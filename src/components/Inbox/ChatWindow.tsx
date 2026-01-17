@@ -24,7 +24,7 @@ import {
   GroundingSource,
   fastAgentResponse,
 } from '../../services/geminiService';
-import { useToast } from '../contexts/ToastContext';
+import { useToast } from '../../contexts/ToastContext';
 
 interface ChatWindowProps {
   conversation: Conversation | null;

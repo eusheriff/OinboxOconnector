@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useJsApiLoader, GoogleMap, Marker } from '@react-google-maps/api';
-import WhatsAppManager from '../pages/admin/WhatsAppManager';
+import WhatsAppManager from '../../pages/admin/WhatsAppManager';
 
 
 import { AppView, Tenant } from '../../types';

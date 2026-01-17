@@ -24,7 +24,7 @@ import {
 import { analyzePropertyImage } from '../../services/geminiService';
 import { apiService } from '../../services/apiService';
 import { uploadImageToCloudflare } from '../../services/integrationService';
-import { useToast } from '../contexts/ToastContext';
+import { useToast } from '../../contexts/ToastContext';
 
 const ListingForm: React.FC = () => {
   const { addToast } = useToast();

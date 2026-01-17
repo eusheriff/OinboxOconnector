@@ -31,28 +31,28 @@ import { errorLoggingMiddleware, requestLoggingMiddleware } from './middleware/l
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-// CORS Middleware - Dynamic based on environment
-// CORS Middleware - Permissive for Debugging
+// CORS Middleware - Proper Allow-List
 app.use(
   '/*',
   cors({
-    origin: '*',
-    allowHeaders: ['Content-Type', 'Authorization', 'x-tenant-id', 'Upgrade-Insecure-Requests'],
+    origin: (origin) => {
+      const allowedOrigins = [
+        'https://oinbox.oconnector.tech',
+        'https://www.oinbox.oconnector.tech',
+        'https://api.oinbox.oconnector.tech',
+        'http://localhost:5173',
+        'http://localhost:3000',
+      ];
+      if (!origin || allowedOrigins.includes(origin)) return origin || allowedOrigins[0];
+      return null; // Block unknown origins
+    },
+    allowHeaders: ['Content-Type', 'Authorization', 'x-tenant-id'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
     exposeHeaders: ['Content-Length', 'x-request-id'],
     maxAge: 600,
     credentials: true,
   }),
 );
-
-// FORCED OPTIONS HANDLER (Nuclear Fix for 404 Preflight)
-app.options('/*', (c) => {
-  return c.text('', 200, {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS, PATCH',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, x-tenant-id',
-  });
-});
 
 // Middlewares Globais de Logging e Erro (MONITORAMENTO TOTAL)
 app.use('/*', errorLoggingMiddleware);

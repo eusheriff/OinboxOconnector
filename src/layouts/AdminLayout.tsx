@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
 import { LayoutDashboard, Users, Settings, LogOut } from 'lucide-react';
-import { User } from '../../types';
+import { User } from '../types';
 
 interface AdminLayoutProps {
   user: User;

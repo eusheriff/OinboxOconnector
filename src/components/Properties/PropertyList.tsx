@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Property } from '../../types';
 import { Search, Plus, MapPin, BedDouble, Trash2, Edit, TrendingUp, Key } from 'lucide-react';
-import { useToast } from '../contexts/ToastContext';
+import { useToast } from '../../contexts/ToastContext';
 
 interface PropertyListProps {
   properties: Property[];

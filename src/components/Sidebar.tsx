@@ -17,7 +17,7 @@ import {
   Settings,
   LogOut,
 } from 'lucide-react';
-import { AppView, User } from '../../types';
+import { AppView, User } from '../types';
 
 interface SidebarProps {
   onLogout: () => void;
