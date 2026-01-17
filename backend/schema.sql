@@ -1,4 +1,4 @@
--- Schema for Euimob SaaS (D1 / SQLite)
+-- Schema for OInbox SaaS (D1 / SQLite)
 
 DROP TABLE IF EXISTS properties;
 DROP TABLE IF EXISTS clients;
@@ -165,3 +165,41 @@ CREATE TABLE IF NOT EXISTS whatsapp_messages (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX IF NOT EXISTS idx_whatsapp_messages_remote_jid ON whatsapp_messages(remote_jid);
+
+-- 5. Leads (Captura e Lead Ops)
+-- Tabela sincronizada com leads.ts e novos requisitos de Lead Ops
+CREATE TABLE IF NOT EXISTS leads (
+    id TEXT PRIMARY KEY,
+    tenant_id TEXT, -- Pode ser nulo se capturado globalmente, mas idealmente vinculado
+    google_place_id TEXT,
+    name TEXT NOT NULL,
+    type TEXT,
+    address TEXT,
+    phone TEXT,
+    email TEXT,
+    website TEXT,
+    rating REAL,
+    reviews_count INTEGER DEFAULT 0,
+    score INTEGER DEFAULT 0,
+    score_breakdown TEXT, -- JSON
+    status TEXT DEFAULT 'new', -- new, qualified, contacted, responded, converted, rejected
+    source TEXT DEFAULT 'manual',
+    notes TEXT,
+    
+    -- Colunas Lead Ops
+    assigned_to TEXT, -- ID do usuário (corretor)
+    last_interaction_at DATETIME,
+    follow_up_count INTEGER DEFAULT 0,
+    stage TEXT DEFAULT 'new', -- Funil de vendas
+    next_follow_up_at DATETIME,
+    
+    captured_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    qualified_at DATETIME,
+    contacted_at DATETIME,
+    responded_at DATETIME,
+    converted_at DATETIME
+);
+CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
+CREATE INDEX IF NOT EXISTS idx_leads_assigned_to ON leads(assigned_to);
+CREATE INDEX IF NOT EXISTS idx_leads_next_follow_up ON leads(next_follow_up_at);
+

@@ -13,7 +13,7 @@ const localStorageMock = (() => {
       store[key] = value.toString();
     },
     removeItem(key: string) {
-        delete store[key];
+      delete store[key];
     },
     clear() {
       store = {};
@@ -26,4 +26,4 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 // Mock scrollIntoView, as it's not implemented in JSDOM
-window.HTMLElement.prototype.scrollIntoView = () => {};
+window.HTMLElement.prototype.scrollIntoView = () => undefined;

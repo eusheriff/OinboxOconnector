@@ -27,18 +27,18 @@ export const REAL_ESTATE_KNOWLEDGE = `
 `;
 
 export const getContextForProvider = (provider, fullKnowledge) => {
-    if (provider === 'gemini') {
-        // Gemini tem 1M de tokens, pode ler tudo.
-        return fullKnowledge;
-    } else {
-        // Llama 3 (Cloudflare) tem ~8k tokens. 
-        // Retornamos uma versão resumida ou "RAG Simples" (Keyword based).
-        // Por enquanto, retornamos os tópicos principais resumidos.
-        return `
+  if (provider === 'gemini') {
+    // Gemini tem 1M de tokens, pode ler tudo.
+    return fullKnowledge;
+  } else {
+    // Llama 3 (Cloudflare) tem ~8k tokens.
+    // Retornamos uma versão resumida ou "RAG Simples" (Keyword based).
+    // Por enquanto, retornamos os tópicos principais resumidos.
+    return `
         ### RESUMO DE VENDAS
         1. Foque em agendar visitas.
         2. Use perguntas abertas para entender a dor do cliente.
         3. Euimob é a plataforma que você usa.
         `;
-    }
+  }
 };

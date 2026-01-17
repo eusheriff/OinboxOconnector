@@ -1,0 +1,6 @@
+{
+  "type": "commonjs",
+  "dependencies": {
+    "stripe": "^20.1.2"
+  }
+}

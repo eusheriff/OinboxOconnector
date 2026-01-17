@@ -1,11 +1,20 @@
 name = "oinbox-backend"
 main = "backend/src/index.ts"
 compatibility_date = "2024-03-20"
+account_id = "4be4fb4784e8a314e28ffdcba74abf25"
+
+# Rota personalizada (API)
+routes = [
+	{ pattern = "api.oinbox.oconnector.tech", custom_domain = true }
+]
+
+[triggers]
+crons = ["0 9 * * 5"] # Toda sexta-feira às 09:00 UTC
 
 [[d1_databases]]
 binding = "DB"
-database_name = "oconnector-db"
-database_id = "ab49a14d-e5d2-434f-9926-964ae69df031"
+database_name = "oinbox-db"
+database_id = "567a1b9f-6f59-4a6b-953e-89ba1eda2b74"
 
 [[r2_buckets]]
 binding = "IMAGES"
@@ -14,9 +23,16 @@ bucket_name = "oconnector-images"
 [ai]
 binding = "AI"
 
+[vars]
+STRIPE_PRICE_EXTRA_SEAT = "price_1SnTGCBGBVDzrAhzuL7ICFwJ"
+STRIPE_PRICE_EXTRA_AI = "price_1SnTGPBGBVDzrAhzL7GPpFqT"
+STRIPE_PRICE_PRO = "price_1SnQxcBGBVDzrAhzxO2rdJ31"
+STRIPE_PRICE_BASIC = "price_1SnQxUBGBVDzrAhzlMMZwDjM"
+# API Keys movidas para secrets (wrangler secret put GOOGLE_PLACES_API_KEY / GOOGLE_GEMINI_API_KEY)
+
 [env.production]
 [[env.production.d1_databases]]
 binding = "DB"
-database_name = "oconnector-prod-db"
-database_id = "82e58966-1791-4b76-a165-a26f55d5b0f9"
+database_name = "oinbox-db"
+database_id = "567a1b9f-6f59-4a6b-953e-89ba1eda2b74"
 

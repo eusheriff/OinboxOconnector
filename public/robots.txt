@@ -1,0 +1,16 @@
+# Oinbox Robots.txt
+# https://oinbox.oconnector.tech/
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://oinbox.oconnector.tech/sitemap.xml
+
+# Crawl-delay (opcional - respeita servidores)
+Crawl-delay: 1
+
+# Bloquear assets não essenciais para SEO
+Disallow: /api/
+Disallow: /_next/
+Disallow: /static/chunks/

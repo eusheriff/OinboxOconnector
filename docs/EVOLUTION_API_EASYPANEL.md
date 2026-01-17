@@ -1,6 +1,7 @@
 # Evolution API - Deploy no EasyPanel
 
 ## Pré-requisitos
+
 - EasyPanel instalado e acessível
 - Domínio ou subdomínio (ex: `evolution.seudominio.com`)
 
@@ -67,6 +68,7 @@ QRCODE_COLOR=#F97316
 ## Passo 4: Criar banco PostgreSQL
 
 No EasyPanel:
+
 1. **Create** → **Database** → **PostgreSQL**
 2. Nome: `evolution-db`
 3. Copie a connection string e use na variável `DATABASE_CONNECTION_URI`
@@ -120,7 +122,8 @@ docker restart evolution-api
 
 ## Segurança
 
-⚠️ **IMPORTANTE:** 
+⚠️ **IMPORTANTE:**
+
 - Troque `SUA_CHAVE_SECRETA_AQUI` por uma chave forte (ex: `openssl rand -hex 32`)
 - Nunca exponha a API sem HTTPS
 - Configure firewall para permitir apenas seu backend acessar a API

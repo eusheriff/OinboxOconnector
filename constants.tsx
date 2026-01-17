@@ -1,36 +1,97 @@
-
-
 import React from 'react';
-import { Platform, Conversation, Property, Deal, DealStage, Client, Appointment, Tenant } from './types';
-import { MessageCircle, Instagram, Mail, Phone, MapPin, Home, Search } from 'lucide-react';
+import {
+  Platform,
+  Conversation,
+  Property,
+  Deal,
+  DealStage,
+  Client,
+  Appointment,
+  Tenant,
+} from './types';
+import { MessageCircle, Instagram, Mail } from 'lucide-react';
 
 // Helper to render platform icons
 export const getPlatformIcon = (platform: Platform) => {
   switch (platform) {
-    case Platform.WHATSAPP: return <MessageCircle className="w-4 h-4 text-green-500" />;
-    case Platform.INSTAGRAM: return <Instagram className="w-4 h-4 text-pink-500" />;
-    case Platform.EMAIL: return <Mail className="w-4 h-4 text-blue-500" />;
-    default: return <MessageCircle className="w-4 h-4 text-gray-500" />;
+    case Platform.WHATSAPP:
+      return <MessageCircle className="w-4 h-4 text-green-500" />;
+    case Platform.INSTAGRAM:
+      return <Instagram className="w-4 h-4 text-pink-500" />;
+    case Platform.EMAIL:
+      return <Mail className="w-4 h-4 text-blue-500" />;
+    default:
+      return <MessageCircle className="w-4 h-4 text-gray-500" />;
   }
 };
 
 export const OLLAMA_MODELS = [
-    { id: 'llama3.1:8b', name: 'Llama 3.1 (8B)', type: 'chat' },
-    { id: 'phi4:latest', name: 'Phi-4 (Microsoft)', type: 'chat' },
-    { id: 'deepseek-r1:7b', name: 'DeepSeek R1 (Raciocínio)', type: 'chat' },
-    { id: 'qwen2.5-coder:14b', name: 'Qwen 2.5 Coder (14B)', type: 'chat' },
-    { id: 'gemma3:12b', name: 'Gemma 3 (Google)', type: 'chat' },
-    { id: 'qwen3-vl:8b', name: 'Qwen 3 VL (Visão)', type: 'vision' },
-    { id: 'llava:latest', name: 'LLaVA (Visão)', type: 'vision' },
-    { id: 'minicpm-v:latest', name: 'MiniCPM-V (Visão Mobile)', type: 'vision' }
+  { id: 'llama3.1:8b', name: 'Llama 3.1 (8B)', type: 'chat' },
+  { id: 'phi4:latest', name: 'Phi-4 (Microsoft)', type: 'chat' },
+  { id: 'deepseek-r1:7b', name: 'DeepSeek R1 (Raciocínio)', type: 'chat' },
+  { id: 'qwen2.5-coder:14b', name: 'Qwen 2.5 Coder (14B)', type: 'chat' },
+  { id: 'gemma3:12b', name: 'Gemma 3 (Google)', type: 'chat' },
+  { id: 'qwen3-vl:8b', name: 'Qwen 3 VL (Visão)', type: 'vision' },
+  { id: 'llava:latest', name: 'LLaVA (Visão)', type: 'vision' },
+  { id: 'minicpm-v:latest', name: 'MiniCPM-V (Visão Mobile)', type: 'vision' },
 ];
 
 export const MOCK_TENANTS: Tenant[] = [
-  { id: 't1', name: 'Imobiliária Silva & Filhos', ownerName: 'Roberto Silva', email: 'roberto@silva.com', plan: 'Business', status: 'Active', mrr: 399, usersCount: 5, joinedAt: new Date('2024-01-15') },
-  { id: 't2', name: 'Luxury Homes SP', ownerName: 'Ana Beatriz', email: 'ana@luxury.com', plan: 'Enterprise', status: 'Active', mrr: 2500, usersCount: 25, joinedAt: new Date('2024-02-10') },
-  { id: 't3', name: 'Corretor João', ownerName: 'João Pedro', email: 'joao@corretor.com', plan: 'Autônomo', status: 'Overdue', mrr: 149, usersCount: 1, joinedAt: new Date('2024-03-05') },
-  { id: 't4', name: 'Mega Imóveis Sul', ownerName: 'Carlos Ferreira', email: 'carlos@megasul.com', plan: 'Business', status: 'Active', mrr: 399, usersCount: 8, joinedAt: new Date('2024-03-20') },
-  { id: 't5', name: 'Novo Lar Consultoria', ownerName: 'Mariana Costa', email: 'mari@novolar.com', plan: 'Autônomo', status: 'Trial', mrr: 0, usersCount: 1, joinedAt: new Date() },
+  {
+    id: 't1',
+    name: 'Imobiliária Silva & Filhos',
+    ownerName: 'Roberto Silva',
+    email: 'roberto@silva.com',
+    plan: 'Business',
+    status: 'Active',
+    mrr: 399,
+    usersCount: 5,
+    joinedAt: new Date('2024-01-15').toISOString(),
+  },
+  {
+    id: 't2',
+    name: 'Luxury Homes SP',
+    ownerName: 'Ana Beatriz',
+    email: 'ana@luxury.com',
+    plan: 'Enterprise',
+    status: 'Active',
+    mrr: 2500,
+    usersCount: 25,
+    joinedAt: new Date('2024-02-10').toISOString(),
+  },
+  {
+    id: 't3',
+    name: 'Corretor João',
+    ownerName: 'João Pedro',
+    email: 'joao@corretor.com',
+    plan: 'Autônomo',
+    status: 'Overdue',
+    mrr: 149,
+    usersCount: 1,
+    joinedAt: new Date('2024-03-05').toISOString(),
+  },
+  {
+    id: 't4',
+    name: 'Mega Imóveis Sul',
+    ownerName: 'Carlos Ferreira',
+    email: 'carlos@megasul.com',
+    plan: 'Business',
+    status: 'Active',
+    mrr: 399,
+    usersCount: 8,
+    joinedAt: new Date('2024-03-20').toISOString(),
+  },
+  {
+    id: 't5',
+    name: 'Novo Lar Consultoria',
+    ownerName: 'Mariana Costa',
+    email: 'mari@novolar.com',
+    plan: 'Autônomo',
+    status: 'Trial',
+    mrr: 0,
+    usersCount: 1,
+    joinedAt: new Date().toISOString(),
+  },
 ];
 
 export const MOCK_PROPERTIES: Property[] = [
@@ -43,7 +104,7 @@ export const MOCK_PROPERTIES: Property[] = [
     features: ['3 Quartos', '2 Suítes', 'Varanda Gourmet'],
     coordinates: { x: 40, y: 30 },
     status: 'Active',
-    listingType: 'sale'
+    listingType: 'sale',
   },
   {
     id: 'prop-2',
@@ -54,7 +115,7 @@ export const MOCK_PROPERTIES: Property[] = [
     features: ['4 Quartos', 'Piscina', 'Segurança 24h'],
     coordinates: { x: 65, y: 55 },
     status: 'Active',
-    listingType: 'sale'
+    listingType: 'sale',
   },
   {
     id: 'prop-3',
@@ -65,7 +126,7 @@ export const MOCK_PROPERTIES: Property[] = [
     features: ['Pé direito duplo', 'Próximo ao Metrô'],
     coordinates: { x: 25, y: 45 },
     status: 'Pending',
-    listingType: 'rent'
+    listingType: 'rent',
   },
   {
     id: 'prop-4',
@@ -76,8 +137,8 @@ export const MOCK_PROPERTIES: Property[] = [
     features: ['Jacuzzi', '4 Vagas', 'Vista 360'],
     coordinates: { x: 50, y: 20 },
     status: 'Active',
-    listingType: 'rent'
-  }
+    listingType: 'rent',
+  },
 ];
 
 export const MOCK_CLIENTS: Client[] = [
@@ -92,7 +153,7 @@ export const MOCK_CLIENTS: Client[] = [
     registeredAt: new Date(Date.now() - 100000000),
     leadScore: 85,
     temperature: 'Hot',
-    lastInteraction: new Date()
+    lastInteraction: new Date(),
   },
   {
     id: 'c2',
@@ -105,7 +166,7 @@ export const MOCK_CLIENTS: Client[] = [
     registeredAt: new Date(Date.now() - 50000000),
     leadScore: 45,
     temperature: 'Warm',
-    lastInteraction: new Date(Date.now() - 86400000)
+    lastInteraction: new Date(Date.now() - 86400000),
   },
   {
     id: 'c3',
@@ -118,8 +179,8 @@ export const MOCK_CLIENTS: Client[] = [
     registeredAt: new Date(Date.now() - 200000000),
     leadScore: 20,
     temperature: 'Cold',
-    lastInteraction: new Date(Date.now() - 604800000)
-  }
+    lastInteraction: new Date(Date.now() - 604800000),
+  },
 ];
 
 export const MOCK_CONVERSATIONS: Conversation[] = [
@@ -134,11 +195,40 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
     tags: ['Interessado', 'Compra'],
     associatedPropertyId: 'prop-1',
     messages: [
-      { id: 'm1', senderId: 'contact', text: 'Olá, bom dia!', timestamp: new Date(Date.now() - 100000), isStaff: false, type: 'text' },
-      { id: 'm2', senderId: 'staff', text: 'Bom dia Roberto! Tudo bem?', timestamp: new Date(Date.now() - 90000), isStaff: true, type: 'text' },
-      { id: 'm3', senderId: 'contact', text: 'Audio message', timestamp: new Date(), isStaff: false, type: 'audio', audioDuration: '0:24' },
-      { id: 'm4', senderId: 'contact', text: 'Gostaria de saber se o imóvel ainda está disponível para visitação neste sábado.', timestamp: new Date(), isStaff: false, type: 'text' }
-    ]
+      {
+        id: 'm1',
+        senderId: 'contact',
+        text: 'Olá, bom dia!',
+        timestamp: new Date(Date.now() - 100000),
+        isStaff: false,
+        type: 'text',
+      },
+      {
+        id: 'm2',
+        senderId: 'staff',
+        text: 'Bom dia Roberto! Tudo bem?',
+        timestamp: new Date(Date.now() - 90000),
+        isStaff: true,
+        type: 'text',
+      },
+      {
+        id: 'm3',
+        senderId: 'contact',
+        text: 'Audio message',
+        timestamp: new Date(),
+        isStaff: false,
+        type: 'audio',
+        audioDuration: '0:24',
+      },
+      {
+        id: 'm4',
+        senderId: 'contact',
+        text: 'Gostaria de saber se o imóvel ainda está disponível para visitação neste sábado.',
+        timestamp: new Date(),
+        isStaff: false,
+        type: 'text',
+      },
+    ],
   },
   {
     id: 'conv-2',
@@ -151,9 +241,23 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
     tags: ['Dúvida', 'Aluguel'],
     associatedPropertyId: 'prop-2',
     messages: [
-      { id: 'm1', senderId: 'contact', text: 'Vi esse story da casa em Alphaville.', timestamp: new Date(Date.now() - 4000000), isStaff: false, type: 'text' },
-      { id: 'm2', senderId: 'contact', text: 'Qual o valor do condomínio?', timestamp: new Date(Date.now() - 3600000), isStaff: false, type: 'text' }
-    ]
+      {
+        id: 'm1',
+        senderId: 'contact',
+        text: 'Vi esse story da casa em Alphaville.',
+        timestamp: new Date(Date.now() - 4000000),
+        isStaff: false,
+        type: 'text',
+      },
+      {
+        id: 'm2',
+        senderId: 'contact',
+        text: 'Qual o valor do condomínio?',
+        timestamp: new Date(Date.now() - 3600000),
+        isStaff: false,
+        type: 'text',
+      },
+    ],
   },
   {
     id: 'conv-3',
@@ -165,9 +269,16 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
     unreadCount: 0,
     tags: ['Parceiro', 'Documentação'],
     messages: [
-        { id: 'm1', senderId: 'contact', text: 'Segue em anexo a documentação solicitada.', timestamp: new Date(Date.now() - 86400000), isStaff: false, type: 'text' }
-    ]
-  }
+      {
+        id: 'm1',
+        senderId: 'contact',
+        text: 'Segue em anexo a documentação solicitada.',
+        timestamp: new Date(Date.now() - 86400000),
+        isStaff: false,
+        type: 'text',
+      },
+    ],
+  },
 ];
 
 export const MOCK_DEALS: Deal[] = [
@@ -178,7 +289,7 @@ export const MOCK_DEALS: Deal[] = [
     value: 1250000,
     stage: DealStage.VISIT,
     probability: 60,
-    lastActivity: new Date()
+    lastActivity: new Date(),
   },
   {
     id: 'deal-2',
@@ -187,7 +298,7 @@ export const MOCK_DEALS: Deal[] = [
     value: 890000,
     stage: DealStage.NEW,
     probability: 20,
-    lastActivity: new Date(Date.now() - 86400000)
+    lastActivity: new Date(Date.now() - 86400000),
   },
   {
     id: 'deal-3',
@@ -196,35 +307,35 @@ export const MOCK_DEALS: Deal[] = [
     value: 450000,
     stage: DealStage.PROPOSAL,
     probability: 80,
-    lastActivity: new Date(Date.now() - 172800000)
-  }
+    lastActivity: new Date(Date.now() - 172800000),
+  },
 ];
 
 export const MOCK_APPOINTMENTS: Appointment[] = [
-    {
-        id: 'apt-1',
-        title: 'Visita - Apto Jardins',
-        date: new Date(new Date().setHours(14, 30, 0, 0)), // Hoje as 14:30
-        type: 'visit',
-        clientName: 'Roberto Silva',
-        propertyId: 'prop-1',
-        location: 'Jardins, SP'
-    },
-    {
-        id: 'apt-2',
-        title: 'Assinatura Contrato',
-        date: new Date(new Date().setDate(new Date().getDate() + 1)), // Amanhã
-        type: 'meeting',
-        clientName: 'Carlos Empreendimentos',
-        location: 'Escritório Central'
-    },
-    {
-        id: 'apt-3',
-        title: 'Fotos - Casa Alphaville',
-        date: new Date(new Date().setDate(new Date().getDate() + 2)), // Depois de amanhã
-        type: 'visit',
-        clientName: 'Proprietário Marcos',
-        propertyId: 'prop-2',
-        location: 'Alphaville'
-    }
+  {
+    id: 'apt-1',
+    title: 'Visita - Apto Jardins',
+    date: new Date(new Date().setHours(14, 30, 0, 0)), // Hoje as 14:30
+    type: 'visit',
+    clientName: 'Roberto Silva',
+    propertyId: 'prop-1',
+    location: 'Jardins, SP',
+  },
+  {
+    id: 'apt-2',
+    title: 'Assinatura Contrato',
+    date: new Date(new Date().setDate(new Date().getDate() + 1)), // Amanhã
+    type: 'meeting',
+    clientName: 'Carlos Empreendimentos',
+    location: 'Escritório Central',
+  },
+  {
+    id: 'apt-3',
+    title: 'Fotos - Casa Alphaville',
+    date: new Date(new Date().setDate(new Date().getDate() + 2)), // Depois de amanhã
+    type: 'visit',
+    clientName: 'Proprietário Marcos',
+    propertyId: 'prop-2',
+    location: 'Alphaville',
+  },
 ];
