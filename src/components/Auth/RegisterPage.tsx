@@ -10,7 +10,7 @@ import {
   CheckCircle2,
   CalendarClock,
 } from 'lucide-react';
-import { apiService } from '../../services/apiService';
+import { apiService } from '@/services/apiService';
 
 interface RegisterPageProps {
   onSwitchToLogin: () => void;

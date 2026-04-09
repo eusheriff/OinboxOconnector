@@ -1,0 +1,84 @@
+---
+title: Instalação
+description: Como instalar e rodar o Oinbox localmente
+---
+
+# Instalação
+
+Guia passo a passo para configurar o ambiente de desenvolvimento do Oinbox.
+
+## Pré-requisitos
+
+- **Node.js 18+** (recomendado 20+)
+- **npm** ou **pnpm**
+- **Conta na Cloudflare** (para backend/D1/R2)
+- **Chave API do Google AI Studio** (Gemini)
+- **Conta Stripe** (para pagamentos)
+
+## Passo 1: Clone o Repositório
+
+```bash
+git clone https://github.com/seu-usuario/oinbox.git
+cd oinbox
+```
+
+## Passo 2: Instale Dependências
+
+```bash
+npm install
+```
+
+## Passo 3: Configure o Ambiente
+
+Crie o arquivo `.env` na raiz:
+
+```bash
+cp .env.example .env
+```
+
+Edite com suas credenciais:
+
+```env
+API_KEY="sua_chave_gemini_aqui"
+JWT_SECRET=$(openssl rand -base64 32)
+VITE_STRIPE_PUBLIC_KEY="pk_test_..."
+STRIPE_SECRET_KEY="sk_test_..."
+```
+
+## Passo 4: Configure o Backend (Cloudflare)
+
+```bash
+# Instale o Wrangler CLI
+npm install -g wrangler
+
+# Faça login na Cloudflare
+wrangler login
+
+# Crie o banco D1
+wrangler d1 create oinbox-db
+
+# Execute o schema SQL
+wrangler d1 execute oinbox-db --file=./backend/schema.sql --local
+```
+
+## Passo 5: Rode o Projeto
+
+```bash
+# Frontend (Vite dev server)
+npm run dev
+# → http://localhost:5173
+
+# Backend (Cloudflare Worker)
+npm run dev:backend
+# → http://localhost:8787
+```
+
+## Verificação
+
+Acesse `http://localhost:5173` no navegador. Você deve ver a landing page do Oinbox.
+
+## Próximos Passos
+
+1. [Configurar Variáveis de Ambiente](/getting-started/configuration)
+2. [Configurar Stripe](/getting-started/stripe-setup)
+3. [Criar Primeiro Tenant](/getting-started/first-tenant)

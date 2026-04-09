@@ -1,4 +1,4 @@
-import { Bindings } from './types';
+import { Bindings } from './bindings';
 import PostalMime from 'postal-mime';
 import { createDatadogLogger } from './utils/datadog';
 import { ExecutionContext } from '@cloudflare/workers-types';
@@ -152,33 +152,52 @@ export async function handleEmail(message: EmailMessage, env: Bindings, ctx: Exe
       await logger?.info(`[Email Handler] Created client`, { clientId });
     }
 
-    // Create Message in Inbox
-    // Se tiver telefone, podemos tentar iniciar conversa whatsapp se tivermos permissão,
-    // mas por segurança inserimos como mensagem 'received' na tabela 'whatsapp_messages' ou 'messages'
-    // Para unificar, vamos inserir na 'messages' (Inbox Geral do CRM) E na 'whatsapp_messages' simulada para aparecer no chat
+    // Create Message in Inbox (tabela geral de mensagens do CRM)
+    // Emails de portais sao inseridos na tabela 'messages' com origem identificada
+    // NAO fingir WhatsApp - isso causava confusão entre canais
 
-    if (leadPhone) {
-      // Simulando entrada na tabela de whatsapp para aparecer na UI (hack de unificação)
-      // Mas o ideal é usar a tabela 'messages' do CRM se a UI ler de lá,
-      // Como a UI atual lê de 'whatsapp_messages' (baseado na refatoração anterior), vamos inserir lá.
-
-      // Formatar JID
-      const remoteJid = leadPhone + '@s.whatsapp.net';
-
+    if (leadPhone || leadEmail) {
+      // Inserir na tabela geral de mensagens do CRM
       await env.DB.prepare(
-        `
-               INSERT INTO whatsapp_messages (id, tenant_id, remote_jid, content, direction, status, created_at)
-               VALUES (?, ?, ?, ?, 'inbound', 'received', ?)
-          `,
+        `INSERT INTO messages (id, tenant_id, client_id, role, content, created_at)
+         VALUES (?, ?, ?, 'user', ?, ?)`,
       )
         .bind(
           crypto.randomUUID(),
           tenantId,
-          remoteJid,
-          `${leadMessage} (Via ${source})`,
+          finalClientId,
+          `[${source}] ${leadMessage}`,
           new Date().toISOString(),
         )
         .run();
+
+      // Se tem telefone, criar notificação para o corretor iniciar contato via WhatsApp
+      if (leadPhone) {
+        const notificationId = crypto.randomUUID();
+        await env.DB.prepare(
+          `INSERT INTO notifications (id, tenant_id, user_id, type, title, message, metadata)
+           VALUES (?, ?, NULL, 'portal_lead', 'Novo lead de portal', ?, ?)`,
+        )
+          .bind(
+            notificationId,
+            tenantId,
+            `Lead ${leadName} veio do ${source}. Telefone: ${leadPhone}. Inicie o contato via WhatsApp.`,
+            JSON.stringify({
+              source,
+              leadPhone,
+              leadEmail,
+              clientId: finalClientId,
+              message: leadMessage,
+            }),
+          )
+          .run();
+
+        await logger?.info('[Email Handler] Portal lead notification created', {
+          notificationId,
+          source,
+          leadPhone,
+        });
+      }
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Conversation, Property } from '../../types';
-import { getPlatformIcon } from '../../constants';
+import { Conversation, Property } from '@shared/types';
+import { getPlatformIcon } from '@/constants';
 import {
   Send,
   Paperclip,
@@ -16,15 +16,15 @@ import {
   Play,
   Pause,
 } from 'lucide-react';
-import { apiService } from '../../services/apiService';
+import { apiService } from '@/services/apiService';
 import {
   suggestReply,
   summarizeConversation,
   askLocationAssistant,
   GroundingSource,
   fastAgentResponse,
-} from '../../services/geminiService';
-import { useToast } from '../../contexts/ToastContext';
+} from '@/services/openaiService';
+import { useToast } from '@/contexts/ToastContext';
 
 interface ChatWindowProps {
   conversation: Conversation | null;
@@ -107,11 +107,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
 
   if (!conversation) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gray-50 flex-col text-gray-400 p-8 text-center">
+      <div className="flex-1 flex items-center justify-center bg-muted/20 flex-col text-muted-foreground p-8 text-center">
         <div className="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mb-6 animate-pulse">
           <Sparkles className="w-10 h-10 text-blue-400" />
         </div>
-        <h3 className="text-lg font-semibold text-slate-700 mb-2">Central de Atendimento</h3>
+        <h3 className="text-lg font-semibold text-foreground mb-2">Central de Atendimento</h3>
         <p className="max-w-md">
           Selecione uma conversa ao lado para iniciar. Nossa IA está pronta para ajudar a fechar
           negócios mais rápido.
@@ -188,9 +188,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-[#F0F2F5] h-full">
+    <div className="flex-1 flex flex-col bg-muted/30 h-full">
       {/* Header */}
-      <div className="h-16 bg-white border-b border-gray-200 px-6 flex items-center justify-between flex-shrink-0 shadow-sm z-10">
+      <div className="h-16 bg-card border-b border-border px-6 flex items-center justify-between flex-shrink-0 shadow-sm z-10">
         <div className="flex items-center gap-3">
           <img
             src={conversation.contactAvatar}
@@ -241,7 +241,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
               className={`max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-3 shadow-sm relative group ${
                 msg.isStaff
                   ? 'bg-primary text-primary-foreground rounded-br-none'
-                  : 'bg-white text-foreground rounded-bl-none border border-gray-100'
+                  : 'bg-card text-foreground rounded-bl-none border border-border'
               }`}
             >
               {msg.type === 'audio' ? (
@@ -262,12 +262,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
       </div>
 
       {/* Input Area */}
-      <div className="bg-white p-4 border-t border-gray-200">
+      <div className="bg-card p-4 border-t border-border">
         {/* Grounding Sources Display */}
         {groundingSources.length > 0 && (
-          <div className="mb-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
+          <div className="mb-3 bg-muted/50 p-3 rounded-lg border border-border">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-xs font-bold text-gray-500 flex items-center gap-1">
+              <span className="text-xs font-bold text-muted-foreground flex items-center gap-1">
                 <MapPin className="w-3 h-3" /> Fontes do Google Maps
               </span>
               <button
@@ -336,8 +336,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
           </button>
         </div>
 
-        <div className="flex items-center gap-2 bg-gray-50 p-2 rounded-xl border border-gray-200 focus-within:ring-2 focus-within:ring-primary focus-within:bg-white transition-all">
-          <button className="p-2 text-gray-400 hover:text-gray-600 transition-colors">
+        <div className="flex items-center gap-2 bg-muted/30 p-2 rounded-xl border border-border focus-within:ring-2 focus-within:ring-primary focus-within:bg-card transition-all">
+          <button className="p-2 text-muted-foreground hover:text-foreground transition-colors">
             <Paperclip className="w-5 h-5" />
           </button>
 
@@ -369,7 +369,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
           ) : (
             <button
               onClick={toggleRecording}
-              className={`p-2 rounded-lg transition-all duration-200 ${isRecording ? 'bg-red-500 text-white shadow-md scale-110' : 'bg-gray-200 text-gray-500 hover:bg-gray-300'}`}
+              className={`p-2 rounded-lg transition-all duration-200 ${isRecording ? 'bg-red-500 text-white shadow-md scale-110' : 'bg-muted text-muted-foreground hover:bg-muted/80'}`}
             >
               {isRecording ? (
                 <div className="w-2 h-2 bg-white rounded animate-spin" />

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import bcrypt from 'bcryptjs';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { authMiddleware } from '../middleware/auth';
 import { getPlan } from '../config/plans';
 
@@ -14,8 +14,10 @@ users.get('/', async (c) => {
   const tenantId = user.tenantId;
 
   const { results } = await c.env.DB.prepare(
-    'SELECT id, name, email, role FROM users WHERE tenant_id = ?'
-  ).bind(tenantId).all<{ id: string; name: string; email: string; role: string }>();
+    'SELECT id, name, email, role FROM users WHERE tenant_id = ?',
+  )
+    .bind(tenantId)
+    .all<{ id: string; name: string; email: string; role: string }>();
 
   return c.json(results);
 });
@@ -47,23 +49,31 @@ users.post('/', async (c) => {
 
   // Calculate limit: base plan + add-ons
   const planConfig = getPlan(tenant.plan);
-  const extraSeats = await c.env.DB.prepare(
-    "SELECT COALESCE(SUM(quantity), 0) as total FROM addons WHERE tenant_id = ? AND type = 'extra_seat' AND status = 'active'"
-  ).bind(tenantId).first<number>('total') || 0;
+  const extraSeats =
+    (await c.env.DB.prepare(
+      "SELECT COALESCE(SUM(quantity), 0) as total FROM addons WHERE tenant_id = ? AND type = 'extra_seat' AND status = 'active'",
+    )
+      .bind(tenantId)
+      .first<number>('total')) || 0;
 
   const totalLimit = planConfig.seats + extraSeats;
   const currentCount = await c.env.DB.prepare(
-    'SELECT COUNT(*) as count FROM users WHERE tenant_id = ?'
-  ).bind(tenantId).first<number>('count');
+    'SELECT COUNT(*) as count FROM users WHERE tenant_id = ?',
+  )
+    .bind(tenantId)
+    .first<number>('count');
 
   if ((currentCount || 0) >= totalLimit) {
-    return c.json({
-      error: `Limite de usuários atingido (${totalLimit}). Compre add-ons ou faça upgrade.`,
-      limit: totalLimit,
-      baseLimit: planConfig.seats,
-      extraSeats,
-      current: currentCount,
-    }, 403);
+    return c.json(
+      {
+        error: `Limite de usuários atingido (${totalLimit}). Compre add-ons ou faça upgrade.`,
+        limit: totalLimit,
+        baseLimit: planConfig.seats,
+        extraSeats,
+        current: currentCount,
+      },
+      403,
+    );
   }
 
   // Check if email already exists
@@ -81,8 +91,10 @@ users.post('/', async (c) => {
   const userId = crypto.randomUUID();
 
   await c.env.DB.prepare(
-    'INSERT INTO users (id, tenant_id, name, email, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)'
-  ).bind(userId, tenantId, data.name, data.email, passwordHash, 'user').run();
+    'INSERT INTO users (id, tenant_id, name, email, password_hash, role) VALUES (?, ?, ?, ?, ?, ?)',
+  )
+    .bind(userId, tenantId, data.name, data.email, passwordHash, 'user')
+    .run();
 
   return c.json({
     success: true,
@@ -107,9 +119,9 @@ users.delete('/:id', async (c) => {
   }
 
   // Check if user belongs to same tenant
-  const targetUser = await c.env.DB.prepare(
-    'SELECT id FROM users WHERE id = ? AND tenant_id = ?'
-  ).bind(userId, currentUser.tenantId).first<{ id: string }>();
+  const targetUser = await c.env.DB.prepare('SELECT id FROM users WHERE id = ? AND tenant_id = ?')
+    .bind(userId, currentUser.tenantId)
+    .first<{ id: string }>();
 
   if (!targetUser) {
     return c.json({ error: 'Usuário não encontrado.' }, 404);

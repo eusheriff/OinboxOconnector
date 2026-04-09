@@ -1,0 +1,117 @@
+# Agent Hub Integration
+
+## Overview
+
+O Agent Hub (`agent-hub.oconnector.tech`) é um serviço externo de orquestração de IA consumido pelo Oinbox. Ele é responsável por:
+
+1. **Análise de intenção** — Classifica a mensagem do lead como `INTERESTED`, `NOT_INTERESTED`, `SUPPORT` ou `OTHER`
+2. **Geração de resposta** — Sugere resposta contextualizada para o corretor
+3. **Orquestração de persona** — Atua como especialista imobiliário quando chamado via `/orchestrate`
+
+Este serviço **não está neste repositório**. É uma dependência externa crítica.
+
+## Endpoints Consumidos
+
+### 1. Analyze Response
+
+```
+POST https://agent-hub.oconnector.tech/api/skill/analyze-response
+Content-Type: application/json
+
+{
+  "message": "Olá, gostaria de saber mais sobre o apartamento",
+  "history": [{"role": "user", "text": "..."}]
+}
+```
+
+**Resposta:**
+```json
+{
+  "result": {
+    "intent": "INTERESTED",
+    "suggested_reply": "Ótimo! Vou te enviar mais detalhes...",
+    "confidence": 0.92
+  }
+}
+```
+
+**Uso:** `backend/src/services/salesTools.ts` — chamado quando lead envia mensagem via WhatsApp.
+
+### 2. Generate Pitch
+
+```
+POST https://agent-hub.oconnector.tech/api/skill/generate-pitch
+Content-Type: application/json
+
+{
+  "name": "João",
+  "business": "Imobiliária XYZ",
+  "property_type": "Apartamento",
+  "location": "Centro"
+}
+```
+
+**Resposta:**
+```json
+{
+  "result": {
+    "pitch": "Olá João! Tenho uma oportunidade imperdível..."
+  }
+}
+```
+
+### 3. Orchestrator (Fallback)
+
+```
+POST https://agent-hub.oconnector.tech/v1/hub/orchestrate
+Content-Type: application/json
+
+{
+  "request": "Qual o valor do condomínio?",
+  "userId": "5511999999999@s.whatsapp.net",
+  "origin_domain": "oinbox.oconnector.tech"
+}
+```
+
+**Resposta:**
+```json
+{
+  "result": {
+    "response": "O condomínio é R$ 450/mês..."
+  }
+}
+```
+
+**Uso:** `backend/src/routes/whatsapp.ts` — chamado quando `analyzeIntention` retorna `OTHER` ou `SUPPORT`, como fallback generativo.
+
+## Circuit Breaker
+
+Todas as chamadas ao Agent Hub são protegidas por circuit breaker:
+
+| Parâmetro | Valor |
+|-----------|-------|
+| Failure threshold | 3 falhas |
+| Recovery timeout | 90 segundos |
+| Success threshold | 2 sucessos |
+
+Quando o circuit está **aberto**, o sistema:
+- **analyzeIntention**: retorna `{ intent: 'OTHER', suggested_reply: '', confidence: 0 }`
+- **orchestrate**: retorna mensagem padrão: *"Recebemos sua mensagem! Um de nossos consultores irá responder em breve."*
+
+## Dependência Crítica
+
+Se o Agent Hub estiver indisponível por mais de 90 segundos:
+- A IA para de responder automaticamente no WhatsApp
+- Leads não atribuídos recebem mensagem genérica
+- O corretor precisa responder manualmente
+
+**Monitoramento:** O health check (`GET /api/health`) reporta status do Agent Hub como `ok`, `error` ou `http_XXX`.
+
+## Alternativa: Google Gemini Direto
+
+O Oinbox também usa Google Gemini diretamente (sem Agent Hub) para:
+- Geração de descrições de imóveis (`POST /api/ai/generate-description`)
+- Análise de perfil de cliente (`/api/clients/:id/analyze`)
+- Resumo de conversas (frontend `openaiService.ts`)
+
+Essas funcionalidades **continuam funcionando** mesmo com Agent Hub indisponível.

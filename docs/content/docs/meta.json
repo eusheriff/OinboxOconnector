@@ -1,0 +1,25 @@
+{
+  "root": {
+    "title": "Oinbox",
+    "icon": "package",
+    "defaultOpen": true
+  },
+  "pages": [
+    "index",
+    "---Introdução---",
+    "...getting-started",
+    "---Arquitetura---",
+    "...architecture",
+    "---Backend---",
+    "...backend",
+    "---Frontend---",
+    "...frontend",
+    "---Funcionalidades---",
+    "...features",
+    "---Integrações---",
+    "...integrations",
+    "---Deploy & Guides---",
+    "...deployment",
+    "...guides"
+  ]
+}

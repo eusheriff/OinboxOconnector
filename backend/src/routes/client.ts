@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { authMiddleware } from '../middleware/auth';
 
 const client = new Hono<{ Bindings: Bindings; Variables: Variables }>();

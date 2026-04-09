@@ -1,0 +1,55 @@
+---
+title: Visão Geral
+description: O que é o Oinbox e por que existe
+---
+
+# Visão Geral do Oinbox
+
+Oinbox é um **Sistema Operacional Imobiliário** (Real Estate Operating System) completo, desenhado para centralizar a operação de corretores e imobiliárias.
+
+## O Problema
+
+Corretores e imobiliárias usam dezenas de ferramentas desconectadas:
+- WhatsApp para comunicação
+- Planilhas para CRM
+- Portais imobiliários para listagens
+- Ferramentas separadas para marketing
+- Simuladores financeiros externos
+
+Oinbox une tudo em uma única plataforma.
+
+## A Solução
+
+| Módulo | Descrição |
+|--------|-----------|
+| **CRM** | Pipeline visual (Kanban), lead scoring, gestão de clientes |
+| **Inbox Unificado** | Omnichannel: WhatsApp, Instagram, Email, Portais em uma tela |
+| **AI Core** | Gemini-powered: Voice-to-CRM, visão computacional, chatbot especialista |
+| **Marketing Studio** | Editor visual para Stories/Posts, campanhas segmentadas |
+| **Ferramentas de Venda** | Simulador financeiro, gerador de contratos, mapas |
+| **SaaS Management** | Dashboard Super Admin para gestão de tenants, planos, MRR |
+
+## Para Quem?
+
+- **Corretores autônomos**: Plano Básico
+- **Imobiliárias pequenas/médias**: Plano Pro
+- **Grandes redes/construtoras**: Plano Enterprise
+- **Donos da plataforma**: Super Admin para gestão SaaS
+
+## Stack Tecnológica
+
+```
+Frontend: React 19 + TypeScript + Tailwind CSS + Radix UI
+Backend: Cloudflare Workers (Hono framework)
+Database: Cloudflare D1 (SQLite na Edge)
+Storage: Cloudflare R2
+AI: Google Gemini (gemini-2.5-flash)
+Pagamentos: Stripe
+Build: Vite + Wrangler
+```
+
+## Links Úteis
+
+- [Guia de Instalação](/getting-started/installation)
+- [Configuração de Ambiente](/getting-started/configuration)
+- [Arquitetura do Sistema](/architecture/overview)

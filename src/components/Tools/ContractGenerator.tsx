@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { MOCK_CLIENTS, MOCK_PROPERTIES } from '../../constants';
-import { Client, Property } from '../../types';
+import { MOCK_CLIENTS, MOCK_PROPERTIES } from '@/constants';
+import { Client, Property } from '@shared/types';
 import { FileText, Download, PenTool, CheckCircle2, Loader2, ArrowRight } from 'lucide-react';
-import { useToast } from '../../contexts/ToastContext';
+import { useToast } from '@/contexts/ToastContext';
 
 const ContractGenerator: React.FC = () => {
   const { addToast } = useToast();

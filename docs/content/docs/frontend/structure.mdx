@@ -1,0 +1,107 @@
+---
+title: Estrutura do Frontend
+description: Organização de componentes, páginas e serviços do frontend
+---
+
+# Estrutura do Frontend
+
+O frontend é uma SPA React com Vite, TypeScript e Tailwind CSS.
+
+## Componentes (`src/components/`)
+
+| Módulo | Descrição |
+|--------|-----------|
+| `CRM/` | Pipeline Kanban, Lead Scoring |
+| `Inbox/` | Chat Window, Client Details |
+| `Properties/` | PropertyList, ListingForm |
+| `Marketing/` | Campaign Manager, Visual Editor |
+| `AI/` | Chat components, AI Agent |
+| `Admin/` | Super Admin dashboards |
+| `UI/` | Componentes base (Skeleton, ErrorBoundary) |
+
+## Páginas (`src/pages/`)
+
+### `pages/admin/`
+Rotas exclusivas do Super Admin:
+- AdminDashboard, TenantsList, AIControlPanel
+- WhatsAppManager, FinanceDashboard
+- AuditLogs, FeatureManager
+
+### `pages/client/`
+Rotas do tenant/corretor:
+- AIConsultant, NewListing, Calculator
+- Campaigns, MarketingStudio, Contracts
+- MapPage, InboxPage, SettingsPage
+
+## Hooks (`src/hooks/`)
+
+\`\`\`typescript
+import { useAuth, useApi } from './hooks';
+
+// Auth hook
+const { user, login, logout, isAuthenticated } = useAuth();
+
+// API hook genérico
+const { data, loading, error, execute } = useApi<Client[]>();
+await execute('/api/clients');
+\`\`\`
+
+## Services
+
+\`\`\`typescript
+import { apiService } from './services/apiService';
+
+// Login
+const response = await apiService.login(email, password);
+
+// Fetch com auth automática
+const clients = await apiService.getClients();
+\`\`\`
+
+## Storage
+
+\`\`\`typescript
+import { authStorage } from './lib/authStorage';
+
+authStorage.getToken();
+authStorage.setToken(token);
+authStorage.getUser();
+\`\`\`
+
+## Error Boundary
+
+Todos os componentes são envolvidos por ErrorBoundary:
+
+\`\`\`typescript
+// src/index.tsx
+<ErrorBoundary>
+  <App />
+</ErrorBoundary>
+\`\`\`
+
+## Lazy Loading
+
+Componentes pesados usam React.lazy:
+
+\`\`\`typescript
+const LegalHub = lazy(() => import('./components/LegalHub'));
+const AIConsultant = lazy(() => import('./pages/client/AIConsultant'));
+const MapPage = lazy(() => import('./pages/client/MapPage'));
+
+// Com Suspense no App.tsx
+<Suspense fallback={<SkeletonCard />}>
+  <LegalHub />
+</Suspense>
+\`\`\`
+
+## Skeleton Screens
+
+Componentes Skeleton para loading states:
+
+\`\`\`typescript
+import { SkeletonCard, SkeletonText, SkeletonButton } from './components/UI/Skeleton';
+
+<SkeletonCard />
+<SkeletonText lines={3} />
+<SkeletonButton />
+\`\`\`

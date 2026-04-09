@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MessageCircle, RefreshCw, Smartphone, CheckCircle, XCircle, LogOut } from 'lucide-react';
-import ConfirmationModal from '../../components/UI/ConfirmationModal';
-import { useToast } from '../../contexts/ToastContext';
+import ConfirmationModal from '@/components/UI/ConfirmationModal';
+import { useToast } from '@/contexts/ToastContext';
 
 interface WhatsAppStatus {
   status: 'connected' | 'disconnected';

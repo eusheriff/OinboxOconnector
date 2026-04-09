@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Client } from '../../types';
+import { Client } from '@shared/types';
 import {
   Search,
   Plus,
@@ -14,8 +14,8 @@ import {
   BrainCircuit,
   Loader2,
 } from 'lucide-react';
-import { apiService } from '../../services/apiService';
-import { useToast } from '../../contexts/ToastContext';
+import { apiService } from '@/services/apiService';
+import { useToast } from '@/contexts/ToastContext';
 
 interface ClientListProps {
   clients: Client[];

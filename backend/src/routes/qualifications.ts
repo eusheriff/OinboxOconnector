@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { superAuthMiddleware } from '../middleware/auth';
 
 const qualifications = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -24,7 +24,7 @@ interface QualificationRule {
 // GET /api/qualifications - Listar regras
 qualifications.get('/', async (c) => {
   const { results } = await c.env.DB.prepare(
-    'SELECT * FROM qualification_rules ORDER BY weight DESC'
+    'SELECT * FROM qualification_rules ORDER BY weight DESC',
   ).all<QualificationRule>();
 
   return c.json({
@@ -67,13 +67,15 @@ qualifications.post('/', async (c) => {
 
   const id = crypto.randomUUID();
 
-  await c.env.DB.prepare(`
+  await c.env.DB.prepare(
+    `
     INSERT INTO qualification_rules (
       id, name, description, min_rating, min_reviews, 
       required_keywords, excluded_keywords, 
       required_has_phone, required_has_website, weight, is_active
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `)
+  `,
+  )
     .bind(
       id,
       data.name,
@@ -85,7 +87,7 @@ qualifications.post('/', async (c) => {
       data.required_has_phone ?? true,
       data.required_has_website ?? false,
       data.weight || 10,
-      data.is_active ?? true
+      data.is_active ?? true,
     )
     .run();
 
@@ -97,7 +99,8 @@ qualifications.put('/:id', async (c) => {
   const id = c.req.param('id');
   const data = await c.req.json();
 
-  await c.env.DB.prepare(`
+  await c.env.DB.prepare(
+    `
     UPDATE qualification_rules SET
       name = COALESCE(?, name),
       description = COALESCE(?, description),
@@ -111,7 +114,8 @@ qualifications.put('/:id', async (c) => {
       is_active = COALESCE(?, is_active),
       updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
-  `)
+  `,
+  )
     .bind(
       data.name || null,
       data.description || null,
@@ -123,7 +127,7 @@ qualifications.put('/:id', async (c) => {
       data.required_has_website ?? null,
       data.weight ?? null,
       data.is_active ?? null,
-      id
+      id,
     )
     .run();
 
@@ -141,12 +145,14 @@ qualifications.delete('/:id', async (c) => {
 qualifications.post('/:id/toggle', async (c) => {
   const id = c.req.param('id');
 
-  await c.env.DB.prepare(`
+  await c.env.DB.prepare(
+    `
     UPDATE qualification_rules SET 
       is_active = NOT is_active,
       updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
-  `)
+  `,
+  )
     .bind(id)
     .run();
 
@@ -159,12 +165,12 @@ qualifications.get('/preview/count', async (c) => {
 
   // Buscar regras ativas
   const { results: rules } = await c.env.DB.prepare(
-    'SELECT * FROM qualification_rules WHERE is_active = 1'
+    'SELECT * FROM qualification_rules WHERE is_active = 1',
   ).all<QualificationRule>();
 
   // Buscar leads não qualificados
   const { results: leads } = await c.env.DB.prepare(
-    "SELECT * FROM leads WHERE status = 'new'"
+    "SELECT * FROM leads WHERE status = 'new'",
   ).all<{
     id: string;
     rating: number;

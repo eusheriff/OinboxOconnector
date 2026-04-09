@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Upload, DollarSign, MapPin, Home, FileText, Check, Sparkles } from 'lucide-react';
-import { useToast } from '../../contexts/ToastContext';
-import { apiService } from '../../services/apiService';
+import { useToast } from '@/contexts/ToastContext';
+import { apiService } from '@/services/apiService';
 
 export default function NewListing() {
   const [loading, setLoading] = useState(false);
@@ -60,6 +60,14 @@ export default function NewListing() {
       await apiService.createProperty({
         ...formData,
         price: Number(formData.price),
+        bedrooms: Number(formData.bedrooms) || 0,
+        bathrooms: Number(formData.bathrooms) || 0,
+        suites: Number(formData.suites) || 0,
+        garage: Number(formData.garage) || 0,
+        area: Number(formData.area) || 0,
+        total_area: Number(formData.total_area) || 0,
+        condo_value: Number(formData.condo_value) || 0,
+        iptu_value: Number(formData.iptu_value) || 0,
         features: formData.features,
       });
       addToast('success', 'Imóvel cadastrado com sucesso!');

@@ -1,5 +1,5 @@
 import { Hono, MiddlewareHandler } from 'hono';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { authMiddleware, superAuthMiddleware } from '../middleware/auth';
 
 const buyerLeads = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -30,7 +30,10 @@ interface BuyerLead {
 // =====================================
 
 // Middleware: verificar se tenant é Enterprise
-const enterpriseMiddleware: MiddlewareHandler<{ Bindings: Bindings; Variables: Variables }> = async (c, next) => {
+const enterpriseMiddleware: MiddlewareHandler<{
+  Bindings: Bindings;
+  Variables: Variables;
+}> = async (c, next) => {
   const user = c.get('user');
   if (!user) {
     return c.json({ error: 'Não autenticado' }, 401);
@@ -89,14 +92,16 @@ buyerLeads.get('/', authMiddleware, enterpriseMiddleware, async (c) => {
   sql += ' ORDER BY captured_at DESC LIMIT ? OFFSET ?';
   params.push(limit, offset);
 
-  const { results } = await c.env.DB.prepare(sql).bind(...params).all<BuyerLead>();
+  const { results } = await c.env.DB.prepare(sql)
+    .bind(...params)
+    .all<BuyerLead>();
 
   // Verificar quais já foram acessados por este tenant
   const leadIds = results.map((l) => l.id);
   if (leadIds.length > 0) {
     const { results: accessed } = await c.env.DB.prepare(
       `SELECT buyer_lead_id, contacted FROM lead_access 
-       WHERE tenant_id = ? AND buyer_lead_id IN (${leadIds.map(() => '?').join(',')})`
+       WHERE tenant_id = ? AND buyer_lead_id IN (${leadIds.map(() => '?').join(',')})`,
     )
       .bind(tenantId, ...leadIds)
       .all<{ buyer_lead_id: string; contacted: boolean }>();
@@ -142,13 +147,13 @@ buyerLeads.get('/my/stats', authMiddleware, enterpriseMiddleware, async (c) => {
   const stats = await c.env.DB.prepare(
     `SELECT COUNT(*) as accessed,
             SUM(CASE WHEN contacted = TRUE THEN 1 ELSE 0 END) as contacted
-     FROM lead_access WHERE tenant_id = ?`
+     FROM lead_access WHERE tenant_id = ?`,
   )
     .bind(user.tenantId)
     .first<Stats>();
 
   const { results: totalAvailable } = await c.env.DB.prepare(
-    "SELECT COUNT(*) as total FROM buyer_leads WHERE status = 'available'"
+    "SELECT COUNT(*) as total FROM buyer_leads WHERE status = 'available'",
   ).all<{ total: number }>();
 
   return c.json({
@@ -174,7 +179,7 @@ buyerLeads.get('/:id', authMiddleware, enterpriseMiddleware, async (c) => {
 
   // Registrar acesso (se não existir)
   const existingAccess = await c.env.DB.prepare(
-    'SELECT id FROM lead_access WHERE tenant_id = ? AND buyer_lead_id = ?'
+    'SELECT id FROM lead_access WHERE tenant_id = ? AND buyer_lead_id = ?',
   )
     .bind(user.tenantId, id)
     .first();
@@ -183,7 +188,7 @@ buyerLeads.get('/:id', authMiddleware, enterpriseMiddleware, async (c) => {
     const accessId = crypto.randomUUID();
     await c.env.DB.prepare(
       `INSERT INTO lead_access (id, tenant_id, buyer_lead_id, user_id)
-       VALUES (?, ?, ?, ?)`
+       VALUES (?, ?, ?, ?)`,
     )
       .bind(accessId, user.tenantId, id, user.sub)
       .run();
@@ -202,7 +207,7 @@ buyerLeads.post('/:id/contact', authMiddleware, enterpriseMiddleware, async (c) 
 
   await c.env.DB.prepare(
     `UPDATE lead_access SET contacted = TRUE, contact_notes = COALESCE(?, contact_notes)
-     WHERE tenant_id = ? AND buyer_lead_id = ?`
+     WHERE tenant_id = ? AND buyer_lead_id = ?`,
   )
     .bind(data.notes || null, user.tenantId, id)
     .run();
@@ -217,7 +222,7 @@ buyerLeads.post('/:id/contact', authMiddleware, enterpriseMiddleware, async (c) 
 // GET /api/buyer-leads/admin - Listar todos (SuperAdmin)
 buyerLeads.get('/admin', superAuthMiddleware, async (c) => {
   const { results } = await c.env.DB.prepare(
-    'SELECT * FROM buyer_leads ORDER BY captured_at DESC LIMIT 100'
+    'SELECT * FROM buyer_leads ORDER BY captured_at DESC LIMIT 100',
   ).all<BuyerLead>();
 
   return c.json({ leads: results });
@@ -232,13 +237,15 @@ buyerLeads.get('/admin/stats', superAuthMiddleware, async (c) => {
     total_contacted: number;
   }
 
-  const stats = await c.env.DB.prepare(`
+  const stats = await c.env.DB.prepare(
+    `
     SELECT 
       (SELECT COUNT(*) FROM buyer_leads) as total,
       (SELECT COUNT(*) FROM buyer_leads WHERE status = 'available') as available,
       (SELECT COUNT(*) FROM lead_access) as total_accessed,
       (SELECT COUNT(*) FROM lead_access WHERE contacted = TRUE) as total_contacted
-  `).first<AdminStats>();
+  `,
+  ).first<AdminStats>();
 
   return c.json(stats);
 });
@@ -257,7 +264,7 @@ buyerLeads.post('/admin', superAuthMiddleware, async (c) => {
     `INSERT INTO buyer_leads (
        id, name, phone, email, source, interest_type, property_type,
        city, state, neighborhood, budget_min, budget_max, bedrooms, notes, ai_score
-     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   )
     .bind(
       id,
@@ -274,7 +281,7 @@ buyerLeads.post('/admin', superAuthMiddleware, async (c) => {
       data.budget_max || null,
       data.bedrooms || null,
       data.notes || null,
-      data.ai_score || 50
+      data.ai_score || 50,
     )
     .run();
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { AppView, Tenant } from '../../types';
-import { MOCK_TENANTS } from '../../constants';
+import { Tenant } from '@shared/types';
+import { AppView } from '@/types/ui';
+import { MOCK_TENANTS } from '@/constants';
 import {
   LayoutDashboard,
   Users,

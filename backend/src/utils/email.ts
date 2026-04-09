@@ -1,4 +1,4 @@
-import { Bindings } from '../types';
+import { Bindings } from '../bindings';
 import { createDatadogLogger } from './datadog';
 
 export async function sendEmail(env: Bindings, to: string, subject: string, html: string) {

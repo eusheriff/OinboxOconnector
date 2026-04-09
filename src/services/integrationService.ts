@@ -1,3 +1,5 @@
+import { authStorage } from '../lib/authStorage';
+
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.oinbox.oconnector.tech/api';
 
 export const uploadImageToCloudflare = async (file: File): Promise<string> => {
@@ -5,8 +7,8 @@ export const uploadImageToCloudflare = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('file', file);
 
-    const tenantId = localStorage.getItem('oconnector_tenant_id') || 'tenant-demo';
-    const token = localStorage.getItem('oinbox_token');
+    const tenantId = authStorage.getTenantId();
+    const token = authStorage.getToken();
     const headers: Record<string, string> = {
       'x-tenant-id': tenantId,
     };
@@ -46,8 +48,8 @@ export const processStripeSubscription = async (planName: string, cycle: 'monthl
     if (!response.ok) {
       throw new Error(
         '[Modo Demo] O sistema redirecionaria para o Stripe Checkout (Plano: ' +
-          planName +
-          '). \n\nVerifique se o Worker está rodando.',
+        planName +
+        '). \n\nVerifique se o Worker está rodando.',
       );
     }
 

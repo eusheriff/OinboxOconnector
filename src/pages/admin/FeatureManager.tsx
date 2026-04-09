@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ToggleLeft, Plus, Trash2, Save } from 'lucide-react';
 
-import { useToast } from '../../contexts/ToastContext';
+import { useToast } from '@/contexts/ToastContext';
 
 interface FeatureFlag {
   key: string;
@@ -110,13 +110,13 @@ const FeatureManager: React.FC = () => {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold text-white flex items-center gap-3">
-          <ToggleLeft className="text-purple-400" />
+        <h2 className="text-3xl font-bold text-foreground flex items-center gap-3">
+          <ToggleLeft className="text-purple-500" />
           Feature Flags
         </h2>
         <button
           onClick={() => setIsCreating(true)}
-          className="bg-primary hover:bg-primary/90 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg flex items-center gap-2"
         >
           <Plus size={20} /> Nova Feature
         </button>
@@ -124,25 +124,25 @@ const FeatureManager: React.FC = () => {
 
       {isCreating && (
         <div className="bg-card p-6 rounded-xl border border-border mb-6">
-          <h3 className="text-xl font-bold text-white mb-4">Nova Feature Flag</h3>
+          <h3 className="text-xl font-bold text-foreground mb-4">Nova Feature Flag</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <input
               type="text"
               placeholder="Chave (ex: new_dashboard)"
-              className="bg-background text-white p-3 rounded border border-border"
+              className="bg-background text-foreground p-3 rounded border border-border"
               value={newFlag.key}
               onChange={(e) => setNewFlag({ ...newFlag, key: e.target.value })}
             />
             <input
               type="text"
               placeholder="Descrição"
-              className="bg-background text-white p-3 rounded border border-border"
+              className="bg-background text-foreground p-3 rounded border border-border"
               value={newFlag.description}
               onChange={(e) => setNewFlag({ ...newFlag, description: e.target.value })}
             />
           </div>
           <div className="flex items-center gap-4 mb-4">
-            <label className="flex items-center gap-2 text-white cursor-pointer">
+            <label className="flex items-center gap-2 text-foreground cursor-pointer">
               <input
                 type="checkbox"
                 checked={newFlag.is_enabled}
@@ -155,7 +155,7 @@ const FeatureManager: React.FC = () => {
           <div className="flex justify-end gap-2">
             <button
               onClick={() => setIsCreating(false)}
-              className="text-gray-400 hover:text-white px-4 py-2"
+              className="text-muted-foreground hover:text-foreground px-4 py-2"
             >
               Cancelar
             </button>
@@ -170,8 +170,8 @@ const FeatureManager: React.FC = () => {
       )}
 
       <div className="bg-card rounded-xl border border-border overflow-hidden">
-        <table className="w-full text-left text-gray-300">
-          <thead className="bg-slate-700 text-gray-100 uppercase text-sm">
+        <table className="w-full text-left">
+          <thead className="bg-muted/50 text-muted-foreground uppercase text-sm">
             <tr>
               <th className="p-4">Chave</th>
               <th className="p-4">Descrição</th>
@@ -179,14 +179,14 @@ const FeatureManager: React.FC = () => {
               <th className="p-4">Ações</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-700">
+          <tbody className="divide-y divide-border">
             {flags.map((flag) => (
-              <tr key={flag.key} className="hover:bg-slate-750 transition-colors">
-                <td className="p-4 font-mono text-blue-300">{flag.key}</td>
-                <td className="p-4">{flag.description}</td>
+              <tr key={flag.key} className="hover:bg-muted/30 transition-colors">
+                <td className="p-4 font-mono text-blue-600 dark:text-blue-400">{flag.key}</td>
+                <td className="p-4 text-foreground">{flag.description}</td>
                 <td className="p-4">
                   <span
-                    className={`px-2 py-1 rounded text-xs font-bold ${flag.is_enabled ? 'bg-green-900 text-green-200' : 'bg-gray-700 text-gray-300'}`}
+                    className={`px-2 py-1 rounded text-xs font-bold ${flag.is_enabled ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' : 'bg-muted text-muted-foreground dark:bg-gray-800 dark:text-gray-400'}`}
                   >
                     {flag.is_enabled ? 'Ativo' : 'Inativo'}
                   </span>

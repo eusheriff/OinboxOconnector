@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Platform } from '../../types';
+import React, { useState, useEffect } from 'react';
+import { Platform } from '@shared/types';
 import {
   Upload,
   Sparkles,
@@ -20,11 +20,15 @@ import {
   Trash2,
   TrendingUp,
   Key,
+  Globe,
 } from 'lucide-react';
-import { analyzePropertyImage } from '../../services/geminiService';
-import { apiService } from '../../services/apiService';
-import { uploadImageToCloudflare } from '../../services/integrationService';
-import { useToast } from '../../contexts/ToastContext';
+import { analyzePropertyImage } from '@/services/openaiService';
+import { apiService } from '@/services/apiService';
+import { uploadImageToCloudflare } from '@/services/integrationService';
+import { useToast } from '@/contexts/ToastContext';
+import PortalSelector from '@/components/Portals/PortalSelector';
+import PublicationStatusDisplay from '@/components/Portals/PublicationStatus';
+import { PortalConfig, PropertyPublication } from '@/types';
 
 const ListingForm: React.FC = () => {
   const { addToast } = useToast();
@@ -46,6 +50,28 @@ const ListingForm: React.FC = () => {
   const [isPosting, setIsPosting] = useState(false);
   const [success, setSuccess] = useState(false);
   const [pendingAnalysisFile, setPendingAnalysisFile] = useState<File | null>(null);
+
+  // Novos estados para publicação em lote
+  const [portalConfigs, setPortalConfigs] = useState<PortalConfig[]>([]);
+  const [publications, setPublications] = useState<PropertyPublication[]>([]);
+  const [showPublicationStatus, setShowPublicationStatus] = useState(false);
+  const [publishedPropertyId, setPublishedPropertyId] = useState<string | null>(null);
+
+  // Carregar configurações de portais ao montar o componente
+  useEffect(() => {
+    loadPortalConfigs();
+  }, []);
+
+  const loadPortalConfigs = async () => {
+    try {
+      const response: any = await apiService.getPortalConfigs();
+      if (response.success) {
+        setPortalConfigs(response.configs || []);
+      }
+    } catch (error) {
+      console.error('Erro ao carregar configurações de portais:', error);
+    }
+  };
 
   const platforms = [
     {
@@ -150,23 +176,70 @@ const ListingForm: React.FC = () => {
     );
   };
 
-  const handleSelectAllPlatforms = () => {
-    if (selectedPlatforms.length === platforms.length) {
-      setSelectedPlatforms([]);
-    } else {
-      setSelectedPlatforms(platforms.map((p) => p.id));
-    }
-  };
+  // PortalSelector já tem "Selecionar Todos" embutido — este handler é redundante
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (selectedPlatforms.length === 0) {
+      addToast('warning', 'Selecione ao menos um portal para publicação');
+      return;
+    }
+
     setIsPosting(true);
-    // Simula delay de API e POST para múltiplos endpoints
-    setTimeout(() => {
+
+    try {
+      // 1. Salvar o imóvel no banco de dados
+      const propertyData = {
+        title: formData.title,
+        listing_type: formData.listingType,
+        type: formData.type,
+        location: formData.location,
+        features: formData.features.split(',').map((f) => f.trim()).filter(Boolean),
+        price: parseFloat(formData.price.replace(/[^0-9.-]+/g, '') || '0'),
+        description: formData.description,
+        image_url: formData.images[0] || null,
+        publish_to_portals: true,
+      };
+
+      const response: any = await apiService.createProperty(propertyData);
+
+      if (!response.success) {
+        throw new Error(response.error || 'Falha ao criar imóvel');
+      }
+
+      const propertyId = response.id;
+      setPublishedPropertyId(propertyId);
+
+      // 2. Publicar em lote nos portais selecionados
+      const publishResult: any = await apiService.bulkPublishProperty(propertyId, selectedPlatforms);
+
+      if (publishResult.success) {
+        addToast(
+          'success',
+          `Imóvel publicado com sucesso em ${publishResult.successful} de ${publishResult.total} portais!`,
+        );
+
+        // 3. Carregar status de publicações
+        const publicationsResponse: any = await apiService.getPropertyPublications(propertyId);
+        if (publicationsResponse.success) {
+          setPublications(publicationsResponse.publications || []);
+          setShowPublicationStatus(true);
+        }
+
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 4000);
+      } else {
+        addToast(
+          'warning',
+          `Imóvel criado, mas houve erros na publicação: ${publishResult.failed} falha(s)`,
+        );
+      }
+    } catch (error) {
+      addToast('error', `Erro ao publicar imóvel: ${(error as Error).message}`);
+    } finally {
       setIsPosting(false);
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 4000);
-    }, 2500);
+    }
   };
 
   return (
@@ -252,43 +325,21 @@ const ListingForm: React.FC = () => {
               </div>
             </div>
 
-            {/* Platform Selection */}
-            <div className="bg-gray-50 p-5 rounded-xl border border-gray-200">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-sm font-bold text-slate-700 uppercase tracking-wide">
-                  Canais de Destino
-                </h3>
-                <button
-                  type="button"
-                  onClick={handleSelectAllPlatforms}
-                  className="text-xs text-primary font-medium hover:underline"
-                >
-                  {selectedPlatforms.length === platforms.length ? 'Desmarcar' : 'Selecionar Todos'}
-                </button>
-              </div>
-              <div className="space-y-2 max-h-[300px] overflow-y-auto pr-1">
-                {platforms.map((p) => (
-                  <label
-                    key={p.id}
-                    className={`flex items-center p-3 rounded-lg border cursor-pointer transition-all ${selectedPlatforms.includes(p.id) ? 'bg-white border-blue-500 shadow-sm ring-1 ring-primary' : 'bg-white border-gray-200 hover:border-blue-300'}`}
-                  >
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 text-primary rounded focus:ring-primary mr-3"
-                      checked={selectedPlatforms.includes(p.id)}
-                      onChange={() => togglePlatform(p.id)}
-                    />
-                    <div className={`p-1.5 rounded-md mr-3 ${p.color}`}>
-                      <p.icon className="w-4 h-4" />
-                    </div>
-                    <span className="font-medium text-slate-700 text-sm">{p.label}</span>
-                  </label>
-                ))}
-              </div>
-              <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-center text-gray-400">
-                Total de canais selecionados: {selectedPlatforms.length}
-              </div>
-            </div>
+            {/* Platform Selection - Usando novo componente */}
+            <PortalSelector
+              selectedPortals={selectedPlatforms}
+              onTogglePortal={(portalId) =>
+                setSelectedPlatforms((prev) =>
+                  prev.includes(portalId)
+                    ? prev.filter((p) => p !== portalId)
+                    : [...prev, portalId],
+                )
+              }
+              onSelectAll={() => {
+                // Lógica handled in PortalSelector
+              }}
+              portalConfigs={portalConfigs}
+            />
           </div>
 
           {/* Right Column - Data (8 cols) */}
@@ -476,12 +527,21 @@ const ListingForm: React.FC = () => {
                 <div className="bg-green-100 p-1 rounded-full">
                   <Check className="w-4 h-4" />
                 </div>
-                <div>
-                  <p className="font-bold">Sucesso!</p>
+                <div className="flex-1">
+                  <p className="font-bold">Imóvel Publicado!</p>
                   <p className="text-sm">
-                    Seu imóvel está sendo processado e aparecerá em breve no Instagram, Facebook e
-                    Portais selecionados.
+                    Seu imóvel foi enviado para publicação nos portais selecionados.
                   </p>
+
+                  {/* Status de Publicações */}
+                  {showPublicationStatus && publications.length > 0 && (
+                    <div className="mt-4">
+                      <h4 className="text-sm font-bold mb-2 text-green-900">
+                        Status de Publicação:
+                      </h4>
+                      <PublicationStatusDisplay publications={publications} />
+                    </div>
+                  )}
                 </div>
               </div>
             )}

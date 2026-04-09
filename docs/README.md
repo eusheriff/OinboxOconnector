@@ -1,0 +1,48 @@
+# Oinbox Documentation
+
+Documentation site built with [Fumadocs](https://fumadocs.dev/).
+
+## Getting Started
+
+```bash
+cd docs
+npm install
+npm run dev
+```
+
+Open [http://localhost:3001](http://localhost:3001).
+
+## Structure
+
+```
+docs/
+├── content/docs/          # MDX documentation
+│   ├── index.mdx          # Home page
+│   ├── getting-started/   # Overview, installation, config
+│   ├── architecture/      # System overview, database, security
+│   ├── backend/           # API reference, services
+│   ├── frontend/          # React structure, components
+│   ├── features/          # AI, CRM, Marketing
+│   ├── deployment/        # Cloudflare deploy guide
+│   └── guides/            # Troubleshooting
+├── app/                   # Next.js App Router
+│   ├── layout.tsx         # Root layout with Fumadocs provider
+│   ├── page.tsx           # Home page
+│   └── [[...slug]]/       # Dynamic doc pages
+└── components/            # Index page and layouts
+```
+
+## Build
+
+```bash
+npm run build
+npm run start
+```
+
+## Deploy
+
+Deploy to Cloudflare Pages:
+
+```bash
+npx wrangler pages deploy .vercel/output/static --project-name=oinbox-docs
+```

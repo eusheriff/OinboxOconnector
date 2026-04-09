@@ -27,25 +27,25 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-screen bg-background flex flex-col justify-center py-12 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center mb-8">
         <div
           onClick={onBack}
           className="mx-auto bg-primary w-12 h-12 rounded-xl flex items-center justify-center mb-4 cursor-pointer hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20"
         >
-          <Building2 className="w-7 h-7 text-white" />
+          <Building2 className="w-7 h-7 text-primary-foreground" />
         </div>
         <h2 className="text-3xl font-extrabold text-foreground tracking-tight">Acesse sua conta</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Ou{' '}
-          <button onClick={onBack} className="font-medium text-primary hover:text-blue-500">
+          <button onClick={onBack} className="font-medium text-primary hover:text-primary/80">
             volte para a página inicial
           </button>
         </p>
       </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-4 shadow-xl shadow-slate-200 sm:rounded-xl sm:px-10 border border-gray-200">
+        <div className="bg-card py-8 px-4 shadow-xl sm:rounded-xl sm:px-10 border border-border">
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-bold text-foreground">
@@ -53,7 +53,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
               </label>
               <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                  <Mail className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <input
                   id="email"
@@ -62,7 +62,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="appearance-none block w-full pl-10 px-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm transition-all bg-white text-foreground font-medium"
+                  className="appearance-none block w-full pl-10 px-3 py-3 border border-border rounded-lg shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm transition-all bg-background text-foreground font-medium"
                   placeholder="voce@imobiliaria.com"
                 />
               </div>
@@ -74,7 +74,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
               </label>
               <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                  <Lock className="h-5 w-5 text-muted-foreground" />
                 </div>
                 <input
                   id="password"
@@ -83,13 +83,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="appearance-none block w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm transition-all bg-white text-foreground font-medium"
+                  className="appearance-none block w-full pl-10 pr-10 py-3 border border-border rounded-lg shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm transition-all bg-background text-foreground font-medium"
                   placeholder="••••••••"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground"
                 >
                   {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
@@ -102,18 +102,18 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
                   id="remember-me"
                   name="remember-me"
                   type="checkbox"
-                  className="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded bg-white"
+                  className="h-4 w-4 text-primary focus:ring-primary border-border rounded bg-background"
                 />
                 <label
                   htmlFor="remember-me"
-                  className="ml-2 block text-sm text-slate-700 font-medium"
+                  className="ml-2 block text-sm text-foreground font-medium"
                 >
                   Lembrar
                 </label>
               </div>
 
               <div className="text-sm">
-                <a href="#" className="font-bold text-primary hover:text-blue-500">
+                <a href="#" className="font-bold text-primary hover:text-primary/80">
                   Esqueceu a senha?
                 </a>
               </div>
@@ -123,7 +123,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-md shadow-primary/20 text-sm font-bold text-white bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-70"
+                className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-md shadow-primary/20 text-sm font-bold text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-70"
               >
                 {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Entrar no Dashboard'}
                 {!isLoading && <ArrowRight className="w-4 h-4" />}
@@ -134,14 +134,14 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
           <div className="mt-6">
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-300" />
+                <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-white text-gray-500">Área do Cliente</span>
+                <span className="px-2 bg-card text-muted-foreground">Área do Cliente</span>
               </div>
             </div>
 
-            <div className="mt-6 bg-blue-50 p-4 rounded-lg border border-blue-100 flex gap-3 items-start">
+            <div className="mt-6 bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-100 dark:border-blue-900 flex gap-3 items-start">
               <HelpCircle className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
               <div className="text-sm text-muted-foreground">
                 <p className="font-bold text-foreground mb-1">Não tem acesso ainda?</p>

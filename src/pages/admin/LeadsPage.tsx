@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Badge } from '../../components/UI/badge';
-import { Button } from '../../components/UI/button';
-import { LeadStatusBadge } from '../../components/LeadStatusBadge';
+import { Badge } from '@/components/UI/badge';
+import { Button } from '@/components/UI/button';
+import { LeadStatusBadge } from '@/components/LeadStatusBadge';
+import { apiService } from '@/services/apiService';
 
 interface Lead {
   id: string;
@@ -30,8 +31,10 @@ export function LeadsPage() {
       if (filter !== 'all') {
         url += `&status=${filter}`;
       }
-      
-      const res = await fetch(url);
+
+      const res = await fetch(url, {
+        headers: apiService.getHeaders(),
+      });
       const data = (await res.json()) as { leads: Lead[] };
       if (data.leads) {
         setLeads(data.leads);
@@ -48,15 +51,24 @@ export function LeadsPage() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Gestão de Leads</h1>
         <div className="flex gap-2">
-           <Button variant={filter === 'all' ? 'default' : 'outline'} onClick={() => setFilter('all')}>
-             Todos
-           </Button>
-           <Button variant={filter === 'new' ? 'default' : 'outline'} onClick={() => setFilter('new')}>
-             Novos
-           </Button>
-           <Button variant={filter === 'qualified' ? 'default' : 'outline'} onClick={() => setFilter('qualified')}>
-             Qualificados
-           </Button>
+          <Button
+            variant={filter === 'all' ? 'default' : 'outline'}
+            onClick={() => setFilter('all')}
+          >
+            Todos
+          </Button>
+          <Button
+            variant={filter === 'new' ? 'default' : 'outline'}
+            onClick={() => setFilter('new')}
+          >
+            Novos
+          </Button>
+          <Button
+            variant={filter === 'qualified' ? 'default' : 'outline'}
+            onClick={() => setFilter('qualified')}
+          >
+            Qualificados
+          </Button>
         </div>
       </div>
 
@@ -85,34 +97,34 @@ export function LeadsPage() {
                     <LeadStatusBadge status={lead.status} />
                   </td>
                   <td className="p-4">
-                    <Badge variant={lead.score > 50 ? 'default' : 'outline'}>
-                      {lead.score}
-                    </Badge>
+                    <Badge variant={lead.score > 50 ? 'default' : 'outline'}>{lead.score}</Badge>
                   </td>
                   <td className="p-4 text-gray-600">
                     {lead.assigned_to ? (
-                        <span className="flex items-center gap-1">
-                            👤 {lead.assigned_to.split('@')[0]}
-                        </span>
+                      <span className="flex items-center gap-1">
+                        👤 {lead.assigned_to.split('@')[0]}
+                      </span>
                     ) : (
-                        <span className="text-gray-400 italic">Não atribuído</span>
+                      <span className="text-gray-400 italic">Não atribuído</span>
                     )}
                   </td>
                   <td className="p-4 text-gray-500 text-sm">
                     {new Date(lead.captured_at).toLocaleDateString('pt-BR')}
                   </td>
                   <td className="p-4">
-                    <Button size="sm" variant="outline">Ver</Button>
+                    <Button size="sm" variant="outline">
+                      Ver
+                    </Button>
                   </td>
                 </tr>
               ))}
-              
+
               {leads.length === 0 && (
-                  <tr>
-                      <td colSpan={7} className="p-8 text-center text-gray-500">
-                          Nenhum lead encontrado.
-                      </td>
-                  </tr>
+                <tr>
+                  <td colSpan={7} className="p-8 text-center text-gray-500">
+                    Nenhum lead encontrado.
+                  </td>
+                </tr>
               )}
             </tbody>
           </table>

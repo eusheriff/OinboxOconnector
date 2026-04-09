@@ -1,7 +1,9 @@
 name = "oinbox-backend"
 main = "backend/src/index.ts"
 compatibility_date = "2024-03-20"
-account_id = "4be4fb4784e8a314e28ffdcba74abf25"
+
+# account_id deve ser configurado via variável de ambiente CLOUDFLARE_ACCOUNT_ID
+# ou via wrangler login. NAO hardcode aqui.
 
 # Rota personalizada (API)
 routes = [
@@ -9,8 +11,10 @@ routes = [
 ]
 
 [triggers]
-crons = ["0 9 * * 5"] # Toda sexta-feira às 09:00 UTC
+# Autopilot: Roda a cada 10 minutos (Seg-Sex, 11h-23h UTC = 8h-20h Brasil)
+crons = ["*/10 11-23 * * 1-5"]
 
+# database_id de producao — NAO commitar em repositorios publicos
 [[d1_databases]]
 binding = "DB"
 database_name = "oinbox-db"
@@ -28,11 +32,17 @@ STRIPE_PRICE_EXTRA_SEAT = "price_1SnTGCBGBVDzrAhzuL7ICFwJ"
 STRIPE_PRICE_EXTRA_AI = "price_1SnTGPBGBVDzrAhzL7GPpFqT"
 STRIPE_PRICE_PRO = "price_1SnQxcBGBVDzrAhzxO2rdJ31"
 STRIPE_PRICE_BASIC = "price_1SnQxUBGBVDzrAhzlMMZwDjM"
-# API Keys movidas para secrets (wrangler secret put GOOGLE_PLACES_API_KEY / GOOGLE_GEMINI_API_KEY)
+# API Keys e segredos devem ser configurados via wrangler secret put:
+#   wrangler secret put JWT_SECRET
+#   wrangler secret put OPENAI_API_KEY
+#   wrangler secret put STRIPE_SECRET_KEY
+#   wrangler secret put STRIPE_WEBHOOK_SECRET
+#   wrangler secret put EVOLUTION_API_KEY
+#   wrangler secret put GOOGLE_PLACES_API_KEY
 
 [env.production]
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "oinbox-db"
-database_id = "567a1b9f-6f59-4a6b-953e-89ba1eda2b74"
-
+# database_id de producao deve ser configurado via variavel de ambiente
+# database_id = "USE_ENV_VAR_D1_PROD_ID"

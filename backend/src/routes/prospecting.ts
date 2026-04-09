@@ -1,12 +1,14 @@
 import { Hono } from 'hono';
-import { Bindings } from '../types';
+import { Bindings } from '../bindings';
 
 const app = new Hono<{ Bindings: Bindings }>();
 
 // GET /api/admin/prospects - Listar prospects salvos
 app.get('/', async (c) => {
   try {
-    const prospects = await c.env.DB.prepare('SELECT * FROM prospects ORDER BY created_at DESC').all();
+    const prospects = await c.env.DB.prepare(
+      'SELECT * FROM prospects ORDER BY created_at DESC',
+    ).all();
     return c.json(prospects.results);
   } catch (error) {
     return c.json({ error: 'Falha ao buscar prospects' }, 500);
@@ -21,7 +23,7 @@ app.post('/', async (c) => {
   try {
     await c.env.DB.prepare(
       `INSERT INTO prospects (id, google_place_id, name, address, phone, rating, website, status, ai_analysis)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
       .bind(
         id,
@@ -32,7 +34,7 @@ app.post('/', async (c) => {
         body.rating || 0,
         body.website || '',
         'New',
-        body.ai_analysis || null
+        body.ai_analysis || null,
       )
       .run();
 
@@ -46,7 +48,7 @@ app.post('/', async (c) => {
 // POST /api/admin/prospects/search - Buscar no Google Places (REAL)
 app.post('/search', async (c) => {
   const { query } = await c.req.json();
-  
+
   if (!query) {
     return c.json({ error: 'Query is required' }, 400);
   }
@@ -58,7 +60,7 @@ app.post('/search', async (c) => {
 
   try {
     const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${GOOGLE_API_KEY}`;
-    
+
     const response = await fetch(url);
     const data: any = await response.json();
 
@@ -77,7 +79,7 @@ app.post('/search', async (c) => {
       geometry: place.geometry,
       icon: place.icon,
       formatted_phone_number: null, // Text Search não retorna telefone direto, precisaria de Place Details
-      website: null // Place Details necessario para website
+      website: null, // Place Details necessario para website
     }));
 
     return c.json({ results, status: data.status });
@@ -90,22 +92,29 @@ app.post('/search', async (c) => {
 // POST /api/admin/prospects/analyze - Gerar Pitch com IA
 app.post('/analyze', async (c) => {
   const { id } = await c.req.json();
-  const GEMINI_KEY = c.env.GOOGLE_GEMINI_API_KEY;
+  const AGENT_HUB_URL = 'https://agent-hub.oconnector.tech/api/skill/generate-pitch';
 
   try {
-    const lead = await c.env.DB.prepare('SELECT * FROM prospects WHERE id = ?').bind(id).first<any>();
+    const lead = await c.env.DB.prepare('SELECT * FROM prospects WHERE id = ?')
+      .bind(id)
+      .first<any>();
     if (!lead) return c.json({ error: 'Lead not found' }, 404);
 
-    const { generateSalesPitch } = await import('../services/geminiService');
-    const pitch = await generateSalesPitch(GEMINI_KEY || '', {
-        name: lead.name,
-        rating: lead.rating,
-        address: lead.address
+    const hubRes = await fetch(AGENT_HUB_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lead }),
     });
 
+    const hubData = (await hubRes.json()) as any;
+    const pitch =
+      hubData.result?.response ||
+      hubData.response ||
+      `Olá ${lead.name}, gostaria de apresentar o OInbox. Posso te mandar um vídeo?`;
+
     await c.env.DB.prepare('UPDATE prospects SET ai_pitch = ?, ai_analysis = ? WHERE id = ?')
-        .bind(pitch, 'Pitch Generated', id)
-        .run();
+      .bind(pitch, 'Pitch Generated', id)
+      .run();
 
     return c.json({ success: true, pitch });
   } catch (error) {
@@ -117,24 +126,28 @@ app.post('/analyze', async (c) => {
 // POST /api/admin/prospects/invite - Enviar Convite (Simulação/Mock do Envio)
 app.post('/invite', async (c) => {
   const { id } = await c.req.json();
-  
+
   try {
-    const lead = await c.env.DB.prepare('SELECT * FROM prospects WHERE id = ?').bind(id).first<any>();
+    const lead = await c.env.DB.prepare('SELECT * FROM prospects WHERE id = ?')
+      .bind(id)
+      .first<any>();
     if (!lead) return c.json({ error: 'Lead not found' }, 404);
-    
+
     if (!lead.ai_pitch) {
-        return c.json({ error: 'Generate pitch first' }, 400);
+      return c.json({ error: 'Generate pitch first' }, 400);
     }
 
     // TODO: Integrar com Evolution API Real quando credenciais estiverem validadas
     // await whatsappService.sendText(lead.phone, lead.ai_pitch);
-    
+
     // Log replaced by structured logger or removed for prod
     // console.log(`[MOCK EMAIL/ZAP] Sending to ${lead.name}: ${lead.ai_pitch}`);
 
-    await c.env.DB.prepare("UPDATE prospects SET status = 'Contacted', last_contact_at = ? WHERE id = ?")
-        .bind(new Date().toISOString(), id)
-        .run();
+    await c.env.DB.prepare(
+      "UPDATE prospects SET status = 'Contacted', last_contact_at = ? WHERE id = ?",
+    )
+      .bind(new Date().toISOString(), id)
+      .run();
 
     return c.json({ success: true, status: 'Contacted' });
   } catch (error) {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CreditCard, Check, ExternalLink } from 'lucide-react';
-import { useToast } from '../../contexts/ToastContext';
+import { useToast } from '@/contexts/ToastContext';
 
 interface Plan {
   id: string;

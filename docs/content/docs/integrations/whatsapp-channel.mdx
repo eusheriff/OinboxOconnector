@@ -1,0 +1,97 @@
+# WhatsApp Channel Flow
+
+## Arquitetura
+
+```
+Cliente WhatsApp → Evolution API (BaileYS) → Webhook → Oinbox Worker → D1 → IA → Resposta
+```
+
+## Componentes
+
+### Evolution API (Self-Hosted)
+
+Gateway WhatsApp baseado em BaileYS. Cada tenant do Oinbox tem uma **instância dedicada**:
+
+- Nome da instância: `tenant_{tenantId}`
+- Webhook: `https://api.oinbox.oconnector.tech/api/whatsapp/webhook`
+- Eventos subscribed: `messages.upsert`, `messages.update`, `messages.media`, `connection.update`, `qrcode.updated`
+
+### Webhook Handler
+
+**Arquivo:** `backend/src/routes/whatsapp.ts`
+
+Fluxo ao receber mensagem:
+
+1. **Parse do payload** — Extrai `instance`, `event`, `data` do webhook
+2. **Resolver tenant** — Nome da instância → `tenant_{tenantId}` → `tenantId`
+3. **Salvar mensagem** — INSERT em `whatsapp_messages` (D1)
+4. **Verificar handover** — Se lead tem `assigned_to`, IA silencia + cria notificação
+5. **Análise de intenção** — `SalesTools.analyzeIntention()` via Agent Hub
+6. **Mover lead** — Atualiza status no pipeline baseado na intenção
+7. **Responder** — Envia resposta via Evolution API + salva em `whatsapp_messages`
+
+### Human Handover
+
+Quando um lead recebe um corretor atribuído (`assigned_to`):
+
+1. IA **silencia** automaticamente
+2. Notificação criada na tabela `notifications`:
+   ```
+   type: 'handover'
+   title: 'Lead respondeu no WhatsApp'
+   message: 'O lead {phone} respondeu e precisa de atenção. A IA foi silenciada.'
+   metadata: { leadId, phone, content }
+   ```
+3. Webhook retorna `{ received: true, action: 'human_handover', notificationId }`
+
+### Resposta Automática (IA)
+
+Se o lead **não tem** corretor atribuído:
+
+1. **SalesTools.analyzeIntention()** → Agent Hub
+   - `INTERESTED` → move para `hot_lead`, gera resposta positiva
+   - `NOT_INTERESTED` → arquiva, gera resposta de encerramento
+   - `SUPPORT` → move para `needs_support`, sem resposta automática
+   - `OTHER` → fallback para Orchestrator
+
+2. **Orchestrator fallback** — `agent-hub.oconnector.tech/v1/hub/orchestrate`
+   - Envia contexto: histórico de mensagens + knowledge base do tenant
+   - Recebe resposta generativa
+
+3. **Envio** — `sendWhatsAppMessage()` via Evolution API
+
+## Rate Limiting e Resiliência
+
+| Mecanismo | Configuração |
+|-----------|-------------|
+| Circuit Breaker (WhatsApp) | 5 falhas → 45s recovery |
+| Circuit Breaker (Agent Hub) | 3 falhas → 90s recovery |
+| Rate Limit (login) | 5 req/min por IP |
+| Timeout (health check) | 3s por dependência |
+
+## Troubleshooting
+
+### Instância desconectada
+
+```bash
+# Verificar status
+GET /api/whatsapp/status
+
+# Reconectar
+POST /api/whatsapp/reconnect
+
+# Gerar novo QR Code
+GET /api/whatsapp/qrcode
+```
+
+### Mensagens não chegando
+
+1. Verificar webhook: Evolution API deve estar apontando para `https://api.oinbox.oconnector.tech/api/whatsapp/webhook`
+2. Verificar logs Datadog: buscar `[WhatsApp Webhook] Received`
+3. Verificar circuit breaker: se aberto, aguardar 90s ou reiniciar worker
+
+### IA não respondendo
+
+1. Verificar health: `GET /api/health` → campo `agentHub`
+2. Se Agent Hub está `error`, verificar status em `agent-hub.oconnector.tech`
+3. Fallback: mensagem padrão é enviada automaticamente

@@ -1,0 +1,60 @@
+---
+title: Configuração de Ambiente
+description: Guia completo de variáveis de ambiente e segredos
+---
+
+# Configuração de Ambiente
+
+O Oinbox utiliza variáveis de ambiente para configuração de serviços externos e segredos.
+
+## Frontend (.env)
+
+| Variável | Descrição | Obrigatório |
+|----------|-----------|-------------|
+| `VITE_API_URL` | URL do backend (dev: http://localhost:8787) | Sim |
+| `VITE_STRIPE_PUBLIC_KEY` | Chave pública do Stripe | Sim (pagamentos) |
+
+## Backend (Cloudflare Secrets)
+
+Em produção, use `wrangler secret put` para configurar:
+
+```bash
+wrangler secret put JWT_SECRET
+wrangler secret put API_KEY          # Gemini API Key
+wrangler secret put STRIPE_SECRET_KEY
+wrangler secret put STRIPE_WEBHOOK_SECRET
+wrangler secret put GOOGLE_PLACES_API_KEY
+wrangler secret put GOOGLE_GEMINI_API_KEY
+wrangler secret put EVOLUTION_API_KEY  # WhatsApp
+```
+
+## Backend (wrangler.toml vars)
+
+Configurados automaticamente no `wrangler.toml`:
+
+```toml
+STRIPE_PRICE_EXTRA_SEAT = "price_1SnTGCBGBVDzrAhzuL7ICFwJ"
+STRIPE_PRICE_EXTRA_AI = "price_1SnTGPBGBVDzrAhzL7GPpFqT"
+STRIPE_PRICE_PRO = "price_1SnQxcBGBVDzrAhzxO2rdJ31"
+STRIPE_PRICE_BASIC = "price_1SnQxUBGBVDzrAhzlMMZwDjM"
+```
+
+## Evolution API (WhatsApp)
+
+| Variável | Descrição |
+|----------|-----------|
+| `EVOLUTION_API_URL` | URL da instância Evolution API |
+| `EVOLUTION_API_KEY` | API Key da Evolution |
+
+## Segurança
+
+> **Nunca** commite `.env` no repositório. Use `wrangler secret` para produção.
+
+## Domínios
+
+| Ambiente | URL |
+|----------|-----|
+| Frontend Dev | http://localhost:5173 |
+| Backend Dev | http://localhost:8787 |
+| Frontend Prod | https://oinbox.oconnector.tech |
+| Backend Prod | https://api.oinbox.oconnector.tech |

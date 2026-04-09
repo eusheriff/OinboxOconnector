@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X, Save, Loader2 } from 'lucide-react';
-import { useToast } from '../../contexts/ToastContext';
+import { useToast } from '@/contexts/ToastContext';
 
 interface TenantManagementModalProps {
   isOpen: boolean;

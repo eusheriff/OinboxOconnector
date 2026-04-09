@@ -1,6 +1,6 @@
 import React from 'react';
-import { Conversation } from '../../types';
-import { getPlatformIcon } from '../../constants';
+import { Conversation } from '@shared/types';
+import { getPlatformIcon } from '@/constants';
 import { Search } from 'lucide-react';
 
 interface ChatListProps {

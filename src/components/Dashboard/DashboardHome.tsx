@@ -1,5 +1,5 @@
 import React from 'react';
-import { Client, Deal, Property, Conversation, DealStage } from '../../types';
+import { Client, Deal, Property, Conversation, DealStage } from '@shared/types';
 import {
   TrendingUp,
   Users,

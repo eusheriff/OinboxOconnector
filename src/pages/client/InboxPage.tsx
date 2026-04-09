@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import ChatList from '../../components/Inbox/ChatList';
-import ChatWindow from '../../components/Inbox/ChatWindow';
-import { Conversation, Message, Platform } from '../../types';
-import { apiService } from '../../services/apiService';
+import ChatList from '@/components/Inbox/ChatList';
+import ChatWindow from '@/components/Inbox/ChatWindow';
+import { Conversation, Message, Platform } from '@shared/types';
+import { apiService } from '@/services/apiService';
 import { Loader2, MessageCircle } from 'lucide-react';
-import { useToast } from '../../contexts/ToastContext';
+import { useToast } from '@/contexts/ToastContext';
 
 const InboxPage: React.FC = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);

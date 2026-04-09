@@ -16,8 +16,8 @@ import {
   Settings2,
   RefreshCw,
 } from 'lucide-react';
-import { OLLAMA_MODELS } from '../../constants';
-import { AIConfig } from '../../types';
+import { OLLAMA_MODELS } from '@/constants';
+import { AIConfig } from '@shared/types';
 
 type AuthMethod = 'qr' | 'credentials' | 'oauth';
 
@@ -123,7 +123,7 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
     return saved
       ? JSON.parse(saved)
       : {
-          provider: 'gemini',
+          provider: 'openai',
           ollamaBaseUrl: 'http://localhost:11434',
           selectedModel: 'llama3.1:8b',
           visionModel: 'qwen3-vl:8b',
@@ -168,8 +168,8 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
       {/* Provider Selection */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div
-          onClick={() => saveAiConfig({ ...aiConfig, provider: 'gemini' })}
-          className={`p-6 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-4 ${aiConfig.provider === 'gemini' ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-gray-200 hover:bg-gray-50'}`}
+          onClick={() => saveAiConfig({ ...aiConfig, provider: 'openai' })}
+          className={`p-6 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-4 ${aiConfig.provider === 'openai' ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-gray-200 hover:bg-gray-50'}`}
         >
           <div className="bg-white p-3 rounded-full shadow-sm">
             <SparklesIcon className="w-6 h-6 text-primary" />
@@ -179,7 +179,7 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
             <p className="text-sm text-muted-foreground mt-1">
               Nuvem (Cloud). Mais rápido, requer chave de API. Ideal para uso em produção web.
             </p>
-            {aiConfig.provider === 'gemini' && (
+            {aiConfig.provider === 'openai' && (
               <div className="mt-3 flex items-center gap-1 text-xs font-bold text-blue-700">
                 <CheckCircle2 className="w-4 h-4" /> Selecionado
               </div>

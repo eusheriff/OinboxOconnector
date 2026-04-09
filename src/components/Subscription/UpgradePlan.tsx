@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 // Actually, App.tsx passes nothing to UpgradePlan.
 // Let's use localStorage or basic User object if useAuth is missing.
 // Searching for useAuth location... assuming default path was wrong.
-import { apiService } from '../../services/apiService';
+import { apiService } from '@/services/apiService';
 import { CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
 
 // Temporary mock hook if useAuth doesn't exist, will verify later

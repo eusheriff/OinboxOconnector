@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { apiService } from '../../services/apiService';
+import { apiService } from '@/services/apiService';
 
 // Define Interface locally or import if available
 interface Tenant {

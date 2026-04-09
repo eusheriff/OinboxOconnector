@@ -1,14 +1,14 @@
-
 import { Hono } from 'hono';
 import Stripe from 'stripe';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { STRIPE_PLANS } from '../config/stripe';
+import { circuitBreakers } from '../utils/circuitBreaker';
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 app.post('/create-checkout-session', async (c) => {
   const env = c.env;
-  
+
   // LIVE KEY from environment variable
   if (!env.STRIPE_SECRET_KEY) {
     console.error('Missing STRIPE_SECRET_KEY');
@@ -37,31 +37,36 @@ app.post('/create-checkout-session', async (c) => {
       return c.json({ error: 'Invalid interval' }, 400);
     }
 
-    // Create session
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
+    // Create session with circuit breaker protection
+    const session = await circuitBreakers.stripe.execute(async () => {
+      return stripe.checkout.sessions.create({
+        mode: 'subscription',
+        payment_method_types: ['card'],
+        line_items: [
+          {
+            price: priceId,
+            quantity: 1,
+          },
+        ],
+        success_url:
+          successUrl ||
+          'https://oinbox.oconnector.tech/admin/billing/success?session_id={CHECKOUT_SESSION_ID}',
+        cancel_url: cancelUrl || 'https://oinbox.oconnector.tech/admin/billing',
+        client_reference_id: tenantId,
+        customer_email: userEmail,
+        metadata: {
+          tenantId: tenantId,
+          planName: planName,
         },
-      ],
-      success_url: successUrl || 'https://oinbox.oconnector.tech/admin/billing/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: cancelUrl || 'https://oinbox.oconnector.tech/admin/billing',
-      client_reference_id: tenantId,
-      customer_email: userEmail, // Pre-fill email
-      metadata: {
-        tenantId: tenantId,
-        planName: planName,
-      },
-      allow_promotion_codes: true,
+        allow_promotion_codes: true,
+      });
     });
 
     return c.json({ url: session.url });
-  } catch (error: any) {
-    console.error('Stripe Checkout Error:', error);
-    return c.json({ error: error.message }, 500);
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    console.error('Stripe Checkout Error:', errorMessage);
+    return c.json({ error: errorMessage }, 500);
   }
 });
 

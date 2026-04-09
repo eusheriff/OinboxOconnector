@@ -1,7 +1,9 @@
 import { Hono } from 'hono';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { createDatadogLogger } from '../utils/datadog';
 import { apiService } from '../services/apiService';
+import { authMiddleware } from '../middleware/auth';
+import { PortalRegistry } from '../services/portals';
 
 const portals = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -16,13 +18,16 @@ const escapeXml = (unsafe: string | null | undefined): string => {
     .replace(/'/g, '&apos;');
 };
 
+// Rota pública para feed XML (não precisa de auth)
 portals.get('/feed/:tenantId.xml', async (c) => {
   const tenantId = c.req.param('tenantId');
   const env = c.env;
   const logger = createDatadogLogger(env);
 
   // Fetch tenant details
-  const tenant = await env.DB.prepare('SELECT name, email, website_url, logo_url FROM tenants WHERE id = ?') // Assuming columns exist, if not, fallback to basic
+  const tenant = await env.DB.prepare(
+    'SELECT name, email, website_url, logo_url FROM tenants WHERE id = ?',
+  ) // Assuming columns exist, if not, fallback to basic
     .bind(tenantId)
     .first<{ name: string; email: string; website_url?: string; logo_url?: string }>();
 
@@ -51,12 +56,13 @@ portals.get('/feed/:tenantId.xml', async (c) => {
     xml += '    <PublishDate>' + new Date().toISOString() + '</PublishDate>\n';
     xml += '    <Provider>Oinbox</Provider>\n';
     if (tenant) {
-        xml += '    <ContactInfo>\n';
-        xml += '      <Name>' + escapeXml(tenant.name) + '</Name>\n';
-        xml += '      <Email>' + escapeXml(tenant.email) + '</Email>\n';
-        if (tenant.website_url) xml += '      <Website>' + escapeXml(tenant.website_url) + '</Website>\n';
-        if (tenant.logo_url) xml += '      <Logo>' + escapeXml(tenant.logo_url) + '</Logo>\n';
-        xml += '    </ContactInfo>\n';
+      xml += '    <ContactInfo>\n';
+      xml += '      <Name>' + escapeXml(tenant.name) + '</Name>\n';
+      xml += '      <Email>' + escapeXml(tenant.email) + '</Email>\n';
+      if (tenant.website_url)
+        xml += '      <Website>' + escapeXml(tenant.website_url) + '</Website>\n';
+      if (tenant.logo_url) xml += '      <Logo>' + escapeXml(tenant.logo_url) + '</Logo>\n';
+      xml += '    </ContactInfo>\n';
     }
     xml += '  </Header>\n';
     xml += '  <Listings>\n';
@@ -222,4 +228,246 @@ portals.post('/api/:tenantId', async (c) => {
   }
 });
 
+// ==========================================
+// ROTAS DE PUBLICAÇÃO EM LOTE (COM AUTH)
+// ==========================================
+
+// Aplicar middleware de auth para todas as rotas abaixo
+const portalsAuth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+portalsAuth.use('/*', authMiddleware);
+
+// Publicação em lote - POST /api/portals/bulk-publish
+portalsAuth.post('/bulk-publish', async (c) => {
+  const user = c.get('user');
+  const tenantId = user.tenantId;
+  const env = c.env;
+  const logger = createDatadogLogger(env);
+
+  const body = await c.req.json<{
+    property_id: string;
+    portal_ids: string[];
+  }>();
+
+  const { property_id, portal_ids } = body;
+
+  if (!property_id || !portal_ids || portal_ids.length === 0) {
+    return c.json({ error: 'property_id e portal_ids são obrigatórios' }, 400);
+  }
+
+  await logger?.info('[Portals] Bulk publish requested', {
+    tenantId,
+    property_id,
+    portal_ids,
+  });
+
+  try {
+    const result = await PortalRegistry.publishToPortals(
+      property_id,
+      tenantId,
+      portal_ids,
+      env,
+    );
+
+    return c.json({
+      success: true,
+      total: result.total,
+      successful: result.successful,
+      failed: result.failed,
+      results: result.results,
+    });
+  } catch (error) {
+    await logger?.error('[Portals] Bulk publish failed', {
+      tenantId,
+      property_id,
+      error,
+    });
+
+    return c.json({
+      error: 'Falha ao publicar em lote',
+      details: (error as Error).message,
+    }, 500);
+  }
+});
+
+// Obter status de publicações de um imóvel - GET /api/portals/publications/:propertyId
+portalsAuth.get('/publications/:propertyId', async (c) => {
+  const user = c.get('user');
+  const tenantId = user.tenantId;
+  const propertyId = c.req.param('propertyId');
+  const env = c.env;
+
+  try {
+    const publications = await env.DB.prepare(
+      `SELECT * FROM property_publications 
+       WHERE property_id = ? AND tenant_id = ?
+       ORDER BY created_at DESC`,
+    )
+      .bind(propertyId, tenantId)
+      .all();
+
+    return c.json({
+      success: true,
+      publications: publications.results || [],
+    });
+  } catch (error) {
+    return c.json({
+      error: 'Falha ao obter publicações',
+      details: (error as Error).message,
+    }, 500);
+  }
+});
+
+// Obter configurações de portais do tenant - GET /api/portals/configs
+portalsAuth.get('/configs', async (c) => {
+  const user = c.get('user');
+  const tenantId = user.tenantId;
+  const env = c.env;
+
+  try {
+    const configs = await env.DB.prepare(
+      `SELECT * FROM portal_configs WHERE tenant_id = ? ORDER BY portal_id`,
+    )
+      .bind(tenantId)
+      .all();
+
+    // Obter lista de todos os portais disponíveis
+    const availablePortals = PortalRegistry.getAvailablePortals();
+
+    return c.json({
+      success: true,
+      configs: configs.results || [],
+      available_portals: availablePortals,
+    });
+  } catch (error) {
+    return c.json({
+      error: 'Falha ao obter configurações',
+      details: (error as Error).message,
+    }, 500);
+  }
+});
+
+// Salvar configuração de portal - POST /api/portals/configs/:portalId
+portalsAuth.post('/configs/:portalId', async (c) => {
+  const user = c.get('user');
+  const tenantId = user.tenantId;
+  const portalId = c.req.param('portalId');
+  const env = c.env;
+  const logger = createDatadogLogger(env);
+
+  const body = await c.req.json<{
+    enabled?: boolean;
+    auth_data?: Record<string, any>;
+    xml_url?: string;
+    webhook_url?: string;
+  }>();
+
+  try {
+    // Verificar se configuração existe
+    const existing = await env.DB.prepare(
+      `SELECT id FROM portal_configs WHERE tenant_id = ? AND portal_id = ?`,
+    )
+      .bind(tenantId, portalId)
+      .first();
+
+    const id = existing ? (existing as any).id : crypto.randomUUID();
+    const now = new Date().toISOString();
+
+    if (existing) {
+      // Atualizar configuração existente
+      await env.DB.prepare(
+        `UPDATE portal_configs 
+         SET enabled = ?, auth_data = ?, xml_url = ?, webhook_url = ?, updated_at = ?
+         WHERE id = ?`,
+      )
+        .bind(
+          body.enabled ? 1 : 0,
+          body.auth_data ? JSON.stringify(body.auth_data) : null,
+          body.xml_url || null,
+          body.webhook_url || null,
+          now,
+          id,
+        )
+        .run();
+    } else {
+      // Criar nova configuração
+      await env.DB.prepare(
+        `INSERT INTO portal_configs (id, tenant_id, portal_id, enabled, auth_data, xml_url, webhook_url, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      )
+        .bind(
+          id,
+          tenantId,
+          portalId,
+          body.enabled ? 1 : 0,
+          body.auth_data ? JSON.stringify(body.auth_data) : null,
+          body.xml_url || null,
+          body.webhook_url || null,
+          now,
+          now,
+        )
+        .run();
+    }
+
+    await logger?.info('[Portals] Config saved', {
+      tenantId,
+      portalId,
+      enabled: body.enabled,
+    });
+
+    return c.json({ success: true, id });
+  } catch (error) {
+    await logger?.error('[Portals] Failed to save config', {
+      tenantId,
+      portalId,
+      error,
+    });
+
+    return c.json({
+      error: 'Falha ao salvar configuração',
+      details: (error as Error).message,
+    }, 500);
+  }
+});
+
+// Validar credenciais de portal - POST /api/portals/validate/:portalId
+portalsAuth.post('/validate/:portalId', async (c) => {
+  const user = c.get('user');
+  const tenantId = user.tenantId;
+  const portalId = c.req.param('portalId');
+  const env = c.env;
+
+  try {
+    const adapter = PortalRegistry.get(portalId);
+    if (!adapter) {
+      return c.json({ error: 'Portal não encontrado', valid: false }, 404);
+    }
+
+    const config = await env.DB.prepare(
+      `SELECT * FROM portal_configs WHERE tenant_id = ? AND portal_id = ?`,
+    )
+      .bind(tenantId, portalId)
+      .first<any>();
+
+    if (!config) {
+      return c.json({ error: 'Portal não configurado', valid: false }, 400);
+    }
+
+    // Parse auth_data se for string JSON
+    if (typeof config.auth_data === 'string') {
+      config.auth_data = JSON.parse(config.auth_data);
+    }
+
+    const isValid = await adapter.validateCredentials(config, env);
+
+    return c.json({ success: true, valid: isValid });
+  } catch (error) {
+    return c.json({
+      error: 'Falha ao validar credenciais',
+      details: (error as Error).message,
+      valid: false,
+    }, 500);
+  }
+});
+
 export default portals;
+export { portalsAuth };

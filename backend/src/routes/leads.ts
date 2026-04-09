@@ -1,56 +1,57 @@
 import { Hono } from 'hono';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { superAuthMiddleware } from '../middleware/auth';
+import { Lead } from '../../../shared/types'; // Importando do Shared
 
 const leads = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 leads.use('*', superAuthMiddleware);
 
-// Types para leads
-interface Lead {
-  id: string;
-  google_place_id?: string;
-  name: string;
-  type?: string;
-  address?: string;
-  phone?: string;
-  email?: string;
-  website?: string;
-  rating?: number;
-  reviews_count: number;
-  score: number;
-  status: string;
-  source: string;
-  captured_at: string;
-  notes?: string;
+// Helper para mapear snake_case do BD para camelCase do Domain
+function mapLeadFromDb(dbLead: any): Lead {
+  return {
+    ...dbLead,
+    googlePlaceId: dbLead.google_place_id,
+    reviewsCount: dbLead.reviews_count,
+    capturedAt: dbLead.captured_at ? new Date(dbLead.captured_at) : new Date(), // Garantir Date object
+    qualifiedAt: dbLead.qualified_at ? new Date(dbLead.qualified_at) : undefined,
+    contactedAt: dbLead.contacted_at ? new Date(dbLead.contacted_at) : undefined,
+    respondedAt: dbLead.responded_at ? new Date(dbLead.responded_at) : undefined,
+    convertedAt: dbLead.converted_at ? new Date(dbLead.converted_at) : undefined,
+    whatsappStatus: dbLead.whatsapp_status,
+    lastMessageAt: dbLead.last_message_at ? new Date(dbLead.last_message_at) : undefined,
+    assignedTo: dbLead.assigned_to,
+    tenantId: dbLead.tenant_id,
+  } as Lead;
 }
 
 // POST /api/leads/maintenance/clean-phones - Rotina de limpeza de telefones antigos
 leads.post('/maintenance/clean-phones', async (c) => {
   try {
-    // 1. Buscar todos os leads com telefone que contenham caracteres não numéricos (exceto null)
-    // D1/SQLite não tem REGEX nativo fácil no WHERE, então pegamos os suspeitos com LIKE ou todos e filtramos no código
     const { results } = await c.env.DB.prepare(
-        "SELECT id, phone FROM leads WHERE phone IS NOT NULL AND (phone LIKE '%(%' OR phone LIKE '%-%' OR phone LIKE '% %')"
-    ).all<Lead>();
+      "SELECT id, phone FROM leads WHERE phone IS NOT NULL AND (phone LIKE '%(%' OR phone LIKE '%-%' OR phone LIKE '% %')",
+    ).all<{ id: string; phone: string }>(); // Tipagem explícita aqui pois não é o objeto Lead completo
 
     let updatedCount = 0;
 
     for (const lead of results) {
-       if (!lead.phone) continue;
-       
-       const cleanPhone = lead.phone.replace(/\D/g, '');
-       
-       if (cleanPhone !== lead.phone) {
-           await c.env.DB.prepare('UPDATE leads SET phone = ? WHERE id = ?')
-               .bind(cleanPhone, lead.id)
-               .run();
-           updatedCount++;
-       }
+      if (!lead.phone) continue;
+
+      const cleanPhone = lead.phone.replace(/\D/g, '');
+
+      if (cleanPhone !== lead.phone) {
+        await c.env.DB.prepare('UPDATE leads SET phone = ? WHERE id = ?')
+          .bind(cleanPhone, lead.id)
+          .run();
+        updatedCount++;
+      }
     }
 
-    return c.json({ success: true, message: `Telefones higienizados: ${updatedCount}`, totalScanned: results.length });
-
+    return c.json({
+      success: true,
+      message: `Telefones higienizados: ${updatedCount}`,
+      totalScanned: results.length,
+    });
   } catch (error) {
     console.error('Clean Phones Error:', error);
     return c.json({ error: 'Falha na rotina de limpeza' }, 500);
@@ -59,65 +60,78 @@ leads.post('/maintenance/clean-phones', async (c) => {
 
 // GET /api/leads - Listar leads com filtros
 leads.get('/', async (c) => {
-  const status = c.req.query('status');
-  const minScore = c.req.query('minScore');
-  const search = c.req.query('search');
-  const limit = parseInt(c.req.query('limit') || '50', 10);
-  const offset = parseInt(c.req.query('offset') || '0', 10);
+  try {
+    const status = c.req.query('status');
+    const minScore = c.req.query('minScore');
+    const search = c.req.query('search');
+    const limit = parseInt(c.req.query('limit') || '50', 10);
+    const offset = parseInt(c.req.query('offset') || '0', 10);
 
-  let sql = 'SELECT * FROM leads WHERE 1=1';
-  const params: (string | number)[] = [];
+    let sql = 'SELECT * FROM leads WHERE 1=1';
+    const params: (string | number)[] = [];
 
-  if (status) {
-    sql += ' AND status = ?';
-    params.push(status);
+    if (status) {
+      sql += ' AND status = ?';
+      params.push(status);
+    }
+
+    if (minScore) {
+      sql += ' AND score >= ?';
+      params.push(parseInt(minScore, 10));
+    }
+
+    if (search) {
+      sql += ' AND (name LIKE ? OR phone LIKE ? OR email LIKE ?)';
+      params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+    }
+
+    sql += ' ORDER BY captured_at DESC LIMIT ? OFFSET ?';
+    params.push(limit, offset);
+
+    // Usamos any aqui porque o retorno do banco é snake_case
+    const { results } = await c.env.DB.prepare(sql)
+      .bind(...params)
+      .all<any>();
+
+    // Mapeamos para o tipo correto do domínio
+    const mappedLeads = results.map(mapLeadFromDb);
+
+    // Count total for pagination
+    let countSql = 'SELECT COUNT(*) as total FROM leads WHERE 1=1';
+    const countParams: (string | number)[] = [];
+
+    if (status) {
+      countSql += ' AND status = ?';
+      countParams.push(status);
+    }
+
+    if (minScore) {
+      countSql += ' AND score >= ?';
+      countParams.push(parseInt(minScore, 10));
+    }
+
+    if (search) {
+      countSql += ' AND (name LIKE ? OR phone LIKE ? OR email LIKE ?)';
+      countParams.push(`%${search}%`, `%${search}%`, `%${search}%`);
+    }
+
+    const total = await c.env.DB.prepare(countSql)
+      .bind(...countParams)
+      .first<number>('total');
+
+    return c.json({
+      leads: mappedLeads,
+      pagination: {
+        total: total || 0,
+        limit,
+        offset,
+        hasMore: offset + mappedLeads.length < (total || 0),
+      },
+    });
+  } catch (error: any) {
+    console.error('Leads List Error:', error);
+    return c.json({ error: error.message || 'Failed to list leads' }, 500);
   }
-
-  if (minScore) {
-    sql += ' AND score >= ?';
-    params.push(parseInt(minScore, 10));
-  }
-
-  if (search) {
-    sql += ' AND (name LIKE ? OR phone LIKE ? OR email LIKE ?)';
-    params.push(`%${search}%`, `%${search}%`, `%${search}%`);
-  }
-
-  sql += ' ORDER BY captured_at DESC LIMIT ? OFFSET ?';
-  params.push(limit, offset);
-
-  const { results } = await c.env.DB.prepare(sql).bind(...params).all<Lead>();
-
-  // Count total for pagination
-  let countSql = 'SELECT COUNT(*) as total FROM leads WHERE 1=1';
-  const countParams: (string | number)[] = [];
-
-  if (status) {
-    countSql += ' AND status = ?';
-    countParams.push(status);
-  }
-
-  if (minScore) {
-    countSql += ' AND score >= ?';
-    countParams.push(parseInt(minScore, 10));
-  }
-
-  if (search) {
-    countSql += ' AND (name LIKE ? OR phone LIKE ? OR email LIKE ?)';
-    countParams.push(`%${search}%`, `%${search}%`, `%${search}%`);
-  }
-
-  const total = await c.env.DB.prepare(countSql).bind(...countParams).first<number>('total');
-
-  return c.json({
-    leads: results,
-    pagination: {
-      total: total || 0,
-      limit,
-      offset,
-      hasMore: offset + results.length < (total || 0),
-    },
-  });
 });
 
 // GET /api/leads/stats - Estatísticas do funil
@@ -133,7 +147,8 @@ leads.get('/stats', async (c) => {
     avg_score: number;
   }
 
-  const stats = await c.env.DB.prepare(`
+  const stats = await c.env.DB.prepare(
+    `
     SELECT 
       COUNT(*) as total,
       SUM(CASE WHEN status = 'new' THEN 1 ELSE 0 END) as new_count,
@@ -144,7 +159,8 @@ leads.get('/stats', async (c) => {
       SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected_count,
       AVG(score) as avg_score
     FROM leads
-  `).first<LeadStats>();
+  `,
+  ).first<LeadStats>();
 
   return c.json({
     funnel: {
@@ -163,15 +179,17 @@ leads.get('/stats', async (c) => {
 // GET /api/leads/:id - Detalhes do lead
 leads.get('/:id', async (c) => {
   const id = c.req.param('id');
-  const lead = await c.env.DB.prepare('SELECT * FROM leads WHERE id = ?').bind(id).first<Lead>();
+  const dbLead = await c.env.DB.prepare('SELECT * FROM leads WHERE id = ?').bind(id).first<any>();
 
-  if (!lead) {
+  if (!dbLead) {
     return c.json({ error: 'Lead não encontrado' }, 404);
   }
 
+  const lead = mapLeadFromDb(dbLead);
+
   // Buscar mensagens da campanha se existirem
   const { results: messages } = await c.env.DB.prepare(
-    'SELECT * FROM campaign_messages WHERE lead_id = ? ORDER BY sent_at DESC'
+    'SELECT * FROM campaign_messages WHERE lead_id = ? ORDER BY sent_at DESC',
   )
     .bind(id)
     .all();
@@ -182,28 +200,42 @@ leads.get('/:id', async (c) => {
 // PUT /api/leads/:id - Atualizar lead
 leads.put('/:id', async (c) => {
   const id = c.req.param('id');
-  
+
+  // Partial update using camelCase fields from frontend? Or snake_case?
+  // Frontend sends camelCase usually if using shared types.
+  // We need to map camelCase input to snake_case DB columns.
+
   interface LeadUpdate {
-      status?: string;
-      score?: number;
-      notes?: string;
-      email?: string;
-      phone?: string;
-      assigned_to?: string;
-      [key: string]: string | number | undefined; // Fallback for loop
+    status?: string;
+    score?: number;
+    notes?: string;
+    email?: string;
+    phone?: string;
+    assignedTo?: string; // camelCase
+    assigned_to?: string; // fallback snake_case
+    [key: string]: string | number | undefined;
   }
-  
+
   const data = await c.req.json<LeadUpdate>();
 
-  const allowedFields = ['status', 'score', 'notes', 'email', 'phone', 'assigned_to'];
   const updates: string[] = [];
   const params: (string | number)[] = [];
 
-  for (const field of allowedFields) {
-    if (data[field] !== undefined) {
-      updates.push(`${field} = ?`);
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      params.push(data[field]!);
+  // Mapeamento de campos permitidos: Frontend (camel) -> DB (snake)
+  const fieldMap: Record<string, string> = {
+    status: 'status',
+    score: 'score',
+    notes: 'notes',
+    email: 'email',
+    phone: 'phone',
+    assignedTo: 'assigned_to',
+    assigned_to: 'assigned_to',
+  };
+
+  for (const [key, val] of Object.entries(data)) {
+    if (fieldMap[key] && val !== undefined) {
+      updates.push(`${fieldMap[key]} = ?`);
+      params.push(val!);
     }
   }
 
@@ -241,7 +273,7 @@ leads.delete('/:id', async (c) => {
 // POST /api/leads/qualify - Qualificar leads em batch
 leads.post('/qualify', async (c) => {
   interface QualifyBody {
-      leadIds: string[];
+    leadIds: string[];
   }
   const { leadIds } = await c.req.json<QualifyBody>();
 
@@ -249,100 +281,126 @@ leads.post('/qualify', async (c) => {
     return c.json({ error: 'leadIds deve ser um array' }, 400);
   }
 
-  // Buscar regras de qualificação ativas
-  const { results: rules } = await c.env.DB.prepare(
-    'SELECT * FROM qualification_rules WHERE is_active = 1'
-  ).all<{
-    id: string;
-    name: string;
-    min_rating: number;
-    min_reviews: number;
-    weight: number;
-  }>();
+  const AGENT_HUB_URL = 'https://agent-hub.oconnector.tech/api/skill/qualify-lead';
 
+  // Buscar todos os leads de uma vez
+  const placeholders = leadIds.map(() => '?').join(',');
+  const { results: dbLeads } = await c.env.DB.prepare(
+    `SELECT * FROM leads WHERE id IN (${placeholders})`,
+  )
+    .bind(...leadIds)
+    .all();
+
+  const leads = (dbLeads as any[]).map(mapLeadFromDb);
+
+  // Processar em paralelo com limite de concorrência
+  const MAX_CONCURRENT = 5;
   let qualifiedCount = 0;
+  const errors: string[] = [];
 
-  for (const leadId of leadIds) {
-    const lead = await c.env.DB.prepare('SELECT * FROM leads WHERE id = ?')
-      .bind(leadId)
-      .first<Lead>();
+  async function processLead(leadId: string, lead: any) {
+    try {
+      const hubRes = await fetch(AGENT_HUB_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lead }),
+      });
 
-    if (!lead) continue;
-
-    let score = 0;
-    const breakdown: Record<string, number> = {};
-
-    for (const rule of rules) {
-      let ruleScore = 0;
-
-      // Rating check
-      if (rule.min_rating > 0 && lead.rating && lead.rating >= rule.min_rating) {
-        ruleScore = rule.weight;
+      if (!hubRes.ok) {
+        console.error(`[Qualify] Hub returned ${hubRes.status} for ${leadId}`);
+        return false;
       }
 
-      // Reviews check
-      if (rule.min_reviews > 0 && lead.reviews_count >= rule.min_reviews) {
-        ruleScore = rule.weight;
+      const hubData = (await hubRes.json()) as any;
+      const responseText = hubData.result?.response || hubData.response || '';
+
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        console.error(`[Qualify] Failed to parse Hub response for ${leadId}`);
+        return false;
       }
 
-      // Phone check
-      if (rule.id === 'rule_phone' && lead.phone) {
-        ruleScore = rule.weight;
-      }
+      const analysis = JSON.parse(jsonMatch[0]) as {
+        score: number;
+        breakdown: Record<string, number>;
+        recommendation: string;
+        reason: string;
+      };
 
-      // Website check
-      if (rule.id === 'rule_website' && lead.website) {
-        ruleScore = rule.weight;
-      }
+      const score = Math.min(100, Math.max(0, analysis.score || 0));
+      const isQualified = score >= 50 || analysis.recommendation === 'qualificado';
 
-      if (ruleScore > 0) {
-        breakdown[rule.id] = ruleScore;
-        score += ruleScore;
-      }
+      await c.env.DB.prepare(
+        `UPDATE leads SET
+          score = ?,
+          score_breakdown = ?,
+          notes = COALESCE(notes, '') || ? ,
+          status = CASE WHEN ? THEN 'qualified' ELSE status END,
+          qualified_at = CASE WHEN ? THEN CURRENT_TIMESTAMP ELSE qualified_at END
+        WHERE id = ?`,
+      )
+        .bind(
+          score,
+          JSON.stringify(analysis.breakdown),
+          `\n[IA] ${analysis.reason}`,
+          isQualified,
+          isQualified,
+          leadId,
+        )
+        .run();
+
+      return isQualified;
+    } catch (err) {
+      console.error(`[Qualify] Error for ${leadId}:`, err);
+      errors.push(leadId);
+      return false;
     }
-
-    // Cap score at 100
-    score = Math.min(score, 100);
-
-    await c.env.DB.prepare(
-      `UPDATE leads SET 
-        score = ?, 
-        score_breakdown = ?, 
-        status = CASE WHEN ? >= 50 THEN 'qualified' ELSE status END,
-        qualified_at = CASE WHEN ? >= 50 THEN CURRENT_TIMESTAMP ELSE qualified_at END
-      WHERE id = ?`
-    )
-      .bind(score, JSON.stringify(breakdown), score, score, leadId)
-      .run();
-
-    if (score >= 50) qualifiedCount++;
   }
 
-  return c.json({ success: true, qualifiedCount, totalProcessed: leadIds.length });
+  // Processar em lotes para evitar sobrecarga
+  for (let i = 0; i < leads.length; i += MAX_CONCURRENT) {
+    const batch = leads.slice(i, i + MAX_CONCURRENT);
+    const ids = leadIds.slice(i, i + MAX_CONCURRENT);
+    const results = await Promise.all(batch.map((lead, idx) => processLead(ids[idx], lead)));
+    qualifiedCount += results.filter(Boolean).length;
+  }
+
+  return c.json({
+    success: true,
+    qualified: qualifiedCount,
+    total: leadIds.length,
+    errors: errors.length > 0 ? errors : undefined,
+  });
 });
 
-// POST /api/leads/:id/analyze - Gerar Pitch com IA
+// POST /api/leads/:id/analyze - Gerar Pitch com IA (via Agent Hub Skill)
 leads.post('/:id/analyze', async (c) => {
   const id = c.req.param('id');
-  const GEMINI_KEY = c.env.GOOGLE_GEMINI_API_KEY;
+  const AGENT_HUB_URL = 'https://agent-hub.oconnector.tech/api/skill/generate-pitch';
 
   try {
-    const lead = await c.env.DB.prepare('SELECT * FROM leads WHERE id = ?').bind(id).first<Lead>();
-    if (!lead) return c.json({ error: 'Lead not found' }, 404);
+    const dbLead = await c.env.DB.prepare('SELECT * FROM leads WHERE id = ?').bind(id).first<any>();
+    if (!dbLead) return c.json({ error: 'Lead not found' }, 404);
 
-    const { generateSalesPitch } = await import('../services/geminiService');
-    const pitch = await generateSalesPitch(GEMINI_KEY || '', {
-        name: lead.name,
-        rating: lead.rating || 0,
-        address: lead.address || ''
+    const lead = mapLeadFromDb(dbLead);
+
+    // Chamar endpoint de skill dedicado no Agent Hub
+    const hubRes = await fetch(AGENT_HUB_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lead }),
     });
 
-    // Save pitch to notes for now (or a new column if we had one, but notes works for MVP)
+    const hubData = (await hubRes.json()) as any;
+    const pitch =
+      hubData.result?.response ||
+      hubData.response ||
+      `Olá ${lead.name}, gostaria de apresentar o OInbox. Posso te mandar um vídeo?`;
+
+    // Save pitch to notes
     const newNotes = (lead.notes || '') + '\n\n[AI PITCH]: ' + pitch;
 
-    await c.env.DB.prepare('UPDATE leads SET notes = ? WHERE id = ?')
-        .bind(newNotes, id)
-        .run();
+    await c.env.DB.prepare('UPDATE leads SET notes = ? WHERE id = ?').bind(newNotes, id).run();
 
     return c.json({ success: true, pitch });
   } catch (error) {
@@ -354,15 +412,15 @@ leads.post('/:id/analyze', async (c) => {
 // POST /api/leads/:id/invite - Enviar Convite (Simulação/Mock do Envio)
 leads.post('/:id/invite', async (c) => {
   const id = c.req.param('id');
-  
+
   try {
-    const lead = await c.env.DB.prepare('SELECT * FROM leads WHERE id = ?').bind(id).first<Lead>();
-    if (!lead) return c.json({ error: 'Lead not found' }, 404);
-    
+    const dbLead = await c.env.DB.prepare('SELECT * FROM leads WHERE id = ?').bind(id).first<any>();
+    if (!dbLead) return c.json({ error: 'Lead not found' }, 404);
+
     // Simulate sending
     await c.env.DB.prepare("UPDATE leads SET status = 'contacted', contacted_at = ? WHERE id = ?")
-        .bind(new Date().toISOString(), id)
-        .run();
+      .bind(new Date().toISOString(), id)
+      .run();
 
     return c.json({ success: true, status: 'contacted' });
   } catch (error) {

@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
 import Stripe from 'stripe';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { authMiddleware, requireRole } from '../middleware/auth';
 import { sendEmail } from '../utils/email';
 import { PLANS } from '../config/plans';
@@ -112,7 +112,7 @@ billing.post('/checkout', async (c) => {
   const { planName } = await c.req.json(); // ex: Pro
 
   const priceMap: Record<string, string> = {
-    Pro: env.STRIPE_PRICE_PRO || '', 
+    Pro: env.STRIPE_PRICE_PRO || '',
     Basic: env.STRIPE_PRICE_BASIC || '',
   };
   const priceId = priceMap[planName];
@@ -147,7 +147,6 @@ billing.post('/checkout', async (c) => {
 billing.get('/plans', (c) => {
   // Plans are imported statically
 
-  
   const plans = Object.values(PLANS).map((p: any) => ({
     id: p.name.toLowerCase(),
     name: p.displayName,
@@ -170,7 +169,7 @@ billing.get('/plans', (c) => {
       aiMessagesPerMonth: p.aiMessagesPerMonth,
     },
   }));
-  
+
   return c.json(plans);
 });
 
@@ -238,8 +237,10 @@ billing.get('/addons', async (c) => {
   const tenantId = user.tenantId;
 
   const { results } = await c.env.DB.prepare(
-    "SELECT type, SUM(quantity) as total FROM addons WHERE tenant_id = ? AND status = 'active' GROUP BY type"
-  ).bind(tenantId).all<{ type: string; total: number }>();
+    "SELECT type, SUM(quantity) as total FROM addons WHERE tenant_id = ? AND status = 'active' GROUP BY type",
+  )
+    .bind(tenantId)
+    .all<{ type: string; total: number }>();
 
   return c.json(results);
 });

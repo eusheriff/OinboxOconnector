@@ -1,0 +1,107 @@
+---
+title: Visão Geral da Arquitetura
+description: Como o Oinbox é estruturado internamente
+---
+
+# Arquitetura do Sistema
+
+O Oinbox utiliza uma arquitetura **serverless moderna** baseada em Cloudflare Workers, com separação clara entre frontend e backend.
+
+## Diagrama de Alto Nível
+
+```
+┌─────────────────────────────────────────────────┐
+│                   Frontend                       │
+│  React 19 + TypeScript + Tailwind CSS + Vite    │
+│  ┌─────────┐ ┌────────┐ ┌──────────┐ ┌───────┐ │
+│  │  CRM    │ │ Inbox  │ │Marketing │ │  AI   │ │
+│  │ Module  │ │ Module │ │ Studio   │ │ Core  │ │
+│  └────┬────┘ └───┬────┘ └────┬─────┘ └───┬───┘ │
+│       └──────────┴───────────┴───────────┘     │
+│                          │                     │
+│                   REST API (/api/*)            │
+└──────────────────────────┼─────────────────────┘
+                           │
+┌──────────────────────────┼─────────────────────┐
+│                   Backend                        │
+│  Cloudflare Workers + Hono Framework            │
+│  ┌──────┐ ┌─────┐ ┌──────┐ ┌────┐ ┌────────┐  │
+│  │ Auth │ │ CRM │ │ AI   │ │Billing││WhatsApp│  │
+│  │Routes│ │Routes││Routes│ │Routes││ Routes │  │
+│  └──┬───┘ └──┬──┘ └──┬───┘ └──┬─┘ └───┬────┘  │
+│     └────────┴───────┴────────┴───────┘        │
+│         │                  │                    │
+│    ┌────┴────┐      ┌──────┴──────┐            │
+│    │  D1 DB  │      │  R2 Storage │            │
+│    │ (SQLite)│      │  (Imagens)  │            │
+│    └─────────┘      └─────────────┘            │
+└─────────────────────────────────────────────────┘
+```
+
+## Princípios de Design
+
+### 1. Separação Frontend/Backend
+- **Frontend**: SPA React com Vite, deploy estático (Cloudflare Pages)
+- **Backend**: API RESTful serverless (Cloudflare Workers)
+- **Comunicação**: HTTP JSON com autenticação JWT
+
+### 2. Serverless First
+- Zero servidores dedicados
+- Escala automática com a demanda
+- Cold start mínimo (~5ms no D1)
+
+### 3. Edge Computing
+- **D1**: SQLite distribuído na edge da Cloudflare
+- **R2**: Storage distribuído globalmente
+- **Workers**: Execução na edge mais próxima do usuário
+
+## Estrutura de Diretórios
+
+```
+oinbox/
+├── src/                      # Frontend React
+│   ├── components/           # UI Components (17 módulos)
+│   │   ├── CRM/             # Pipeline, Kanban, Lead Scoring
+│   │   ├── Inbox/           # Chat Window, Client Details
+│   │   ├── Marketing/       # Campaign Manager, Editor
+│   │   ├── AI/              # Chat components
+│   │   ├── Properties/      # PropertyList, ListingForm
+│   │   └── Admin/           # Super Admin dashboards
+│   ├── pages/               # Páginas (admin/, client/)
+│   ├── contexts/            # React Contexts (Toast, Auth)
+│   ├── services/            # API Service, Gemini Service
+│   ├── hooks/               # Custom Hooks (useAuth, useApi)
+│   ├── lib/                 # Utilities (authStorage)
+│   └── types/               # TypeScript types
+├── backend/                  # Backend Cloudflare
+│   └── src/
+│       ├── routes/          # 18 módulos de rotas API
+│       ├── services/        # aiService, tokenService, etc
+│       ├── middleware/      # Auth, logging
+│       ├── utils/           # Helpers (whatsapp, datadog)
+│       └── config/          # Plans, permissions
+└── shared/types/            # Tipos compartilhados
+```
+
+## Fluxo de Autenticação
+
+1. Usuário faz login via `POST /api/auth/login`
+2. Backend valida credenciais no D1
+3. Gera JWT com `TokenService` (24h expiração)
+4. Frontend armazena token via `authStorage`
+5. Cada request inclui `Authorization: Bearer <token>` + `x-tenant-id`
+6. Middleware `authMiddleware` valida token em cada rota
+
+## Multi-Tenant
+
+O sistema é **multi-tenant**: cada imobiliária/corretor é um tenant isolado.
+
+```sql
+tenants (id, name, plan, status, mrr, ...)
+  └── users (tenant_id, ...)
+  └── clients (tenant_id, ...)
+  └── properties (tenant_id, ...)
+  └── conversations (tenant_id, ...)
+```
+
+Todos os dados são escopados por `tenant_id`.

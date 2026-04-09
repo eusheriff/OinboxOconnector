@@ -1,18 +1,32 @@
 import { Hono } from 'hono';
-import { SignJWT } from 'jose';
 import bcrypt from 'bcryptjs';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { authMiddleware, superAuthMiddleware } from '../middleware/auth';
+import { generateImpersonationJWT } from '../services/tokenService';
 
 const admin = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 admin.use('*', superAuthMiddleware);
 
 admin.get('/tenants', async (c) => {
-  const { results } = await c.env.DB.prepare('SELECT * FROM tenants ORDER BY joined_at DESC').all<
-    Record<string, unknown>
-  >();
-  return c.json(results);
+  const page = parseInt(c.req.query('page') || '1', 10);
+  const limit = parseInt(c.req.query('limit') || '50', 10);
+  const offset = (page - 1) * limit;
+
+  const [tenantsResult, countResult] = await Promise.all([
+    c.env.DB.prepare(
+      'SELECT id, name, owner_name, email, plan, status, joined_at, trial_ends_at, stripe_subscription_id, stripe_customer_id, mrr FROM tenants ORDER BY joined_at DESC LIMIT ? OFFSET ?',
+    )
+      .bind(limit, offset)
+      .all<Record<string, unknown>>(),
+    c.env.DB.prepare('SELECT COUNT(*) as total FROM tenants').first<{ total: number }>(),
+  ]);
+
+  const items = tenantsResult.results;
+  const total = countResult?.total ?? 0;
+  const hasMore = offset + items.length < total;
+
+  return c.json({ items, total, page, pageSize: limit, hasMore });
 });
 
 admin.post('/tenants', async (c) => {
@@ -136,18 +150,16 @@ admin.post('/tenants/:id/impersonate', async (c) => {
   if (!c.env.JWT_SECRET) {
     return c.json({ error: 'Server configuration error' }, 500);
   }
-  const jwtSecret = new TextEncoder().encode(c.env.JWT_SECRET);
 
-  const token = await new SignJWT({
-    sub: user.id,
-    tenantId: user.tenant_id,
-    role: user.role,
-    name: user.name,
-  })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('1h')
-    .sign(jwtSecret);
+  const token = await generateImpersonationJWT(
+    {
+      sub: user.id,
+      tenantId: user.tenant_id,
+      role: user.role,
+      name: user.name,
+    },
+    c.env.JWT_SECRET,
+  );
 
   return c.json({
     user: {
@@ -249,5 +261,42 @@ admin.get('/billing-plans', (c) =>
     },
   ]),
 );
+
+admin.post('/test-ai-connection', async (c) => {
+  const apiKey = c.env.OPENAI_API_KEY;
+
+  if (!apiKey) {
+    return c.json({ error: 'Chave de API do OpenAI não configurada no servidor.' }, 500);
+  }
+
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o-mini',
+        messages: [{ role: 'user', content: "Ping? Responda apenas 'Pong ✅'" }],
+        max_tokens: 10,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return c.json({ success: false, error: errorText });
+    }
+
+    const data: { choices?: Array<{ message?: { content: string } }> } = await response.json();
+    const text = data.choices?.[0]?.message?.content || '';
+
+    return c.json({ success: true, message: text });
+  } catch (error: unknown) {
+    console.error('OpenAI Test Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return c.json({ error: `Falha ao conectar com OpenAI: ${errorMessage}` }, 500);
+  }
+});
 
 export default admin;

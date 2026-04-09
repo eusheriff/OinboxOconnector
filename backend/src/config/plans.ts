@@ -12,7 +12,7 @@ export interface PlanConfig {
   aiMessagesPerMonth: number;
   support: 'email' | 'priority' | 'dedicated';
   trialDays?: number; // If set, this is a trial plan
-  basePlan?: string;  // For trials, the paid plan it upgrades to
+  basePlan?: string; // For trials, the paid plan it upgrades to
 }
 
 export const PLANS: Record<string, PlanConfig> = {
@@ -45,7 +45,7 @@ export const PLANS: Record<string, PlanConfig> = {
     trialDays: 14,
     basePlan: 'Imobiliaria',
   },
-  
+
   // Paid Plans
   Corretor: {
     name: 'Corretor',
@@ -105,7 +105,7 @@ export function getPlanLimit(plan: string, limit: keyof PlanConfig): number {
 export function isTrialExpired(joinedAt: string, plan: string): boolean {
   const config = PLANS[plan];
   if (!config?.trialDays) return false;
-  
+
   const joined = new Date(joinedAt);
   const now = new Date();
   const diffDays = Math.floor((now.getTime() - joined.getTime()) / (1000 * 60 * 60 * 24));
@@ -114,5 +114,5 @@ export function isTrialExpired(joinedAt: string, plan: string): boolean {
 
 // Backwards compatibility
 export const PLAN_LIMITS: Record<string, number> = Object.fromEntries(
-  Object.entries(PLANS).map(([k, v]) => [k, v.seats])
+  Object.entries(PLANS).map(([k, v]) => [k, v.seats]),
 );

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Lead } from '../../types';
+import { Lead } from '@shared/types';
 import { MoreHorizontal, Plus, Calendar, DollarSign, Loader2 } from 'lucide-react';
 import {
   DndContext,
@@ -11,11 +11,7 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable';
+import { SortableContext, useSortable, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 interface PipelineProps {
@@ -32,14 +28,9 @@ const PIPELINE_COLUMNS = [
 
 // Draggable Lead Card Component
 function DraggableLeadCard({ lead }: { lead: Lead }) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: lead.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: lead.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -72,9 +63,7 @@ function DraggableLeadCard({ lead }: { lead: Lead }) {
         </button>
       </div>
 
-      {lead.phone && (
-        <div className="text-xs text-gray-500 mb-2">📞 {lead.phone}</div>
-      )}
+      {lead.phone && <div className="text-xs text-gray-500 mb-2">📞 {lead.phone}</div>}
 
       {lead.score > 0 && (
         <div className="mb-3">
@@ -106,7 +95,7 @@ function DroppableColumn({
   leads,
   total,
 }: {
-  column: typeof PIPELINE_COLUMNS[number];
+  column: (typeof PIPELINE_COLUMNS)[number];
   leads: Lead[];
   total: number;
 }) {
@@ -120,9 +109,7 @@ function DroppableColumn({
           <h3 className="font-bold text-slate-700 text-sm uppercase tracking-wide">
             {column.label}
           </h3>
-          <span className="text-xs text-gray-400 font-medium">
-            {leads.length} leads
-          </span>
+          <span className="text-xs text-gray-400 font-medium">{leads.length} leads</span>
         </div>
         <div className="text-xs font-bold text-muted-foreground bg-gray-100 px-2 py-1 rounded">
           {total > 0 ? `Score: ${total}` : '—'}
@@ -130,10 +117,7 @@ function DroppableColumn({
       </div>
 
       {/* Cards Area - Droppable */}
-      <SortableContext
-        items={leads.map((l) => l.id)}
-        strategy={verticalListSortingStrategy}
-      >
+      <SortableContext items={leads.map((l) => l.id)} strategy={verticalListSortingStrategy}>
         <div
           className="flex-1 bg-gray-200/50 rounded-xl p-2 overflow-y-auto space-y-3 min-h-[200px]"
           data-column={column.id}
@@ -142,9 +126,7 @@ function DroppableColumn({
             <DraggableLeadCard key={lead.id} lead={lead} />
           ))}
           {leads.length === 0 && (
-            <div className="text-center text-gray-400 text-sm py-8">
-              Arraste leads aqui
-            </div>
+            <div className="text-center text-gray-400 text-sm py-8">Arraste leads aqui</div>
           )}
         </div>
       </SortableContext>
@@ -162,7 +144,7 @@ const Pipeline: React.FC<PipelineProps> = () => {
       activationConstraint: {
         distance: 8,
       },
-    })
+    }),
   );
 
   // Fetch leads from backend
@@ -174,9 +156,9 @@ const Pipeline: React.FC<PipelineProps> = () => {
           `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/leads`,
           {
             headers: { Authorization: `Bearer ${token}` },
-          }
+          },
         );
-        const data = await response.json() as { leads: Lead[] };
+        const data = (await response.json()) as { leads: Lead[] };
         setLeads(data.leads || []);
       } catch {
         // Fallback to empty if error
@@ -201,7 +183,7 @@ const Pipeline: React.FC<PipelineProps> = () => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ status: newStatus }),
-        }
+        },
       );
     } catch {
       // Silent fail - optimistic update already done
@@ -227,9 +209,8 @@ const Pipeline: React.FC<PipelineProps> = () => {
     // Get target column from the over element or its parent
     const targetColumn = (over.id as string).includes('-')
       ? null
-      : PIPELINE_COLUMNS.find((col) =>
-          leads.find((l) => l.id === over.id && l.status === col.id)
-        )?.id;
+      : PIPELINE_COLUMNS.find((col) => leads.find((l) => l.id === over.id && l.status === col.id))
+          ?.id;
 
     // If dropped on another lead, get that lead's status
     const targetLead = leads.find((l) => l.id === over.id);
@@ -240,9 +221,7 @@ const Pipeline: React.FC<PipelineProps> = () => {
       if (leadToMove && leadToMove.status !== newStatus) {
         // Optimistic update
         setLeads((prev) =>
-          prev.map((l) =>
-            l.id === active.id ? { ...l, status: newStatus as Lead['status'] } : l
-          )
+          prev.map((l) => (l.id === active.id ? { ...l, status: newStatus as Lead['status'] } : l)),
         );
         // Persist to backend
         updateLeadStatus(active.id as string, newStatus);
@@ -251,8 +230,7 @@ const Pipeline: React.FC<PipelineProps> = () => {
   };
 
   // Get leads by status
-  const getLeadsByStatus = (status: string) =>
-    leads.filter((l) => l.status === status);
+  const getLeadsByStatus = (status: string) => leads.filter((l) => l.status === status);
 
   // Calculate total score per column
   const calculateColumnTotal = (status: string) =>
@@ -285,9 +263,7 @@ const Pipeline: React.FC<PipelineProps> = () => {
           </div>
           <div className="flex gap-4">
             <div className="text-right">
-              <span className="text-xs text-gray-500 uppercase font-bold">
-                Total de Leads
-              </span>
+              <span className="text-xs text-gray-500 uppercase font-bold">Total de Leads</span>
               <p className="text-xl font-bold text-foreground">{leads.length}</p>
             </div>
             <button className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-medium flex items-center gap-2 transition-colors">
@@ -329,7 +305,6 @@ const Pipeline: React.FC<PipelineProps> = () => {
       </div>
     </div>
   );
-
 };
 
 export default Pipeline;

@@ -1,0 +1,58 @@
+---
+title: Deploy na Cloudflare
+description: Como fazer deploy do backend e frontend
+---
+
+# Deploy na Cloudflare
+
+## Backend (Cloudflare Workers)
+
+### Pré-requisitos
+
+```bash
+npm install -g wrangler
+wrangler login
+```
+
+### Configurar D1
+
+```bash
+# Criar banco D1 (produção)
+wrangler d1 create oinbox-db
+
+# Executar schema
+wrangler d1 execute oinbox-db --file=./backend/schema.sql --remote
+```
+
+### Deploy
+
+```bash
+wrangler deploy
+```
+
+### Segredos
+
+```bash
+wrangler secret put JWT_SECRET
+wrangler secret put GOOGLE_GEMINI_API_KEY
+wrangler secret put STRIPE_SECRET_KEY
+```
+
+## Frontend
+
+### Build
+
+```bash
+npm run build
+```
+
+### Deploy no Pages
+
+```bash
+npx wrangler pages deploy dist --project-name=oinbox-frontend
+```
+
+## URLs de Produção
+
+- Frontend: https://oinbox.oconnector.tech
+- Backend: https://api.oinbox.oconnector.tech

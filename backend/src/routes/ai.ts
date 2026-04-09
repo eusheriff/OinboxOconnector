@@ -1,12 +1,12 @@
 import { Hono } from 'hono';
 import { authMiddleware } from '../middleware/auth';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import {
   checkAndIncrementRateLimit,
   getRateLimitStatus,
   cleanupOldRateLimits,
-} from '../utils/rateLimiter';
-import { DatadogLogger } from '../utils/datadog';
+} from '../utils/aiRateLimiter';
+import { callGPT4oMini, callGPT4o } from '../services/aiService';
 
 const aiRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -39,39 +39,28 @@ aiRoutes.post('/public-chat', async (c) => {
       '\n\nPergunta do usuário: ' +
       prompt;
 
-    // 3. Chamar Gemini Flash diretamente
-    let response = await callGeminiFlash(c.env.API_KEY, fullPrompt, logger);
-    let provider = 'gemini';
-
-    // Fallback para Cloudflare AI se Gemini falhar (retornar vazio)
-    if (!response) {
-      await logger?.warn('Gemini Flash returned empty, falling back to Cloudflare AI', {
-        session_id,
-        prompt_length: prompt.length,
-      });
-      response = await callCloudflareAI(c.env.AI, fullPrompt);
-      provider = 'cloudflare-ai';
-    }
+    // 3. Chamar GPT-4o-mini diretamente
+    const response = await callGPT4oMini(c.env.OPENAI_API_KEY, fullPrompt);
 
     const duration = Date.now() - startTime;
 
     await logger?.info('Public chat request completed', {
       session_id,
-      provider,
+      provider: 'openai',
       duration_ms: duration,
       response_length: response.length,
     });
 
-    await logger?.metric('oinbox.ai.public_chat.duration', duration, [`provider:${provider}`]);
-    await logger?.metric('oinbox.ai.public_chat.success', 1, [`provider:${provider}`]);
+    await logger?.metric('oinbox.ai.public_chat.duration', duration, ['provider:openai']);
+    await logger?.metric('oinbox.ai.public_chat.success', 1, ['provider:openai']);
 
     return c.json({ text: response });
-  } catch (error: any) {
+  } catch (error: unknown) {
     const duration = Date.now() - startTime;
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
     await logger?.error('Public chat error', {
-      error: error.message,
-      stack: error.stack,
+      error: errorMessage,
       duration_ms: duration,
     });
 
@@ -116,67 +105,9 @@ aiRoutes.post('/knowledge', async (c) => {
   return c.json({ success: true });
 });
 
-import { GoogleGenerativeAI } from '@google/generative-ai';
-import { runAgent } from '../services/agentService';
-
-/**
- * Chama Gemini Flash com rate limiting e fallback
- */
-async function callGeminiFlash(
-  apiKey: string,
-  prompt: string,
-  logger: DatadogLogger | null,
-): Promise<string> {
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      }),
-    },
-  );
-  const data: any = await response.json();
-  await logger?.info('Gemini Flash Response', { data });
-  if (data.error) {
-    await logger?.error('Gemini API Error', { error: data.error });
-  }
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-}
-
-/**
- * Chama Gemini Pro com rate limiting e fallback
- */
-async function callGeminiPro(apiKey: string, prompt: string): Promise<string> {
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ role: 'user', parts: [{ text: prompt }] }],
-      }),
-    },
-  );
-  const data: any = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-}
-
-/**
- * Chama Cloudflare AI (fallback gratuito)
- */
-async function callCloudflareAI(ai: any, prompt: string): Promise<string> {
-  const response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
-    prompt: prompt,
-    max_tokens: 1024,
-  });
-  return response.response || '';
-}
-
 aiRoutes.post('/generate', async (c) => {
   const user = c.get('user');
-  const { prompt, context } = await c.req.json();
+  const { prompt, context, systemPrompt } = await c.req.json();
   const logger = c.get('logger');
 
   // 1. Buscar contexto na base de conhecimento (RAG simples)
@@ -188,54 +119,29 @@ aiRoutes.post('/generate', async (c) => {
 
   const knowledge = results.map((r) => r.content).join('\n');
 
+  const fullSystemPrompt =
+    (systemPrompt || 'Você é um assistente virtual imobiliário.') +
+    '\nUse o seguinte conhecimento:\n' +
+    knowledge;
+
   const fullPrompt =
-    'Você é um assistente virtual imobiliário.\n' +
-    'Use o seguinte conhecimento para responder:\n' +
-    knowledge +
-    '\n\n' +
-    'Contexto da conversa: ' +
-    JSON.stringify(context) +
-    '\n\n' +
-    'Usuário: ' +
-    prompt;
+    'Contexto da conversa: ' + JSON.stringify(context || {}) + '\n\n' + 'Usuário: ' + prompt;
 
-  // 2. Verificar rate limit do Gemini Flash
-  const geminiLimit = await checkAndIncrementRateLimit(c.env.DB, user.tenantId, 'gemini-flash');
+  // 2. Verificar rate limit do OpenAI
+  const openaiLimit = await checkAndIncrementRateLimit(c.env.DB, user.tenantId, 'openai');
 
-  let response: string;
-  let modelUsed: string;
-
-  if (geminiLimit.allowed) {
-    // Usar Gemini Flash
-    try {
-      response = await callGeminiFlash(c.env.API_KEY, fullPrompt, logger);
-      modelUsed = 'gemini-1.5-flash';
-    } catch (e) {
-      // Fallback para Cloudflare AI em caso de erro
-      const cfLimit = await checkAndIncrementRateLimit(c.env.DB, user.tenantId, 'cloudflare-ai');
-      if (cfLimit.allowed) {
-        response = await callCloudflareAI(c.env.AI, fullPrompt);
-        modelUsed = 'cloudflare-llama-3.1';
-      } else {
-        return c.json({ error: 'Limite de IA atingido para hoje' }, 429);
-      }
-    }
-  } else {
-    // Limite Gemini atingido, usar Cloudflare AI
-    const cfLimit = await checkAndIncrementRateLimit(c.env.DB, user.tenantId, 'cloudflare-ai');
-    if (cfLimit.allowed) {
-      response = await callCloudflareAI(c.env.AI, fullPrompt);
-      modelUsed = 'cloudflare-llama-3.1';
-    } else {
-      return c.json({ error: 'Limite de IA atingido para hoje' }, 429);
-    }
+  if (!openaiLimit.allowed) {
+    return c.json({ error: 'Limite de IA atingido para hoje' }, 429);
   }
 
+  // 3. Usar GPT-4o-mini
+  const response = await callGPT4oMini(c.env.OPENAI_API_KEY, fullPrompt, fullSystemPrompt);
+
   return c.json({
-    response,
+    text: response,
     _meta: {
-      model: modelUsed,
-      geminiRemaining: geminiLimit.remaining,
+      model: 'gpt-4o-mini',
+      openaiRemaining: openaiLimit.remaining,
     },
   });
 });
@@ -254,50 +160,27 @@ aiRoutes.post('/chat', async (c) => {
       .all<{ content: string }>();
     const knowledge = results.map((r) => r.content).join('\n');
 
-    const fullPrompt =
-      'Você é um assistente útil para imobiliárias. Use este conhecimento: ' +
-      knowledge +
-      '\n\n' +
-      message;
+    const systemPrompt =
+      'Você é um assistente útil para imobiliárias. Use este conhecimento: ' + knowledge;
 
-    // Verificar rate limit do Gemini Pro (usado para chat)
-    const geminiLimit = await checkAndIncrementRateLimit(c.env.DB, user.tenantId, 'gemini-pro');
+    const fullPrompt = message + '\n\nHistórico: ' + JSON.stringify(history || []);
 
-    let reply: string;
-    let modelUsed: string;
+    // Verificar rate limit do OpenAI
+    const openaiLimit = await checkAndIncrementRateLimit(c.env.DB, user.tenantId, 'openai');
 
-    if (geminiLimit.allowed) {
-      try {
-        reply = await callGeminiPro(c.env.API_KEY, fullPrompt);
-        modelUsed = 'gemini-pro';
-      } catch (e) {
-        // Fallback
-        const cfLimit = await checkAndIncrementRateLimit(c.env.DB, user.tenantId, 'cloudflare-ai');
-        if (cfLimit.allowed) {
-          reply = await callCloudflareAI(c.env.AI, fullPrompt);
-          modelUsed = 'cloudflare-llama-3.1';
-        } else {
-          return c.json({ error: 'Limite de IA atingido' }, 429);
-        }
-      }
-    } else {
-      // Fallback para Cloudflare AI
-      const cfLimit = await checkAndIncrementRateLimit(c.env.DB, user.tenantId, 'cloudflare-ai');
-      if (cfLimit.allowed) {
-        reply = await callCloudflareAI(c.env.AI, fullPrompt);
-        modelUsed = 'cloudflare-llama-3.1';
-      } else {
-        return c.json({ error: 'Limite de IA atingido' }, 429);
-      }
+    if (!openaiLimit.allowed) {
+      return c.json({ error: 'Limite de IA atingido' }, 429);
     }
 
+    const reply = await callGPT4o(c.env.OPENAI_API_KEY, fullPrompt, systemPrompt);
+
     if (!reply) {
-      reply = 'Desculpe, não consegui processar sua solicitação.';
+      return c.json({ error: 'Não consegui processar sua solicitação.' }, 500);
     }
 
     return c.json({
       reply,
-      _meta: { model: modelUsed },
+      _meta: { model: 'gpt-4o' },
     });
   } catch (e) {
     logger?.error('AI Chat Error', { error: e });

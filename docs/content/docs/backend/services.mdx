@@ -1,0 +1,66 @@
+---
+title: Serviços
+description: Serviços centralizados do backend
+---
+
+# Serviços
+
+O backend utiliza serviços centralizados para evitar duplicação de código.
+
+## AIService
+
+`backend/src/services/aiService.ts`
+
+Serviço centralizado para todas as chamadas à IA Gemini.
+
+\`\`\`typescript
+import { callGemini, callGeminiFlash, analyzeClientData, generatePropertyDescription } from '../services/aiService';
+
+// Chamada genérica
+const result = await callGemini(prompt, { model: 'gemini-2.5-flash' });
+
+// Modelo flash (mais rápido/barato)
+const result = await callGeminiFlash(prompt);
+
+// Análise de cliente do CRM
+const analysis = await analyzeClientData(clientData);
+
+// Geração de descrição de imóvel
+const description = await generatePropertyDescription(property);
+\`\`\`
+
+## TokenService
+
+`backend/src/services/tokenService.ts`
+
+Geração e verificação centralizada de JWT.
+
+\`\`\`typescript
+import { generateJWT, generateImpersonationJWT, verifyJWT } from '../services/tokenService';
+
+// Gerar token (expira em 24h)
+const token = await generateJWT({
+  sub: userId,
+  tenantId,
+  role,
+  name,
+  email,
+}, JWT_SECRET);
+
+// Token de impersonação (expira em 1h)
+const impersonationToken = await generateImpersonationJWT(payload, JWT_SECRET);
+
+// Verificar token
+const { payload } = await verifyJWT(token, JWT_SECRET);
+\`\`\`
+
+## WhatsApp Utils
+
+`backend/src/utils/whatsapp.ts`
+
+\`\`\`typescript
+import { formatWhatsAppJid } from '../utils/whatsapp';
+
+const jid = formatWhatsAppJid('+5511999999999');
+// Returns: "5511999999999@s.whatsapp.net"
+\`\`\`

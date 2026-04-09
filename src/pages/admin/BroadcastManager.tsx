@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Radio, Plus, Trash2, Save, AlertTriangle, Info, CheckCircle, XCircle } from 'lucide-react';
-import ConfirmationModal from '../../components/UI/ConfirmationModal';
-import { useToast } from '../../contexts/ToastContext';
+import ConfirmationModal from '@/components/UI/ConfirmationModal';
+import { useToast } from '@/contexts/ToastContext';
 
 interface Broadcast {
   id: string;

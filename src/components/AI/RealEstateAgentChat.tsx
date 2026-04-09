@@ -10,7 +10,7 @@ import {
   FileText,
   AlertCircle,
 } from 'lucide-react';
-import { askMarketExpert } from '../../services/geminiService';
+import { askMarketExpert } from '@/services/openaiService';
 
 const RealEstateAgentChat: React.FC = () => {
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([

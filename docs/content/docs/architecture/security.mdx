@@ -1,0 +1,138 @@
+---
+title: Segurança
+description: Autenticação, autorização e práticas de segurança
+---
+
+# Segurança
+
+O Oinbox implementa múltiplas camadas de segurança para proteger dados e operações.
+
+## Autenticação
+
+### JWT (JSON Web Tokens)
+
+Todos os tokens são gerados e verificados pelo `TokenService`:
+
+\`\`\`typescript
+// Gerar token
+import { generateJWT } from '../services/tokenService';
+
+const token = await generateJWT({
+  sub: userId,
+  tenantId,
+  role,
+  name,
+  email,
+}, JWT_SECRET);
+// Expira em 24h por padrão
+
+// Verificar token
+import { verifyJWT } from '../services/tokenService';
+
+const { payload } = await verifyJWT(token, JWT_SECRET);
+\`\`\`
+
+### Middleware de Auth
+
+\`\`\`typescript
+// Proteger rota
+route.use('*', authMiddleware);
+
+// Super Admin apenas
+route.use('*', superAuthMiddleware);
+\`\`\`
+
+## Autorização
+
+### Roles
+
+| Role | Acesso |
+|------|--------|
+| `SuperAdmin` | Plataforma completa + gestão de tenants |
+| `admin` | Tenant completo (dono) |
+| `user` | Funcionalidades básicas do tenant |
+| `client` | Portal do cliente |
+
+### Plan-based Access Control
+
+Cada plano tem permissões definidas em `config/plans.ts`:
+
+\`\`\`typescript
+const PLANS = {
+  basic: { maxUsers: 1, maxProperties: 50, aiCredits: 100 },
+  pro: { maxUsers: 10, maxProperties: 500, aiCredits: 1000 },
+  enterprise: { maxUsers: -1, maxProperties: -1, aiCredits: -1 },
+};
+\`\`\`
+
+## Webhooks Protegidos
+
+Webhooks validam assinatura antes de processar:
+
+\`\`\`typescript
+// Evolution API webhook
+const apiKey = c.req.header('X-Api-Key');
+if (apiKey !== c.env.EVOLUTION_API_KEY) {
+  return c.json({ error: 'Unauthorized' }, 401);
+}
+\`\`\`
+
+## Rate Limiting
+
+Rotas públicas têm rate limiting:
+
+\`\`\`typescript
+import { createRateLimiter } from '../utils/rateLimiter';
+
+const limiter = createRateLimiter({ max: 10, window: '1m' });
+route.post('/login', limiter, loginHandler);
+\`\`\`
+
+## Migração de Senhas
+
+Senhas legadas em texto plano são automaticamente migradas para bcrypt no próximo login:
+
+\`\`\`typescript
+if (user.password_hash.startsWith('$2')) {
+  isValid = await bcrypt.compare(password, user.password_hash);
+} else {
+  // Legado: migra para bcrypt automaticamente
+  isValid = password === user.password_hash;
+  if (isValid) {
+    const newHash = await bcrypt.hash(password, 10);
+    await env.DB.prepare('UPDATE users SET password_hash = ? WHERE id = ?')
+      .bind(newHash, user.id).run();
+  }
+}
+\`\`\`
+
+## Audit Trail
+
+Ações sensíveis são logadas:
+
+\`\`\`sql
+INSERT INTO audit_logs (user_id, action, target_type, target_id, details)
+VALUES (?, 'impersonate', 'tenant', ?, ?)
+\`\`\`
+
+## CORS
+
+Origens permitidas são whitelist estrita:
+
+\`\`\`typescript
+const allowedOrigins = [
+  'https://oinbox.oconnector.tech',
+  'https://www.oinbox.oconnector.tech',
+  // localhost apenas em dev
+];
+\`\`\`
+
+## Boas Práticas
+
+- ✅ Secrets via `wrangler secret`, nunca no código
+- ✅ Parameterized queries (SQL injection prevention)
+- ✅ JWT com expiração
+- ✅ Rate limiting em rotas públicas
+- ✅ CORS com allow-list
+- ✅ Audit logs para ações sensíveis
+- ✅ Senhas sempre com bcrypt

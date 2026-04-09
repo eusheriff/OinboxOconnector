@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  darkMode: ['class'],
   content: [
     './index.html',
     './src/**/*.{js,ts,jsx,tsx}',
@@ -71,18 +72,18 @@ export default {
           '50%': { transform: 'translateY(-20px)' },
         },
         'gradient-x': {
-            '0%, 100%': {
-                'background-size': '200% 200%',
-                'background-position': 'left center',
-            },
-            '50%': {
-                'background-size': '200% 200%',
-                'background-position': 'right center',
-            },
+          '0%, 100%': {
+            'background-size': '200% 200%',
+            'background-position': 'left center',
+          },
+          '50%': {
+            'background-size': '200% 200%',
+            'background-position': 'right center',
+          },
         },
         fadeInUp: {
-            '0%': { opacity: '0', transform: 'translateY(20px)' },
-            '100%': { opacity: '1', transform: 'translateY(0)' },
+          '0%': { opacity: '0', transform: 'translateY(20px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
         },
       },
     },
@@ -100,10 +101,10 @@ export default {
           backfaceVisibility: 'hidden',
         },
         '.rotate-x-20': {
-            transform: 'rotateX(20deg)',
+          transform: 'rotateX(20deg)',
         },
-      }
-      addUtilities(newUtilities)
-    }
+      };
+      addUtilities(newUtilities);
+    },
   ],
 };

@@ -1,4 +1,3 @@
-
 import Stripe from 'stripe';
 
 // LIVE KEY from User Input (Securely processed)
@@ -22,24 +21,54 @@ const PRODUCTS = [
     name: 'Oinbox Autônomo',
     description: 'Para corretores independentes (1 usuário)',
     prices: [
-      { unit_amount: 20000, currency: 'brl', recurring: { interval: 'month' }, lookup_key: 'autonomo_monthly' },
-      { unit_amount: 192000, currency: 'brl', recurring: { interval: 'year' }, lookup_key: 'autonomo_yearly' },
+      {
+        unit_amount: 20000,
+        currency: 'brl',
+        recurring: { interval: 'month' },
+        lookup_key: 'autonomo_monthly',
+      },
+      {
+        unit_amount: 192000,
+        currency: 'brl',
+        recurring: { interval: 'year' },
+        lookup_key: 'autonomo_yearly',
+      },
     ],
   },
   {
     name: 'Oinbox Business',
     description: 'Para imobiliárias em crescimento (Até 5 corretores)',
     prices: [
-      { unit_amount: 50000, currency: 'brl', recurring: { interval: 'month' }, lookup_key: 'business_monthly' },
-      { unit_amount: 480000, currency: 'brl', recurring: { interval: 'year' }, lookup_key: 'business_yearly' },
+      {
+        unit_amount: 50000,
+        currency: 'brl',
+        recurring: { interval: 'month' },
+        lookup_key: 'business_monthly',
+      },
+      {
+        unit_amount: 480000,
+        currency: 'brl',
+        recurring: { interval: 'year' },
+        lookup_key: 'business_yearly',
+      },
     ],
   },
   {
     name: 'Oinbox Enterprise',
     description: 'Para redes e franquias (Usuários ilimitados + Leads)',
     prices: [
-      { unit_amount: 100000, currency: 'brl', recurring: { interval: 'month' }, lookup_key: 'enterprise_monthly' },
-      { unit_amount: 960000, currency: 'brl', recurring: { interval: 'year' }, lookup_key: 'enterprise_yearly' },
+      {
+        unit_amount: 100000,
+        currency: 'brl',
+        recurring: { interval: 'month' },
+        lookup_key: 'enterprise_monthly',
+      },
+      {
+        unit_amount: 960000,
+        currency: 'brl',
+        recurring: { interval: 'year' },
+        lookup_key: 'enterprise_yearly',
+      },
     ],
   },
 ];
@@ -49,7 +78,7 @@ async function main() {
 
   for (const p of PRODUCTS) {
     console.log(`\n📦 Verificando/Criando Produto: ${p.name}...`);
-    
+
     // Check if exists
     const search = await stripe.products.search({ query: `name:'${p.name}'` });
     let product = search.data[0];
@@ -67,7 +96,7 @@ async function main() {
     // Create Prices
     for (const pr of p.prices) {
       console.log(`   💲 Processando Preço: ${pr.lookup_key} (${pr.unit_amount / 100} BRL)...`);
-      
+
       const priceSearch = await stripe.prices.list({
         product: product.id,
         lookup_keys: [pr.lookup_key as string],

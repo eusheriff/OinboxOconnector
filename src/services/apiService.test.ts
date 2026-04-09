@@ -8,9 +8,15 @@ global.fetch = mockFetch;
 const localStorageMock = {
   store: {} as Record<string, string>,
   getItem: vi.fn((key: string) => localStorageMock.store[key] || null),
-  setItem: vi.fn((key: string, value: string) => { localStorageMock.store[key] = value; }),
-  removeItem: vi.fn((key: string) => { delete localStorageMock.store[key]; }),
-  clear: vi.fn(() => { localStorageMock.store = {}; }),
+  setItem: vi.fn((key: string, value: string) => {
+    localStorageMock.store[key] = value;
+  }),
+  removeItem: vi.fn((key: string) => {
+    delete localStorageMock.store[key];
+  }),
+  clear: vi.fn(() => {
+    localStorageMock.store = {};
+  }),
 };
 Object.defineProperty(global, 'localStorage', { value: localStorageMock });
 
@@ -53,20 +59,20 @@ describe('apiService', () => {
       mockFetch.mockResolvedValueOnce({
         ok: false,
         status: 401,
+        json: () => Promise.resolve({ error: 'Invalid credentials' }),
       });
 
-      await expect(apiService.login('bad@example.com', 'wrongpass')).rejects.toThrow('Login failed');
+      await expect(apiService.login('bad@example.com', 'wrongpass')).rejects.toThrow(
+        'Invalid credentials',
+      );
     });
 
-    it('should fallback for demo credentials', async () => {
+    it('should throw error on network failure', async () => {
       mockFetch.mockRejectedValueOnce(new Error('Network error'));
 
-      const result = await apiService.login('demo@imobiliaria.com', 'any');
-
-      expect(result).toEqual({
-        user: { role: 'client', name: 'Demo User' },
-        tenantId: 'tenant-demo',
-      });
+      await expect(apiService.login('demo@imobiliaria.com', 'any')).rejects.toThrow(
+        'Network error',
+      );
     });
   });
 

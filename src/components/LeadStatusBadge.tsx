@@ -16,10 +16,6 @@ const statusMap: Record<string, { label: string; className: string }> = {
 
 export function LeadStatusBadge({ status }: LeadStatusBadgeProps) {
   const config = statusMap[status] || statusMap.default;
-  
-  return (
-    <Badge className={`${config.className} text-white border-0`}>
-      {config.label}
-    </Badge>
-  );
+
+  return <Badge className={`${config.className} text-white border-0`}>{config.label}</Badge>;
 }

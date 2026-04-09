@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { authMiddleware } from '../middleware/auth';
 import { getPlan } from '../config/plans';
+import { generatePropertyDescription } from '../services/aiService';
 
 const properties = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -12,13 +13,25 @@ properties.get('/', async (c) => {
   const user = c.get('user');
   const tenantId = user.tenantId;
 
-  const { results } = await c.env.DB.prepare(
-    'SELECT * FROM properties WHERE tenant_id = ? ORDER BY created_at DESC',
-  )
-    .bind(tenantId)
-    .all();
+  const page = parseInt(c.req.query('page') || '1', 10);
+  const limit = parseInt(c.req.query('limit') || '50', 10);
+  const offset = (page - 1) * limit;
 
-  const formatted = results.map((p) => {
+  const [propertiesResult, countResult] = await Promise.all([
+    c.env.DB.prepare(
+      'SELECT id, title, price, location, bedrooms, bathrooms, area, listing_type, status, images, features, created_at FROM properties WHERE tenant_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+    )
+      .bind(tenantId, limit, offset)
+      .all(),
+    c.env.DB.prepare('SELECT COUNT(*) as total FROM properties WHERE tenant_id = ?')
+      .bind(tenantId)
+      .first<{ total: number }>(),
+  ]);
+
+  const total = countResult?.total ?? 0;
+  const hasMore = offset + propertiesResult.results.length < total;
+
+  const formatted = propertiesResult.results.map((p) => {
     const prop = p as Record<string, unknown>;
     return {
       ...prop,
@@ -26,7 +39,7 @@ properties.get('/', async (c) => {
     };
   });
 
-  return c.json(formatted);
+  return c.json({ items: formatted, total, page, pageSize: limit, hasMore });
 });
 
 properties.get('/:id', async (c) => {
@@ -47,13 +60,15 @@ properties.get('/:id', async (c) => {
   // Track view (UPSERT)
   const today = new Date().toISOString().split('T')[0];
   try {
-    await c.env.DB.prepare(`
+    await c.env.DB.prepare(
+      `
       INSERT INTO property_daily_stats (property_id, tenant_id, date, views)
       VALUES (?, ?, ?, 1)
       ON CONFLICT(property_id, date) DO UPDATE SET views = views + 1
-    `)
-    .bind(propertyId, tenantId, today)
-    .run();
+    `,
+    )
+      .bind(propertyId, tenantId, today)
+      .run();
   } catch (e) {
     // Ignore stats errors to not block main flow
     console.error('Error tracking property view:', e);
@@ -76,19 +91,24 @@ properties.post('/', async (c) => {
   const tenant = await c.env.DB.prepare('SELECT plan FROM tenants WHERE id = ?')
     .bind(tenantId)
     .first<{ plan: string }>();
-  
+
   if (tenant) {
     const planConfig = getPlan(tenant.plan);
     const currentCount = await c.env.DB.prepare(
-      'SELECT COUNT(*) as count FROM properties WHERE tenant_id = ?'
-    ).bind(tenantId).first<number>('count');
+      'SELECT COUNT(*) as count FROM properties WHERE tenant_id = ?',
+    )
+      .bind(tenantId)
+      .first<number>('count');
 
     if ((currentCount || 0) >= planConfig.properties) {
-      return c.json({
-        error: `Limite de ${planConfig.properties} imóveis atingido. Faça upgrade do seu plano.`,
-        limit: planConfig.properties,
-        current: currentCount,
-      }, 403);
+      return c.json(
+        {
+          error: `Limite de ${planConfig.properties} imóveis atingido. Faça upgrade do seu plano.`,
+          limit: planConfig.properties,
+          current: currentCount,
+        },
+        403,
+      );
     }
   }
 
@@ -130,23 +150,24 @@ properties.post('/', async (c) => {
     )
     .run();
 
-
   // Trigger Match Reverso (Background)
   c.executionCtx.waitUntil(
     (async () => {
-        try {
-            // 1. Get Agent Phone
-            const agent = await c.env.DB.prepare('SELECT phone FROM users WHERE id = ?').bind(user.sub).first<{ phone: string }>();
-            
-            // 2. Run Match
-            if (agent?.phone) {
-                const { findMatches } = await import('../services/matchService');
-                await findMatches(c.env, data, tenantId, agent.phone);
-            }
-        } catch (e) {
-            console.error('Error in Match Reverso trigger:', e);
+      try {
+        // 1. Get Agent Phone
+        const agent = await c.env.DB.prepare('SELECT phone FROM users WHERE id = ?')
+          .bind(user.sub)
+          .first<{ phone: string }>();
+
+        // 2. Run Match
+        if (agent?.phone) {
+          const { findMatches } = await import('../services/matchService');
+          await findMatches(c.env, data, tenantId, agent.phone);
         }
-    })()
+      } catch (e) {
+        console.error('Error in Match Reverso trigger:', e);
+      }
+    })(),
   );
 
   return c.json({ success: true, id });
@@ -195,42 +216,9 @@ properties.post('/upload-image', async (c) => {
 properties.post('/generate-description', async (c) => {
   const { features, type, location } = await c.req.json();
 
-  const prompt =
-    'Crie uma descrição vendedora e atraente para um anúncio de imóvel (Zap Imóveis / OLX).\n\n' +
-    'DADOS DO IMÓVEL:\n' +
-    '- Tipo: ' +
-    type +
-    '\n' +
-    '- Localização: ' +
-    location +
-    '\n' +
-    '- Detalhes: ' +
-    JSON.stringify(features) +
-    '\n\n' +
-    'REGRAS:\n' +
-    '- Use emojis.\n' +
-    '- Destaque os pontos fortes.\n' +
-    '- Use gatilhos de escassez ("Últimas unidades", "Oportunidade").\n' +
-    '- Chamada para ação no final (Agendar visita).\n' +
-    '- Formato: Título chamativo + Corpo do texto.';
-
-  const apiKey = c.env.API_KEY;
-  const url =
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' +
-    apiKey;
-
   try {
-    const geminiResp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-      }),
-    });
-    const data: any = await geminiResp.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    return c.json({ description: text });
+    const description = await generatePropertyDescription(c.env, { features, type, location });
+    return c.json({ description });
   } catch (e) {
     return c.json({ error: 'Failed to generate description' }, 500);
   }

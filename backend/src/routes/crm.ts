@@ -1,7 +1,8 @@
 import { Hono } from 'hono';
 import bcrypt from 'bcryptjs';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { authMiddleware } from '../middleware/auth';
+import { analyzeClientData } from '../services/aiService';
 
 const crm = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -11,13 +12,26 @@ crm.get('/clients', async (c) => {
   const user = c.get('user');
   const tenantId = user.tenantId;
 
-  const { results } = await c.env.DB.prepare(
-    'SELECT * FROM clients WHERE tenant_id = ? ORDER BY created_at DESC',
-  )
-    .bind(tenantId)
-    .all();
+  const page = parseInt(c.req.query('page') || '1', 10);
+  const limit = parseInt(c.req.query('limit') || '50', 10);
+  const offset = (page - 1) * limit;
 
-  return c.json(results);
+  const [clientsResult, countResult] = await Promise.all([
+    c.env.DB.prepare(
+      'SELECT id, name, email, phone, status, temperature, lead_score, last_interaction, created_at FROM clients WHERE tenant_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
+    )
+      .bind(tenantId, limit, offset)
+      .all(),
+    c.env.DB.prepare('SELECT COUNT(*) as total FROM clients WHERE tenant_id = ?')
+      .bind(tenantId)
+      .first<{ total: number }>(),
+  ]);
+
+  const items = clientsResult.results;
+  const total = countResult?.total ?? 0;
+  const hasMore = offset + items.length < total;
+
+  return c.json({ items, total, page, pageSize: limit, hasMore });
 });
 
 crm.post('/clients', async (c) => {
@@ -70,42 +84,12 @@ crm.post('/clients/:id/analyze', async (c) => {
     return c.json({ error: 'No interaction history to analyze' }, 400);
   }
 
-  // 2. Construct Prompt
+  // 2. Construct conversation text
   const conversation = history.results.map((m) => m.role + ': ' + m.content).join('\n');
-  const prompt =
-    'Analise a seguinte conversa entre um corretor (ou IA) e um cliente imobiliário.\n\n' +
-    'CONVERSA:\n' +
-    conversation +
-    '\n\n' +
-    'TAREFA:\n' +
-    '1. Atribua uma nota de 0 a 100 para a probabilidade de compra deste cliente (Lead Score).\n' +
-    '2. Escreva um resumo curto (max 2 frases) sobre o perfil e urgência dele.\n\n' +
-    'SAÍDA JSON (apenas JSON):\n' +
-    '{ "score": 85, "summary": "Cliente busca 3 quartos urgente, tem crédito aprovado." }';
 
-  // 3. Call Gemini
-  const apiKey = c.env.API_KEY;
-  const url =
-    'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' +
-    apiKey;
-
+  // 3. Call Gemini via aiService
   try {
-    const geminiResp = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-      }),
-    });
-    const data: any = await geminiResp.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    // Clean markdown code blocks if present
-    const jsonStr = text
-      .replace(/```json/g, '')
-      .replace(/```/g, '')
-      .trim();
-    const result = JSON.parse(jsonStr);
+    const result = await analyzeClientData(c.env, conversation);
 
     // 4. Update Database
     await c.env.DB.prepare('UPDATE clients SET score = ?, ai_summary = ? WHERE id = ?')

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Property, MarketingTemplate } from '../../types';
+import { Property, MarketingTemplate } from '@shared/types';
 import {
   Instagram,
   Download,
@@ -9,10 +9,10 @@ import {
   Layout,
   Loader2,
 } from 'lucide-react';
-import { apiService } from '../../services/apiService';
-import { generateMarketingCaption } from '../../services/geminiService';
+import { apiService } from '@/services/apiService';
+import { generateMarketingCaption } from '@/services/openaiService';
 import html2canvas from 'html2canvas';
-import { useToast } from '../../contexts/ToastContext';
+import { useToast } from '@/contexts/ToastContext';
 
 const TEMPLATES: MarketingTemplate[] = [
   { id: 't1', name: 'Stories - Vendido', format: 'story', label: 'VENDIDO', color: 'bg-red-600' },

@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+@import 'fumadocs-ui/style.css';
+
+@theme {
+  --color-brand: #2563eb;
+  --color-brand-foreground: #3b82f6;
+}

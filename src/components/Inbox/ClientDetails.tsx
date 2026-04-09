@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Conversation, Property, ClientProfile, ClientDocument } from '../../types';
-import { MOCK_PROPERTIES } from '../../constants';
+import { Conversation, Property, ClientProfile, ClientDocument } from '@shared/types';
+import { MOCK_PROPERTIES } from '@/constants';
 import {
   Phone,
   Mail,
@@ -19,7 +19,7 @@ import {
   Mic,
   StopCircle,
 } from 'lucide-react';
-import { analyzeClientProfile, processVoiceNote } from '../../services/geminiService';
+import { analyzeClientProfile, processVoiceNote } from '@/services/openaiService';
 
 interface ClientDetailsProps {
   conversation: Conversation | null;
@@ -54,7 +54,7 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
           text: m.text,
         }));
         const result = await analyzeClientProfile(msgs);
-        setProfile(result);
+        setProfile(result as unknown as ClientProfile | null);
         setLoadingProfile(false);
       } else if (conversation?.clientProfile) {
         setProfile(conversation.clientProfile);
@@ -160,11 +160,10 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
             <button
               onClick={handleVoiceNoteClick}
               disabled={voiceProcessing}
-              className={`w-full py-3 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${
-                isRecordingVoiceNote
+              className={`w-full py-3 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${isRecordingVoiceNote
                   ? 'bg-red-100 text-red-600 animate-pulse'
                   : 'bg-white border border-gray-200 text-slate-700 hover:border-blue-400 shadow-sm'
-              }`}
+                }`}
             >
               {voiceProcessing ? (
                 <>

@@ -1,7 +1,9 @@
 # Oinbox Technical Audit (Snapshot 1.0)
 
 ## 1. Project Overview
+
 **Oinbox** is a Multi-tenant SaaS for Real Estate Agencies (CRM + WhatsApp Automation).
+
 - **Frontend**: React + Vite + TailwindCSS.
 - **Backend**: Cloudflare Workers + Hono.
 - **Database**: Cloudflare D1 (SQLite).
@@ -9,6 +11,7 @@
 - **Payments**: Stripe.
 
 ## 2. Infrastructure ([wrangler.toml](file:///Volumes/LexarAPFS/Oinbox/oinbox/wrangler.toml))
+
 Running on Cloudflare Workers with Cron Triggers (Weekly Reports) and D1 Binding.
 
 ```toml
@@ -45,6 +48,7 @@ STRIPE_PRICE_BASIC = "price_1SnQxUBGBVDzrAhzlMMZwDjM"
 ```
 
 ## 3. Database Schema ([backend/schema.sql](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/schema.sql))
+
 Multi-tenant architecture where almost every table has `tenant_id`.
 
 ```sql
@@ -218,7 +222,9 @@ CREATE INDEX IF NOT EXISTS idx_whatsapp_messages_remote_jid ON whatsapp_messages
 ```
 
 ## 4. WhatsApp Integration ([whatsapp.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/whatsapp.ts))
+
 Uses Evolution API. Creates unique instances as `tenant_{id}`.
+
 - **Webhook**: Handles `messages.upsert`, saves to DB, triggers AI Agent if inbound.
 - **Lazy Creation**: [ensureInstance](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/whatsapp.ts#171-205) creates Evolution session on demand.
 - **AI Agent**: RAG based on `knowledge_base` + `chat_history`.
@@ -229,84 +235,95 @@ Uses Evolution API. Creates unique instances as `tenant_{id}`.
 const ensureInstance = async (env: Bindings, tenantId: string, logger: DatadogLogger | null) => {
   // ... checks if exists ...
   // If 404, creates:
-    const create = await evolutionFetch(env, '/instance/create', {
-      method: 'POST',
-      body: JSON.stringify({
-        instanceName: instanceName, // tenant_{id}
-        qrcode: true,
-        integration: 'WHATSAPP-BAILEYS',
-        webhook: `${webhookBaseUrl}/api/whatsapp/webhook`,
-        webhook_by_events: true,
-        events: ['messages.upsert'],
-      }),
-    });
+  const create = await evolutionFetch(env, '/instance/create', {
+    method: 'POST',
+    body: JSON.stringify({
+      instanceName: instanceName, // tenant_{id}
+      qrcode: true,
+      integration: 'WHATSAPP-BAILEYS',
+      webhook: `${webhookBaseUrl}/api/whatsapp/webhook`,
+      webhook_by_events: true,
+      events: ['messages.upsert'],
+    }),
+  });
   // ...
 };
 ```
 
 ## 5. Stripe Integration ([stripe.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/config/stripe.ts))
+
 Subscription handling logic.
 
 ```typescript
 // backend/src/routes/stripe.ts
 // ...
-    const session = await stripe.checkout.sessions.create({
-      mode: 'subscription',
-      payment_method_types: ['card'],
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      success_url: successUrl || 'https://oinbox.oconnector.tech/admin/billing/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: cancelUrl || 'https://oinbox.oconnector.tech/admin/billing',
-      client_reference_id: tenantId,
-      customer_email: userEmail,
-      metadata: {
-        tenantId: tenantId,
-        planName: planName,
-      },
-      allow_promotion_codes: true,
-    });
+const session = await stripe.checkout.sessions.create({
+  mode: 'subscription',
+  payment_method_types: ['card'],
+  line_items: [
+    {
+      price: priceId,
+      quantity: 1,
+    },
+  ],
+  success_url:
+    successUrl ||
+    'https://oinbox.oconnector.tech/admin/billing/success?session_id={CHECKOUT_SESSION_ID}',
+  cancel_url: cancelUrl || 'https://oinbox.oconnector.tech/admin/billing',
+  client_reference_id: tenantId,
+  customer_email: userEmail,
+  metadata: {
+    tenantId: tenantId,
+    planName: planName,
+  },
+  allow_promotion_codes: true,
+});
 // ...
 ```
 
 ## 6. Frontend Routing ([App.tsx](file:///Volumes/LexarAPFS/Oinbox/oinbox/App.tsx) & [index.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/index.ts))
+
 - **SuperAdmin**: `/admin/*` -> [SuperAdminLeadCapture](file:///Volumes/LexarAPFS/Oinbox/oinbox/components/Admin/SuperAdminLeadCapture.tsx#49-645)
 - **Client**: `/app/*` -> [ClientLayout](file:///Volumes/LexarAPFS/Oinbox/oinbox/src/layouts/ClientLayout.tsx#11-22)
 - **Auth**: `/login`, `/register`
 - **Gate**: Trial expiry check blocks usage.
 
 ## 7. Status & Readiness
+
 - **Production URL**: `https://oinbox-frontend.pages.dev`
 - **API URL**: `https://api.oinbox.oconnector.tech`
 - **Lint**: Passed (0 critical errors).
+
 ## 8. Deep Dive: Security & Data Isolation (Code Verification)
+
 Here are the critical snippets to verify multi-tenant isolation and billing logic.
 
 ### 8.1. Auth Middleware ([backend/src/middleware/auth.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/middleware/auth.ts))
+
 **How Tenant ID is determined**: Extracted from signed JWT. Critical for downstream isolation.
+
 ```typescript
 // backend/src/middleware/auth.ts
 export const authMiddleware = async (c, next) => {
   // ... verify token ...
-    const { payload } = await jwtVerify(token, secret);
+  const { payload } = await jwtVerify(token, secret);
 
-    // Set user in context variables (TRUSTED SOURCE)
-    c.set('user', {
-      sub: payload.sub as string,
-      tenantId: payload.tenantId as string, // <--- CRITICAL: Source of Truth
-      role: payload.role as string,
-      // ...
-    });
-    await next();
+  // Set user in context variables (TRUSTED SOURCE)
+  c.set('user', {
+    sub: payload.sub as string,
+    tenantId: payload.tenantId as string, // <--- CRITICAL: Source of Truth
+    role: payload.role as string,
+    // ...
+  });
+  await next();
   // ...
 };
 ```
 
 ### 8.2. Client Data Isolation ([backend/src/routes/client.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/client.ts))
+
 **Usage of Tenant ID**: Injected into SQL queries to prevent data leaks.
+
 ```typescript
 // backend/src/routes/client.ts
 client.get('/dashboard', async (c) => {
@@ -325,12 +342,14 @@ client.get('/dashboard', async (c) => {
 ```
 
 ### 8.3. WhatsApp Webhook Validation ([backend/src/routes/whatsapp.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/whatsapp.ts))
+
 **Public Entry Point**: Identifies tenant via `instance` name from Evolution API payload.
+
 ```typescript
 // backend/src/routes/whatsapp.ts
 whatsapp.post('/webhook', async (c) => {
   const payload = await c.req.json();
-  
+
   // Identificar Tenant pela instância no payload
   // Evolution envia: { "instance": "tenant_123", ... }
   const instanceName = payload.instance;

@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "ES2020",
     "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2020",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "skipLibCheck": true,
     "moduleResolution": "bundler",
@@ -15,12 +19,32 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,
-    "types": ["vite/client", "node", "vitest/globals", "@cloudflare/workers-types"],
+    "types": [
+      "vite/client",
+      "node",
+      "vitest/globals",
+      "@cloudflare/workers-types"
+    ],
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["shared/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@shared/*": [
+        "shared/*"
+      ]
     }
   },
-  "include": ["src", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules", "nanobrowser", "backend/src/_deprecated"]
+  "include": [
+    "src",
+    "**/*.ts",
+    "**/*.tsx",
+    "backend/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "nanobrowser",
+    "backend/src/_deprecated",
+    "docs"
+  ]
 }

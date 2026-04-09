@@ -6,19 +6,73 @@ import React, { useState, useRef, useEffect } from 'react';
 // Actually, I'll use standard SVGs to be safe and dependency-free within the component.
 
 const BotIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z"/><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8"/><path d="M10 12h4"/><path d="M2.29 7.62A2 2 0 0 1 4 5.22L6 4"/><path d="M21.71 7.62A2 2 0 0 0 20 5.22L18 4"/></svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 2a2 2 0 0 1 2 2v2a2 2 0 0 1-2 2 2 2 0 0 1-2-2V4a2 2 0 0 1 2-2Z" />
+    <path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8" />
+    <path d="M10 12h4" />
+    <path d="M2.29 7.62A2 2 0 0 1 4 5.22L6 4" />
+    <path d="M21.71 7.62A2 2 0 0 0 20 5.22L18 4" />
+  </svg>
 );
 
 const XIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M18 6 6 18" />
+    <path d="m6 6 12 12" />
+  </svg>
 );
 
 const MessageIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z"/></svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" />
+  </svg>
 );
 
 const SendIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="m22 2-7 20-4-9-9-4Z" />
+    <path d="M22 2 11 13" />
+  </svg>
 );
 
 interface Message {
@@ -31,18 +85,19 @@ export const ManuWidget: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
-      id: "welcome",
-      role: "assistant",
-      content: "Olá! Sou a Manú, Especialista em Omnichannel do oInbox. 📥\nComo posso ajudar a centralizar seu atendimento hoje?"
-    }
+      id: 'welcome',
+      role: 'assistant',
+      content:
+        'Olá! Sou a Manú, Especialista em Omnichannel do oInbox. 📥\nComo posso ajudar a centralizar seu atendimento hoje?',
+    },
   ]);
-  const [inputValue, setInputValue] = useState("");
+  const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isOpen]);
 
   const handleSendMessage = async () => {
@@ -51,52 +106,54 @@ export const ManuWidget: React.FC = () => {
     const userMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: inputValue
+      content: inputValue,
     };
 
-    setMessages(prev => [...prev, userMsg]);
-    setInputValue("");
+    setMessages((prev) => [...prev, userMsg]);
+    setInputValue('');
     setIsLoading(true);
 
     try {
       // Get or create generic user ID
-      let userId = localStorage.getItem("manu_session_id");
+      let userId = localStorage.getItem('manu_session_id');
       if (!userId) {
-        userId = "web-" + Math.random().toString(36).substring(7);
-        localStorage.setItem("manu_session_id", userId);
+        userId = 'web-' + Math.random().toString(36).substring(7);
+        localStorage.setItem('manu_session_id', userId);
       }
 
-      const response = await fetch("https://agent-hub.oconnector.tech/v1/hub/orchestrate", {
-        method: "POST",
+      const response = await fetch('https://agent-hub.oconnector.tech/v1/hub/orchestrate', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json"
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           request: userMsg.content,
           userId: userId,
-          origin_domain: "oinbox.oconnector.tech" // Forces oInbox Persona
-        })
+          origin_domain: 'oinbox.oconnector.tech', // Forces oInbox Persona
+        }),
       });
 
-      if (!response.ok) throw new Error("Falha na comunicação");
+      if (!response.ok) throw new Error('Falha na comunicação');
 
-      const data = await response.json() as { result?: { response?: string } };
-      
+      const data = (await response.json()) as { result?: { response?: string } };
+
       const botMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.result?.response || "Desculpe, tive um problema técnico. Tente novamente."
+        content: data.result?.response || 'Desculpe, tive um problema técnico. Tente novamente.',
       };
 
-      setMessages(prev => [...prev, botMsg]);
-
+      setMessages((prev) => [...prev, botMsg]);
     } catch (error) {
-      console.error("Manu Error:", error);
-      setMessages(prev => [...prev, {
-        id: Date.now().toString(),
-        role: 'system',
-        content: "⚠️ Erro de conexão. Verifique sua internet."
-      }]);
+      console.error('Manu Error:', error);
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          role: 'system',
+          content: '⚠️ Erro de conexão. Verifique sua internet.',
+        },
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -111,11 +168,9 @@ export const ManuWidget: React.FC = () => {
 
   return (
     <div className="fixed bottom-4 right-4 z-[9999] flex flex-col items-end gap-2 font-sans text-slate-800">
-      
       {/* Chat Window */}
       {isOpen && (
         <div className="bg-white w-[350px] h-[500px] shadow-2xl rounded-2xl flex flex-col overflow-hidden border border-slate-200 animate-in slide-in-from-bottom-10 fade-in duration-300">
-          
           {/* Header */}
           <div className="bg-indigo-600 p-4 flex items-center justify-between text-white shadow-sm">
             <div className="flex items-center gap-3">
@@ -130,7 +185,10 @@ export const ManuWidget: React.FC = () => {
                 <p className="text-xs text-indigo-100">Omnichannel & CRM</p>
               </div>
             </div>
-            <button onClick={() => setIsOpen(false)} className="hover:bg-white/10 p-1 rounded-lg transition-colors">
+            <button
+              onClick={() => setIsOpen(false)}
+              className="hover:bg-white/10 p-1 rounded-lg transition-colors"
+            >
               <XIcon />
             </button>
           </div>
@@ -142,36 +200,36 @@ export const ManuWidget: React.FC = () => {
                 key={msg.id}
                 className={`flex gap-3 ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}
               >
-                 {msg.role === 'assistant' && (
-                     <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
-                         <BotIcon />
-                     </div>
-                 )}
-                 
-                 <div
+                {msg.role === 'assistant' && (
+                  <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
+                    <BotIcon />
+                  </div>
+                )}
+
+                <div
                   className={`max-w-[80%] rounded-2xl p-3 text-sm leading-relaxed shadow-sm ${
                     msg.role === 'user'
                       ? 'bg-indigo-600 text-white rounded-tr-none'
                       : msg.role === 'system'
-                      ? 'bg-red-50 text-red-600 text-xs text-center w-full border border-red-100'
-                      : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'
+                        ? 'bg-red-50 text-red-600 text-xs text-center w-full border border-red-100'
+                        : 'bg-white text-slate-700 border border-slate-100 rounded-tl-none'
                   }`}
                 >
                   <p className="whitespace-pre-wrap">{msg.content}</p>
                 </div>
               </div>
             ))}
-            
+
             {isLoading && (
               <div className="flex gap-3">
-                 <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
-                     <BotIcon />
-                 </div>
-                 <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-none p-3 shadow-sm flex items-center gap-1">
-                    <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce"></span>
-                    <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
-                    <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
-                 </div>
+                <div className="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center flex-shrink-0 text-indigo-600">
+                  <BotIcon />
+                </div>
+                <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-none p-3 shadow-sm flex items-center gap-1">
+                  <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce"></span>
+                  <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                  <span className="w-2 h-2 bg-indigo-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                </div>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -198,7 +256,7 @@ export const ManuWidget: React.FC = () => {
               </button>
             </div>
             <div className="text-center mt-2">
-                <p className="text-[10px] text-slate-400">Powered by OBotOConnector Technology</p>
+              <p className="text-[10px] text-slate-400">Powered by OBotOConnector Technology</p>
             </div>
           </div>
         </div>
@@ -213,7 +271,6 @@ export const ManuWidget: React.FC = () => {
       >
         {isOpen ? <XIcon /> : <MessageIcon />}
       </button>
-
     </div>
   );
 };

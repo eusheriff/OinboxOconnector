@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { MOCK_PROPERTIES } from '../../constants';
-import { Property } from '../../types';
+import { MOCK_PROPERTIES } from '@/constants';
+import { Property } from '@shared/types';
 import { MapPin, Navigation, X, Loader2, Sparkles, ExternalLink, Building2 } from 'lucide-react';
-import { askLocationAssistant, GroundingSource } from '../../services/geminiService';
+import { askLocationAssistant, GroundingSource } from '@/services/openaiService';
 
 const PropertyMap: React.FC = () => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);
@@ -43,7 +43,7 @@ const PropertyMap: React.FC = () => {
       </div>
 
       {/* Map Container (Simulated) */}
-      <div className="w-full h-full relative bg-[#e5e7eb] group cursor-grab active:cursor-grabbing">
+      <div className="w-full h-full relative bg-muted group cursor-grab active:cursor-grabbing">
         {/* Mock Map Background using a subtle pattern or image */}
         <div
           className="absolute inset-0 opacity-60 bg-cover bg-center grayscale-[30%]"

@@ -1,40 +1,42 @@
-import { Bindings } from '../types';
+import { Bindings } from '../bindings';
 
 interface Property {
-    id: string;
-    title: string;
-    price: number;
-    location: string;
-    listing_type: string;
-    bedrooms: number;
-    bathrooms: number;
-    area: number;
-    features: string[];
-    description: string;
-    image_url: string;
+  id: string;
+  title: string;
+  price: number;
+  location: string;
+  listing_type: string;
+  bedrooms: number;
+  bathrooms: number;
+  area: number;
+  features: string[];
+  description: string;
+  image_url: string;
 }
 
 interface SocialKit {
-    caption: string;
-    hashtags: string[];
-    story_frames: string[];
-    image_url: string;
+  caption: string;
+  hashtags: string[];
+  story_frames: string[];
+  image_url: string;
 }
 
 type Tone = 'professional' | 'fun' | 'urgent';
 
 export async function generateSocialKit(
-    env: Bindings,
-    property: Property,
-    tone: Tone = 'professional'
+  env: Bindings,
+  property: Property,
+  tone: Tone = 'professional',
 ): Promise<SocialKit> {
-    const toneGuides: Record<Tone, string> = {
-        professional: 'Tom formal e elegante. Use linguagem de corretor experiente. Destaque exclusividade.',
-        fun: 'Tom leve e descontraído. Use emojis com moderação. Crie conexão emocional.',
-        urgent: 'Tom de urgência. Use gatilhos de escassez ("Últimas unidades!", "Oportunidade única!"). FOMO.'
-    };
+  const toneGuides: Record<Tone, string> = {
+    professional:
+      'Tom formal e elegante. Use linguagem de corretor experiente. Destaque exclusividade.',
+    fun: 'Tom leve e descontraído. Use emojis com moderação. Crie conexão emocional.',
+    urgent:
+      'Tom de urgência. Use gatilhos de escassez ("Últimas unidades!", "Oportunidade única!"). FOMO.',
+  };
 
-    const prompt = `
+  const prompt = `
 Você é um copywriter especialista em Marketing Imobiliário para Instagram Brasil.
 
 IMÓVEL:
@@ -78,32 +80,35 @@ FORMATO DE RESPOSTA (JSON estrito):
 Responda APENAS o JSON, sem markdown ou explicações.
 `;
 
-    const apiKey = env.API_KEY;
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const apiKey = env.OPENAI_API_KEY;
+  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
 
-    const response = await fetch(geminiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }],
-            generationConfig: {
-                temperature: 0.8, // More creative
-                maxOutputTokens: 2048
-            }
-        })
-    });
+  const response = await fetch(geminiUrl, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      contents: [{ parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.8, // More creative
+        maxOutputTokens: 2048,
+      },
+    }),
+  });
 
-    const data: any = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  const data: any = await response.json();
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
-    // Clean and parse JSON
-    const jsonStr = text.replace(/```json/g, '').replace(/```/g, '').trim();
-    const result = JSON.parse(jsonStr);
+  // Clean and parse JSON
+  const jsonStr = text
+    .replace(/```json/g, '')
+    .replace(/```/g, '')
+    .trim();
+  const result = JSON.parse(jsonStr);
 
-    return {
-        caption: result.caption,
-        hashtags: result.hashtags,
-        story_frames: result.story_frames,
-        image_url: property.image_url || ''
-    };
+  return {
+    caption: result.caption,
+    hashtags: result.hashtags,
+    story_frames: result.story_frames,
+    image_url: property.image_url || '',
+  };
 }

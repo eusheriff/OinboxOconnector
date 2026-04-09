@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Bot, Cpu, DollarSign } from 'lucide-react';
-import { useToast } from '../../contexts/ToastContext';
+import { useToast } from '@/contexts/ToastContext';
 
 interface AIConfig {
   model: string;

@@ -50,10 +50,6 @@ class DatadogLogger {
       });
     } catch (error) {
       // Fallback: log to console if Datadog fails
-      // eslint-disable-next-line no-console
-      // console.error('Datadog logging failed:', error);
-      // eslint-disable-next-line no-console
-      // console.log('Original log:', log);
     }
   }
 
@@ -105,8 +101,7 @@ class DatadogLogger {
         body: JSON.stringify(payload),
       });
     } catch (error) {
-      // eslint-disable-next-line no-console
-      // console.error('Datadog metric failed:', error);
+      // Silently fail on metric errors
     }
   }
 }
@@ -116,7 +111,6 @@ const safeLogger = (action: () => void) => {
   try {
     action();
   } catch (err) {
-    // Silently fail on logging errors to not affect main application
     console.error('Datadog Logging Error:', err);
   }
 };
@@ -128,8 +122,6 @@ export function createDatadogLogger(env: any): DatadogLogger | null {
   const apiKey = env.DATADOG_API_KEY;
 
   if (!apiKey) {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // console.warn('DATADOG_API_KEY not set. Logging to console only.');
     return null;
   }
 

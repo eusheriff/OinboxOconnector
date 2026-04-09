@@ -1,6 +1,6 @@
 /**
  * SHARED TYPES - Oinbox Platform
- * 
+ *
  * These types are shared between Frontend and Backend.
  * Import from '@/shared/types' (frontend) or '../../../shared/types' (backend)
  */
@@ -15,7 +15,25 @@ export enum Platform {
   OLX = 'OLX',
   ZAP = 'Zap Imóveis',
   PORTAL_IMOVEL = 'Portal Imóvel',
+  VIVA_REAL = 'VivaReal',
+  MERCADO_LIVRE = 'Mercado Livre Imóveis',
+  IMOVELWEB = 'Imovelweb',
+  CHAVES_NA_MAO = 'Chaves na Mão',
+  REALIZA = 'Realiza',
+  FACEBOOK_MARKETPLACE = 'Facebook Marketplace',
 }
+
+// Status de publicação em portais
+export enum PublicationStatus {
+  PENDING = 'pending',
+  PUBLISHING = 'publishing',
+  PUBLISHED = 'published',
+  FAILED = 'failed',
+  DRAFT = 'draft',
+}
+
+// Tipo de autenticação do portal
+export type PortalAuthType = 'api_key' | 'oauth' | 'credentials' | 'xml_feed' | 'webhook';
 
 export enum DealStage {
   NEW = 'Novo Lead',
@@ -30,7 +48,7 @@ export interface User {
   id: string;
   name: string;
   avatar: string;
-  role?: 'admin' | 'client' | 'SuperAdmin' | 'user';
+  role?: 'admin' | 'client' | 'SuperAdmin' | 'user' | 'super_admin';
 }
 
 export interface Tenant {
@@ -51,6 +69,14 @@ export interface Tenant {
 
 // === CLIENT & LEAD ===
 
+export interface ClientProfile {
+  budget?: string;
+  urgency?: 'Baixa' | 'Média' | 'Alta';
+  preferences?: string[];
+  sentiment?: 'Positivo' | 'Neutro' | 'Crítico';
+  summary?: string;
+}
+
 export interface Client {
   id: string;
   name: string;
@@ -65,6 +91,15 @@ export interface Client {
   temperature?: 'Cold' | 'Warm' | 'Hot';
   lastInteraction?: Date;
   aiSummary?: string;
+}
+
+export interface ClientDocument {
+  id: string;
+  name: string;
+  type: 'pdf' | 'image' | 'doc';
+  status: 'pending' | 'approved' | 'rejected';
+  url?: string;
+  uploadedAt?: Date;
 }
 
 export interface Lead {
@@ -104,10 +139,23 @@ export interface Property {
   price: number;
   location: string;
   image: string;
+  images?: string[];
   features: string[];
   coordinates?: { x: number; y: number };
   status?: 'Active' | 'Sold' | 'Pending';
   listingType: 'sale' | 'rent';
+  // Campos adicionais para publicação multi-plataforma
+  description?: string;
+  bedrooms?: number;
+  bathrooms?: number;
+  suites?: number;
+  garage?: number;
+  area?: number;
+  total_area?: number;
+  condo_value?: number;
+  iptu_value?: number;
+  portal_urls?: Record<string, string>; // portal_id -> URL
+  publications?: PropertyPublication[];
 }
 
 // === MESSAGING ===
@@ -135,6 +183,18 @@ export interface Conversation {
   messages: Message[];
   associatedPropertyId?: string;
   aiSummary?: string;
+  clientProfile?: ClientProfile;
+  documents?: ClientDocument[];
+}
+
+export interface Appointment {
+  id: string;
+  title: string;
+  date: Date;
+  type: 'visit' | 'meeting' | 'call';
+  clientName: string;
+  propertyId?: string;
+  location: string;
 }
 
 // === DEALS ===
@@ -185,6 +245,17 @@ export interface OutreachCampaign {
   completedAt?: Date;
 }
 
+// === AI & CONFIG ===
+
+export type AIProvider = 'openai' | 'ollama';
+
+export interface AIConfig {
+  provider: AIProvider;
+  ollamaBaseUrl: string;
+  selectedModel: string;
+  visionModel: string;
+}
+
 // === API RESPONSES ===
 
 export interface ApiResponse<T> {
@@ -200,4 +271,97 @@ export interface PaginatedResponse<T> {
   page: number;
   pageSize: number;
   hasMore: boolean;
+}
+
+// === MARKETING ===
+
+export interface MarketingTemplate {
+  id: string;
+  name: string;
+  format: 'story' | 'post';
+  label: string;
+  color: string;
+}
+
+export interface QualificationRule {
+  id: string;
+  name: string;
+  description?: string;
+  minRating: number;
+  minReviews: number;
+  requiredKeywords?: string[];
+  excludedKeywords?: string[];
+  requiredHasPhone: boolean;
+  requiredHasWebsite: boolean;
+  weight: number;
+  isActive: boolean;
+}
+
+// === PORTALS & MULTI-PLATFORM PUBLISHING ===
+
+export interface PortalConfig {
+  id: string;
+  tenant_id: string;
+  portal_id: string;
+  enabled: boolean;
+  auth_data?: Record<string, any>; // Credenciais criptografadas
+  xml_url?: string; // Para portais que usam feed XML
+  webhook_url?: string; // Para portais que usam webhook
+  last_sync?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PortalInfo {
+  id: string;
+  name: string;
+  type: 'listing' | 'social' | 'marketplace';
+  icon: string;
+  color: string;
+  description: string;
+  authType: PortalAuthType;
+  authFields?: {
+    label: string;
+    type: string;
+    placeholder: string;
+    required?: boolean;
+  }[];
+  supported: boolean;
+  requiresApproval?: boolean;
+}
+
+export interface PropertyPublication {
+  id: string;
+  property_id: string;
+  tenant_id: string;
+  portal_id: string;
+  status: PublicationStatus;
+  external_id?: string; // ID no portal externo
+  external_url?: string; // URL do anúncio no portal
+  error_message?: string;
+  published_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface BulkPublishRequest {
+  property_id: string;
+  portal_ids: string[];
+}
+
+export interface BulkPublishResult {
+  success: boolean;
+  publications: PropertyPublication[];
+  total: number;
+  successful: number;
+  failed: number;
+}
+
+export interface PortalPublishResponse {
+  success: boolean;
+  publication_id: string;
+  status: PublicationStatus;
+  external_id?: string;
+  external_url?: string;
+  error?: string;
 }

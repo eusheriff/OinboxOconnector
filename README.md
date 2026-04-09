@@ -1,45 +1,51 @@
-# Oinbox - Real Estate Operating System
+# Oinbox — Omnichannel Platform for Real Estate
 
-Oinbox é um "Sistema Operacional Imobiliário" completo, desenhado para centralizar a operação de corretores e imobiliárias. A plataforma une **CRM**, **Inbox Unificado** (Omnichannel) e **Marketing**, tudo potencializado por Inteligência Artificial Generativa (Google Gemini).
+Oinbox é uma plataforma omnichannel com automação de vendas via IA, desenhada para centralizar a operação de corretores e imobiliárias. O core do produto é o **Inbox Unificado** (WhatsApp, Email, Portais) potencializado por Inteligência Artificial Generativa (Google Gemini + Agent Hub externo).
 
 ## 🚀 Stack Tecnológico
 
-O projeto utiliza uma arquitetura moderna, serverless e de baixo custo (Edge Computing):
-
-- **Frontend:** React 19, Tailwind CSS, Lucide Icons.
-- **AI Core:** Google Gemini API (`gemini-2.5-flash` e `gemini-2.5-flash-lite`).
-- **Backend (Serverless):** Cloudflare Workers.
-- **Banco de Dados:** Cloudflare D1 (SQLite na Edge).
-- **Storage:** Cloudflare R2 (Armazenamento de Contratos e Fotos).
-- **Build Tool:** Vite.
+| Camada | Tecnologia |
+|--------|-----------|
+| **Frontend** | React 18, TypeScript, Tailwind CSS, shadcn/ui, Vite |
+| **Backend** | Hono (Cloudflare Workers — serverless edge) |
+| **Banco de Dados** | Cloudflare D1 (SQLite na edge) |
+| **Storage** | Cloudflare R2 (imagens e contratos) |
+| **WhatsApp** | Evolution API (BaileYS, self-hosted) — instância por tenant |
+| **AI** | Google Gemini + Agent Hub externo (`agent-hub.oconnector.tech`) |
+| **Billing** | Stripe |
+| **Observabilidade** | Datadog (logs + métricas, região US5) |
 
 ---
 
-## 💎 Funcionalidades Principais
+## 📦 Funcionalidades
 
-### 1. Inteligência Artificial (Agentic AI)
+### Core: Inbox Omnichannel
+- **WhatsApp** — Canal principal com instância dedicada por tenant (QR code individual)
+- **Email** — Captura de leads de portais imobiliários (Zap, VivaReal, OLX) via Cloudflare Email Routing
+- **Chat unificado** — Todas as conversas em uma única interface com perfil comportamental do cliente (IA)
 
-- **Flash Agent:** Respostas ultra-rápidas no chat simulando o corretor.
-- **Visão Computacional:** Upload de foto do imóvel -> A IA detecta características (piso, acabamento) e preenche o cadastro.
-- **Voice-to-CRM:** Transcrição de áudios de visita transformados em dados estruturados no CRM.
-- **Consultor de Mercado:** Chatbot especialista em direito e economia imobiliária.
+### Automação de Vendas (IA)
+- **Sales Specialist** — Análise de intenção da mensagem do lead e resposta automática
+- **Flash Agent** — Respostas rápidas no chat simulando o corretor
+- **Human Handover** — Quando um corretor é atribuído ao lead, a IA silencia e notifica o responsável
+- **Visão Computacional** — Upload de foto do imóvel → IA detecta características e preenche o cadastro
+- **Voice-to-CRM** — Transcrição de áudios de visita transformados em dados estruturados
 
-### 2. Inbox Unificado & CRM
+### CRM e Operações
+- **Lead Scoring** — Termômetro automático que pontua leads
+- **Pipeline Visual** — Kanban (Novo, Visita, Proposta, Fechado)
+- **Criação de Imóveis** — Formulário completo com upload de fotos (Cloudflare R2), análise de imagem por IA (Gemini), geração de descrição, seleção de portais e publicação em lote
+- **Publicação Multi-Plataforma** — OLX, Zap Imóveis, VivaReal, Facebook Marketplace (adapter pattern, credenciais por tenant)
+- **XML Feed** — Geração automática de feed XML para portais que usam integração XML (`GET /api/feed/{tenantId}.xml`)
+- **Simulador Financeiro** — Parcelas SAC/Price com taxas de mercado
+- **Gerador de Contratos** — PDFs automáticos
+- **Campanhas** — Disparo em lote via WhatsApp com delay anti-bloqueio
 
-- **Omnichannel:** Gestão de WhatsApp, Instagram e Portais em uma única tela.
-- **Lead Scoring:** Termômetro automático que pontua leads quentes.
-- **Pipeline Visual:** Kanban (Novo, Visita, Proposta, Fechado).
+### Publicação Multi-Plataforma
+- Publish de imóveis em OLX, Zap Imóveis, VivaReal, Facebook (adapter pattern)
 
-### 3. Ferramentas de Venda (Sales Enablement)
-
-- **Simulador Financeiro:** Cálculo de parcelas SAC/Price conectado a taxas de mercado (Selic/IPCA).
-- **Gerador de Contratos:** Criação de PDFs jurídicos automáticos.
-- **Marketing Studio:** Editor visual para criar Stories/Posts de imóveis vendidos ou oportunidades.
-- **Campanhas:** "AI Matchmaker" que cruza imóveis com a base de leads para disparos precisos.
-
-### 4. Gestão SaaS (Super Admin)
-
-- Dashboard exclusivo para o dono da plataforma gerenciar Inquilinos (Tenants), MRR e planos.
+### Gestão SaaS (Super Admin)
+- Multi-tenant com trial de 30 dias, billing via Stripe, feature flags
 
 ---
 
@@ -47,73 +53,137 @@ O projeto utiliza uma arquitetura moderna, serverless e de baixo custo (Edge Com
 
 ### Pré-requisitos
 
-- Node.js 18+
-- Conta na Cloudflare (para Backend/DB)
+- Node.js 20+
+- Conta na Cloudflare (Workers + D1 + R2)
 - Chave de API do Google AI Studio (Gemini)
+- Evolution API self-hosted (para WhatsApp)
 
 ### Passo 1: Clone e Instalação
 
 ```bash
-git clone https://github.com/seu-usuario/oconnector.git
-cd oconnector
+git clone https://github.com/seu-usuario/oinbox.git
+cd oinbox
 npm install
 ```
 
 ### Passo 2: Configuração de Ambiente
 
-Crie um arquivo `.env` na raiz baseado no exemplo:
+Crie um arquivo `.env` na raiz baseado no `.env.example`:
 
-```env
-API_KEY="sua_chave_gemini_aqui"
-REACT_APP_API_URL="http://localhost:8787" # Para dev local
+```bash
+cp .env.example .env
 ```
 
-### Passo 3: Configuração do Backend (Cloudflare)
+Edite `.env` com suas credenciais. Segredos do backend devem ser configurados via Wrangler:
 
-Instale o Wrangler (CLI da Cloudflare) e configure o banco D1:
+```bash
+wrangler secret put JWT_SECRET
+wrangler secret put STRIPE_SECRET_KEY
+wrangler secret put STRIPE_WEBHOOK_SECRET
+wrangler secret put EVOLUTION_API_KEY
+wrangler secret put GOOGLE_PLACES_API_KEY
+```
+
+### Passo 3: Configurar Banco D1
 
 ```bash
 npm install -g wrangler
 wrangler login
 
 # Criar banco de dados
-wrangler d1 create oconnector-db
+wrangler d1 create oinbox-db
 
-# Executar esquema SQL inicial
-wrangler d1 execute oconnector-db --file=./backend/schema.sql --local
+# Copiar o database_id retornado para wrangler.toml
+
+# Executar schema
+wrangler d1 execute oinbox-db --file=./backend/schema.sql --local
 ```
 
 ### Passo 4: Executar Localmente
 
-Para rodar Frontend e Backend simultaneamente:
+Terminal 1 — Backend (Wrangler dev, porta 8787):
+```bash
+npm run dev:backend
+```
 
+Terminal 2 — Frontend (Vite, porta 5173 com proxy para /api):
 ```bash
 npm run dev
 ```
 
-O Frontend rodará em `http://localhost:5173` e o Backend em `http://localhost:8787`.
+Acesse `http://localhost:5173`.
 
 ---
 
-## 📦 Estrutura do Projeto
+## 📂 Estrutura do Projeto
 
-```text
-/oconnector
-├── /backend            # Cloudflare Worker & SQL Schema
-│   ├── worker.js       # API REST Serverless
-│   └── schema.sql      # Definição do Banco de Dados
-├── /src
-│   ├── /components     # UI Components (Inbox, CRM, Tools...)
-│   └── /types          # Definições TypeScript
-├── /services           # Integrações (Gemini, API, Stripe)
-├── wrangler.toml       # Configuração Cloudflare
-└── vite.config.ts      # Configuração do Build
 ```
+oinbox/
+├── backend/                  # Cloudflare Worker (Hono)
+│   ├── src/
+│   │   ├── routes/           # 22 módulos de rota (/api/auth, /api/whatsapp, etc.)
+│   │   ├── services/         # Lógica de negócio (AI, WhatsApp, portais, billing)
+│   │   ├── middleware/       # auth, logging, rateLimiter, foreignKey
+│   │   ├── utils/            # datadog logger, circuit breaker, email
+│   │   ├── bindings.ts       # Tipagens de env/bindings do Worker
+│   │   ├── index.ts          # Entry point do Worker
+│   │   └── email-handler.ts  # Cloudflare Email Routing handler
+│   ├── migrations/           # Migrações D1 incrementais
+│   ├── schema.sql            # Schema completo do banco (~35 tabelas)
+│   ├── seed*.sql             # Seeds de dados para dev
+│   └── tsconfig.json
+├── src/                      # Frontend React
+│   ├── components/           # UI: Inbox, CRM, Admin, AI, Marketing, etc.
+│   ├── pages/                # Admin e Client pages
+│   ├── routes/               # React Router definitions
+│   ├── services/             # apiService, openaiService
+│   ├── contexts/             # Toast, Theme
+│   └── App.tsx               # Root
+├── shared/types/             # Tipos TypeScript compartilhados (FE ↔ BE)
+├── wrangler.toml             # Configuração Cloudflare Workers
+├── vite.config.ts            # Vite + Vitest
+└── .env.example              # Template de variáveis de ambiente
+```
+
+---
+
+## 🔄 Fluxo de Mensagem WhatsApp
+
+```
+Cliente envia WhatsApp
+  → Evolution API (BaileYS, self-hosted)
+    → Webhook POST /api/whatsapp/webhook (Cloudflare Worker)
+      → WhatsAppRepository.saveMessage() (D1)
+        → Lead tem assigned_to?
+          → SIM: Criar notificação para corretor, IA silencia (human handover)
+          → NÃO: SalesTools.analyzeIntention() via Agent Hub
+            → Move lead no pipeline + responde via Evolution API
+            → Se Agent Hub indisponível: fallback com mensagem padrão
+```
+
+---
 
 ## 🔒 Segurança
 
-- A plataforma utiliza autenticação simulada para demonstração, pronta para integração com Auth0, Clerk ou Firebase.
-- Chaves de API críticas (Stripe, Cloudflare) devem ficar apenas no Backend (Worker), nunca no Frontend.
+- JWT com `jose` para autenticação, verificado em middleware
+- Senhas com bcrypt (NUNCA plaintext)
+- Rate limiting em rotas de login (5 req/min por IP)
+- Circuit breakers para serviços externos (WhatsApp, Agent Hub, Stripe, Google Places)
+- CORS com allow-list explícita
+- Multi-tenant isolation via `tenant_id` em todas as tabelas
+- Segredos via `wrangler secret put` (NUNCA no código)
+- Gate de trial/subscription no middleware de auth
+
+---
+
+## 📊 Observabilidade
+
+- **Datadog** — Logs estruturados + métricas customizadas (`oinbox.http.*`, `oinbox.exception.*`)
+- **Correlation IDs** — `X-Correlation-ID` em todas as respostas
+- **Health Check** — `GET /api/health` retorna status detalhado: D1, Agent Hub, Evolution API
+- **Notificações** — `GET /api/notifications?unread=true` — handover, portal leads, alertas
+
+---
 
 ## 📄 Licença
 

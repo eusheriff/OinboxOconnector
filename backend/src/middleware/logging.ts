@@ -34,6 +34,9 @@ export const errorLoggingMiddleware = async (c: Context, next: Next) => {
   } catch (error: any) {
     const duration = Date.now() - startTime;
 
+    const headers: Record<string, string> = {};
+    c.req.raw.headers.forEach((v, k) => (headers[k] = v));
+
     // Log detalhado de erro
     await logger?.error('Unhandled exception in request', {
       method: c.req.method,
@@ -41,7 +44,7 @@ export const errorLoggingMiddleware = async (c: Context, next: Next) => {
       error: error.message,
       stack: error.stack,
       duration_ms: duration,
-      headers: Object.fromEntries(c.req.raw.headers.entries()),
+      headers: headers,
     });
 
     await logger?.metric('oinbox.exception.unhandled', 1, [
@@ -62,33 +65,52 @@ export const requestLoggingMiddleware = async (c: Context, next: Next) => {
   const startTime = Date.now();
   const logger = createDatadogLogger(c.env);
 
-  const requestId = crypto.randomUUID();
-  c.set('requestId', requestId);
+  // Correlation ID: Propagate or Generate
+  const correlationId = c.req.header('x-correlation-id') || crypto.randomUUID();
+  c.set('correlationId', correlationId);
   c.set('logger', logger);
 
-  await logger?.info('Request started', {
-    request_id: requestId,
+  // Response Header for traceability
+  c.res.headers.set('X-Correlation-ID', correlationId);
+
+  const logData = {
+    correlation_id: correlationId,
     method: c.req.method,
     path: c.req.path,
     user_agent: c.req.header('user-agent'),
     origin: c.req.header('origin'),
-  });
+  };
+
+  // Log Start
+  if (logger) {
+    await logger.info('Request started', logData);
+  } else {
+    // Local dev fallback
+    console.log(JSON.stringify({ level: 'info', message: 'Request started', ...logData }));
+  }
 
   await next();
 
   const duration = Date.now() - startTime;
+  const status = c.res.status;
 
-  await logger?.info('Request completed', {
-    request_id: requestId,
-    method: c.req.method,
-    path: c.req.path,
-    status: c.res.status,
+  const responseLogData = {
+    ...logData,
+    status,
     duration_ms: duration,
-  });
+  };
 
-  await logger?.metric('oinbox.http.request.duration', duration, [
-    'method:' + c.req.method,
-    'status:' + c.res.status,
-    'path:' + c.req.path,
-  ]);
+  // Log End
+  if (logger) {
+    await logger.info('Request completed', responseLogData);
+    await logger.metric('oinbox.http.request.duration', duration, [
+      'method:' + c.req.method,
+      'status:' + status,
+      'path:' + c.req.path,
+    ]);
+  } else {
+    console.log(
+      JSON.stringify({ level: 'info', message: 'Request completed', ...responseLogData }),
+    );
+  }
 };

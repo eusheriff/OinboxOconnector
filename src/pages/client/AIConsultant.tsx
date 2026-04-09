@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Send, Bot, User as UserIcon, Loader2 } from 'lucide-react';
-import { apiService } from '../../services/apiService';
+import { apiService } from '@/services/apiService';
 
 interface Message {
   id: string;
@@ -68,13 +68,15 @@ export default function AIConsultant() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-gray-50 p-6">
+    <div className="h-full flex flex-col bg-background p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Consultor IA</h1>
-        <p className="text-gray-600">Especialista em Direito Imobiliário e Tendências de Mercado</p>
+        <h1 className="text-2xl font-bold text-foreground">Consultor IA</h1>
+        <p className="text-muted-foreground">
+          Especialista em Direito Imobiliário e Tendências de Mercado
+        </p>
       </div>
 
-      <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col overflow-hidden">
+      <div className="flex-1 bg-card rounded-xl shadow-sm border border-border flex flex-col overflow-hidden">
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((msg) => (
             <div
@@ -83,7 +85,9 @@ export default function AIConsultant() {
             >
               <div
                 className={`max-w-[80%] rounded-2xl px-4 py-3 flex gap-3 ${
-                  msg.role === 'user' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-800'
+                  msg.role === 'user'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-foreground'
                 }`}
               >
                 <div className="mt-1">
@@ -100,7 +104,7 @@ export default function AIConsultant() {
           ))}
           {isLoading && (
             <div className="flex justify-start">
-              <div className="bg-gray-100 rounded-2xl px-4 py-3 flex gap-2 items-center text-gray-500">
+              <div className="bg-muted rounded-2xl px-4 py-3 flex gap-2 items-center text-muted-foreground">
                 <Bot size={16} />
                 <Loader2 size={16} className="animate-spin" />
                 <span className="text-sm">Digitando...</span>
@@ -110,7 +114,7 @@ export default function AIConsultant() {
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="p-4 border-t border-gray-100 bg-white">
+        <div className="p-4 border-t border-border bg-card">
           <div className="flex gap-2">
             <input
               type="text"
@@ -118,7 +122,7 @@ export default function AIConsultant() {
               onChange={(e) => setInput(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && handleSend()}
               placeholder="Pergunte sobre contratos, taxas ou leis..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
+              className="flex-1 px-4 py-2 border border-border bg-background text-foreground rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
               disabled={isLoading}
             />
             <button

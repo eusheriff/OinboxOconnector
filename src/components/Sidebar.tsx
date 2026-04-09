@@ -14,10 +14,13 @@ import {
   FileText,
   Calculator,
   Map,
+  Scale,
   Settings,
   LogOut,
 } from 'lucide-react';
-import { AppView, User } from '../types';
+import { User } from '@shared/types';
+import { AppView } from '@/types/ui';
+import { ThemeToggle } from './UI/ThemeToggle';
 
 interface SidebarProps {
   onLogout: () => void;
@@ -52,6 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, user }) => {
     { view: AppView.CONTRACTS, label: 'Contratos', icon: FileText, path: '/app/contracts' },
     { view: AppView.CALCULATOR, label: 'Calculadora', icon: Calculator, path: '/app/calculator' },
     { view: AppView.MAP, label: 'Mapa', icon: Map, path: '/app/map' },
+    { view: AppView.LEGAL_HUB, label: 'Hub Jurídico', icon: Scale, path: '/app/legal-hub' }, // Added Hub Jurídico
     { view: AppView.SETTINGS, label: 'Configurações', icon: Settings, path: '/app/settings' },
     { view: AppView.WHATSAPP, label: 'WhatsApp', icon: Megaphone, path: '/app/whatsapp' },
     { view: AppView.CRM, label: 'Leads Ops', icon: Users, path: '/app/leads' },
@@ -61,28 +65,28 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, user }) => {
     <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col h-full border-r border-sidebar-border flex-shrink-0 transition-all duration-300">
       <div className="p-4 flex flex-col items-center justify-center border-b border-sidebar-border gap-2">
         <img src="/oinbox-logo.png" alt="Oinbox Logo" className="h-24 w-auto object-contain" />
-        {user && <span className="text-xs text-gray-400 font-medium">Olá, {user.name.split(' ')[0]}</span>}
+        {user && (
+          <span className="text-xs text-gray-400 font-medium">Olá, {user.name.split(' ')[0]}</span>
+        )}
       </div>
 
       <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1 custom-scrollbar">
         {menuItems.map((item) => {
           // Check exact match for root '/app' or startsWith for sub-routes, but be careful with '/app' matching everything
           // Simple logic: if path is '/app', exact match. Else, startsWith.
-          const isActive = item.path === '/app' 
-            ? currentPath === '/app' 
-            : currentPath.startsWith(item.path);
+          const isActive =
+            item.path === '/app' ? currentPath === '/app' : currentPath.startsWith(item.path);
 
           return (
             <Link
-              key={item.view}
+              key={`${item.view}-${item.path}`}
               to={item.path}
               className={`
                                 flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group
-                                ${
-                                  isActive
-                                    ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-lg shadow-sidebar-primary/20'
-                                    : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                                }
+                                ${isActive
+                  ? 'bg-sidebar-primary text-sidebar-primary-foreground shadow-lg shadow-sidebar-primary/20'
+                  : 'text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                }
                             `}
             >
               <item.icon
@@ -98,10 +102,11 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, user }) => {
         })}
       </nav>
 
-      <div className="p-4 border-t border-sidebar-border">
-        <button 
+      <div className="p-4 border-t border-sidebar-border space-y-1">
+        <ThemeToggle />
+        <button
           onClick={onLogout}
-          className="flex items-center gap-3 px-3 py-2 text-sm font-medium text-sidebar-foreground/70 hover:text-sidebar-accent-foreground transition-colors w-full rounded-lg hover:bg-sidebar-accent"
+          className="flex items-center gap-3 px-3 py-2.5 text-sm font-medium text-sidebar-foreground/70 hover:text-sidebar-accent-foreground transition-colors w-full rounded-lg hover:bg-sidebar-accent"
         >
           <LogOut size={18} />
           Sair da Conta

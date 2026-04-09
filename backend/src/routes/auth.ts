@@ -1,76 +1,81 @@
 import { Hono } from 'hono';
-import { SignJWT } from 'jose';
 import bcrypt from 'bcryptjs';
-import { Bindings, Variables } from '../types';
+import { Bindings, Variables } from '../bindings';
 import { sendEmail } from '../utils/email';
+import { generateJWT, verifyJWT } from '../services/tokenService';
+import { rateLimiter } from '../middleware/rateLimiter';
 
 const auth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-auth.post('/login', async (c) => {
+// Rate limiting: 5 tentativas de login por minuto por IP
+auth.post('/login', rateLimiter(5), async (c) => {
   const env = c.env;
   if (!env.JWT_SECRET) {
     return c.json({ error: 'Server configuration error' }, 500);
   }
-  const jwtSecret = new TextEncoder().encode(env.JWT_SECRET);
 
   const { email, password } = await c.req.json();
+  const cleanEmail = email?.trim();
+
+  console.log(`[Login Attempt] Email: '${cleanEmail}' | Password Length: ${password?.length}`);
 
   // Query no D1 com Join para pegar dados do Tenant
-  const user = await env.DB.prepare(`
-    SELECT users.*, tenants.plan, tenants.trial_ends_at 
+  const user = await env.DB.prepare(
+    `
+    SELECT users.*, tenants.plan, tenants.subscription_end 
     FROM users 
     JOIN tenants ON users.tenant_id = tenants.id 
     WHERE users.email = ?
-  `).bind(email).first<{
-    id: string;
-    tenant_id: string;
-    role: string;
-    name: string;
-    email: string;
-    password_hash: string;
-    plan: string;
-    trial_ends_at: string;
-  }>();
+  `,
+  )
+    .bind(cleanEmail)
+    .first<{
+      id: string;
+      tenant_id: string;
+      role: string;
+      name: string;
+      email: string;
+      password_hash: string;
+      plan: string;
+      subscription_end: string;
+    }>();
 
   if (!user) {
+    console.warn(`[Login Failed] User not found for email: '${cleanEmail}'`);
     return c.json({ error: 'Credenciais inválidas' }, 401);
   }
 
-  // Verifica senha (suporta legado texto plano ou bcrypt)
-  let isValid = false;
-  if (user.password_hash.startsWith('$2')) {
-    isValid = await bcrypt.compare(password, user.password_hash);
-  } else {
-    isValid = user.password_hash === password; // Fallback legado
-  }
+  // Verifica senha com bcrypt (somente hashes — plaintext removido por segurança)
+  const isValid = await bcrypt.compare(password, user.password_hash);
+
+  console.log(`[Login Check] User found: ${user.id} | IsValid: ${isValid}`);
 
   if (!isValid) {
+    console.warn(`[Login Failed] Invalid password for user: ${user.id}`);
     return c.json({ error: 'Credenciais inválidas' }, 401);
   }
 
   // Gera JWT
-  const token = await new SignJWT({
-    sub: user.id,
-    tenantId: user.tenant_id,
-    role: user.role,
-    name: user.name,
-  })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('24h')
-    .sign(jwtSecret);
+  const token = await generateJWT(
+    {
+      sub: user.id,
+      tenantId: user.tenant_id,
+      role: user.role,
+      name: user.name,
+    },
+    env.JWT_SECRET,
+  );
 
   return c.json({
     user: { id: user.id, name: user.name, email: user.email, role: user.role },
     tenantId: user.tenant_id,
     token: token,
-    // Add trial info for frontend gate
-    trialEndsAt: user.trial_ends_at, 
+    trialEndsAt: user.subscription_end,
     plan: user.plan,
   });
 });
 
-auth.post('/register', async (c) => {
+auth.post('/register', rateLimiter(3), async (c) => {
   const env = c.env;
   const data = await c.req.json();
 
@@ -84,14 +89,20 @@ auth.post('/register', async (c) => {
 
   // 2. Anti-Fraud: Check trial fingerprint
   const fingerprint = await env.DB.prepare(
-    'SELECT id FROM trial_fingerprints WHERE email = ? OR phone = ? OR device_id = ?'
-  ).bind(data.email, data.phone || '', data.deviceId || '').first<{ id: string }>();
+    'SELECT id FROM trial_fingerprints WHERE email = ? OR phone = ? OR device_id = ?',
+  )
+    .bind(data.email, data.phone || '', data.deviceId || '')
+    .first<{ id: string }>();
 
   if (fingerprint) {
-    return c.json({
-      error: 'Este dispositivo/email/telefone já utilizou o período de teste. Faça upgrade para continuar.',
-      code: 'TRIAL_USED',
-    }, 403);
+    return c.json(
+      {
+        error:
+          'Este dispositivo/email/telefone já utilizou o período de teste. Faça upgrade para continuar.',
+        code: 'TRIAL_USED',
+      },
+      403,
+    );
   }
 
   // Hash password (or generate random if not provided)
@@ -105,7 +116,7 @@ auth.post('/register', async (c) => {
   // 4. Create Tenant
   const tenantId = crypto.randomUUID();
   await env.DB.prepare(
-    `INSERT INTO tenants (id, name, owner_name, email, phone, plan, status, joined_at, trial_ends_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO tenants (id, name, owner_name, email, phone, plan, status, joined_at, subscription_end) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   )
     .bind(
       tenantId,
@@ -116,7 +127,7 @@ auth.post('/register', async (c) => {
       trialPlan,
       'Active',
       new Date().toISOString(),
-      new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // trial_ends_at = NOW + 14 days
+      new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(), // trial_ends_at = NOW + 30 days
     )
     .run();
 
@@ -130,8 +141,10 @@ auth.post('/register', async (c) => {
 
   // 6. Save fingerprint for anti-fraud
   await env.DB.prepare(
-    'INSERT INTO trial_fingerprints (id, email, phone, device_id, tenant_id) VALUES (?, ?, ?, ?, ?)'
-  ).bind(crypto.randomUUID(), data.email, data.phone || null, data.deviceId || null, tenantId).run();
+    'INSERT INTO trial_fingerprints (id, email, phone, device_id, tenant_id) VALUES (?, ?, ?, ?, ?)',
+  )
+    .bind(crypto.randomUUID(), data.email, data.phone || null, data.deviceId || null, tenantId)
+    .run();
 
   // 7. Send Welcome Email
   await sendEmail(
@@ -144,19 +157,48 @@ auth.post('/register', async (c) => {
       '<p>Sua imobiliária <strong>' +
       data.companyName +
       '</strong> foi cadastrada com sucesso.</p>' +
-      '<p>Você tem <strong>14 dias</strong> de acesso completo para testar.</p>' +
+      '<p>Você tem <strong>30 dias</strong> de acesso completo para testar.</p>' +
       '<p>Acesse seu painel agora mesmo e comece a vender mais.</p>',
   );
 
-  return c.json({ success: true, tenantId, userId, trialDays: 14 });
+  return c.json({ success: true, tenantId, userId, trialDays: 30 });
 });
 
-auth.post('/client/login', async (c) => {
+// GET /me - Validate Token & Get Profile
+auth.get('/me', async (c) => {
+  const env = c.env;
+  if (!env.JWT_SECRET) return c.json({ error: 'Config Error' }, 500);
+
+  const authHeader = c.req.header('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return c.json({ error: 'Token não fornecido' }, 401);
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const { payload } = await verifyJWT(token, env.JWT_SECRET);
+
+    // Opcional: Buscar dados frescos do DB
+    const user = await env.DB.prepare(
+      'SELECT id, name, email, role, tenant_id FROM users WHERE id = ?',
+    )
+      .bind(payload.sub as string)
+      .first<any>();
+
+    if (!user) return c.json({ error: 'Usuário não encontrado' }, 401);
+
+    return c.json({ user });
+  } catch (e) {
+    return c.json({ error: 'Token inválido ou expirado' }, 401);
+  }
+});
+
+auth.post('/client/login', rateLimiter(5), async (c) => {
   const env = c.env;
   if (!env.JWT_SECRET) {
     return c.json({ error: 'Server configuration error' }, 500);
   }
-  const jwtSecret = new TextEncoder().encode(env.JWT_SECRET);
   const { email, password } = await c.req.json();
 
   // Busca cliente
@@ -188,17 +230,16 @@ auth.post('/client/login', async (c) => {
     .run();
 
   // Gera JWT de Cliente
-  const token = await new SignJWT({
-    sub: client.id,
-    tenantId: client.tenant_id,
-    role: 'client',
-    name: client.name,
-    email: client.email,
-  })
-    .setProtectedHeader({ alg: 'HS256' })
-    .setIssuedAt()
-    .setExpirationTime('24h')
-    .sign(jwtSecret);
+  const token = await generateJWT(
+    {
+      sub: client.id,
+      tenantId: client.tenant_id,
+      role: 'client',
+      name: client.name,
+      email: client.email,
+    },
+    env.JWT_SECRET,
+  );
 
   return c.json({
     user: { id: client.id, name: client.name, email: client.email, role: 'client' },

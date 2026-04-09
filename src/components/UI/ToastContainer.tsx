@@ -1,5 +1,5 @@
 import React from 'react';
-import { ToastNotification } from '../../types';
+import { ToastNotification } from '@/types/ui';
 import { CheckCircle2, AlertCircle, XCircle, Info, X } from 'lucide-react';
 
 interface ToastContainerProps {
