@@ -5,7 +5,7 @@ import { authMiddleware } from '../middleware/auth';
 const notifications = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // Aplicar auth em todas as rotas
-notifications.use('/*', authMiddleware);
+// notifications.use('/*', authMiddleware); // Auth global em index.ts
 
 // GET /api/notifications — Listar notificações não lidas do tenant
 notifications.get('/', async (c) => {

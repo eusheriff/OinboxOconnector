@@ -22,7 +22,7 @@ import {
   Key,
   Globe,
 } from 'lucide-react';
-import { analyzePropertyImage } from '@/services/openaiService';
+import { analyzePropertyImage } from '@/services/aiService';
 import { apiService } from '@/services/apiService';
 import { uploadImageToCloudflare } from '@/services/integrationService';
 import { useToast } from '@/contexts/ToastContext';

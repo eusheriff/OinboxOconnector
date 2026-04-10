@@ -85,11 +85,6 @@ CREATE INDEX IF NOT EXISTS idx_clients_score ON clients(score DESC);
 CREATE INDEX IF NOT EXISTS idx_properties_tenant_id ON properties(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_properties_listing_type ON properties(listing_type);
 CREATE INDEX IF NOT EXISTS idx_properties_created_at ON properties(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_messages_tenant_id ON messages(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
-CREATE INDEX IF NOT EXISTS idx_leads_tenant_id ON leads(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_whatsapp_messages_tenant ON whatsapp_messages(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_ai_usage_tenant_date ON ai_usage(tenant_id, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS ai_usage (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -351,6 +346,13 @@ CREATE TABLE IF NOT EXISTS notifications (
 CREATE INDEX IF NOT EXISTS idx_notifications_tenant ON notifications(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(tenant_id, is_read) WHERE is_read = FALSE;
+
+-- Índices de tabelas intermediárias (definidos aqui após CREATE TABLE)
+CREATE INDEX IF NOT EXISTS idx_messages_tenant_id ON messages(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_leads_tenant_id ON leads(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_whatsapp_messages_tenant ON whatsapp_messages(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_ai_usage_tenant_date ON ai_usage(tenant_id, created_at DESC);
 
 -- Índices finais
 CREATE INDEX IF NOT EXISTS idx_portal_configs_tenant ON portal_configs(tenant_id);

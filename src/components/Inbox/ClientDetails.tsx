@@ -19,7 +19,7 @@ import {
   Mic,
   StopCircle,
 } from 'lucide-react';
-import { analyzeClientProfile, processVoiceNote } from '@/services/openaiService';
+import { analyzeClientProfile, processVoiceNote } from '@/services/aiService';
 
 interface ClientDetailsProps {
   conversation: Conversation | null;
@@ -161,8 +161,8 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
               onClick={handleVoiceNoteClick}
               disabled={voiceProcessing}
               className={`w-full py-3 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${isRecordingVoiceNote
-                  ? 'bg-red-100 text-red-600 animate-pulse'
-                  : 'bg-white border border-gray-200 text-slate-700 hover:border-blue-400 shadow-sm'
+                ? 'bg-red-100 text-red-600 animate-pulse'
+                : 'bg-white border border-gray-200 text-slate-700 hover:border-blue-400 shadow-sm'
                 }`}
             >
               {voiceProcessing ? (

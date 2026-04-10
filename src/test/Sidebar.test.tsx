@@ -1,6 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import { ThemeProvider } from '../contexts/ThemeContext';
 import { describe, it, expect, vi } from 'vitest';
 
 describe('Sidebar Component', () => {
@@ -18,7 +19,9 @@ describe('Sidebar Component', () => {
     window.history.pushState({}, 'Test page', currentPath);
     return render(
       <BrowserRouter>
-        <Sidebar onLogout={mockLogout} user={mockUser} />
+        <ThemeProvider>
+          <Sidebar onLogout={mockLogout} user={mockUser} />
+        </ThemeProvider>
       </BrowserRouter>,
     );
   };

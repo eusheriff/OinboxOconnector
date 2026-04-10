@@ -10,7 +10,7 @@
     "build:backend": "tsc -p backend/tsconfig.json",
     "start:backend": "echo 'Use wrangler dev para desenvolvimento. Node.js mode requires D1/R2 adapters.' && exit 1",
     "preview": "vite preview",
-    "deploy": "wrangler pages deploy dist",
+    "deploy": "wrangler pages deploy dist --project-name oinbox-frontend",
     "deploy:worker": "wrangler deploy",
     "db:setup": "wrangler d1 execute oinbox-db --file=./backend/schema.sql --local",
     "db:migrate": "bash -c 'for f in backend/migrations/*.sql; do echo \"Running $f\"; wrangler d1 execute oinbox-db --local --file=./$f; done'",
@@ -76,6 +76,6 @@
     "typescript": "^5.2.2",
     "vite": "^7.3.1",
     "vitest": "^4.0.13",
-    "wrangler": "^3.114.15"
+    "wrangler": "^4.81.1"
   }
 }

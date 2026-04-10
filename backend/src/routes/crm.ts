@@ -6,7 +6,7 @@ import { analyzeClientData } from '../services/aiService';
 
 const crm = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-crm.use('*', authMiddleware);
+// crm.use('*', authMiddleware); // Auth global
 
 crm.get('/clients', async (c) => {
   const user = c.get('user');

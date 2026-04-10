@@ -1,31 +1,34 @@
-## State Current (2026-01-18)
+# Projeto Oinbox - Estado Atual
 
-- **Current Phase**: Live & Verified (Feature Added)
-- **Status**: ✅ Live & Verified. Autopilot CRM & Trial 30 Dias & "Elite Seller" (Sales Tools) Ativos.
-- **Next Steps**:
-  1. Monitorar conversão de cadastro (Trial 30 dias).
-  2. Validar fluxo real (Campanha Outreach).
-  3. Monitorar fila de Autopilot via Datadog.
-  4. Expandir skills do Agent Hub (Análise de resposta mais profunda).
-- **Blockers**: Nenhum.
+## Resumo Executivo
+Resolvida a crise de acesso em produção ("402 Payment Required") através da extensão de trial no banco D1 e implementação de interceptor robusto no frontend. O roteamento foi unificado para SPA e a segurança foi auditada e reforçada contra credenciais hardcoded.
 
-## Recent Decisions
+## Estado por Módulo
 
-1. **Agent Hub**: IA centralizada em serviço externo (`api.obot.oconnector.tech`).
-2. **Repository Pattern**: Usado para módulo WhatsApp (L4).
-3. **Types Unified**: `shared/types/index.ts` é a fonte única.
-4. **Wrangler for All**: Docker removido. Desenvolvimento e Produção alinhados com Wrangler.
+### Backend (Worker - Cloudflare)
+- **Autenticação**: Emails normalizados. JWT fortalecido no mock.
+- **Segurança**: Rota órfã `stripe.ts` removida; variáveis sensíveis renomeadas.
+- **WhatsApp**: Endpoints estáveis e validados por testes (100% PASS).
 
-## Next Steps
+### Frontend (React - Vite/Pages)
+- **Roteamento**: Estabilizado.
+- **Segurança**: Credenciais de teste removidas e substituídas por placeholders.
 
-### L5 (Monitoring & Growth)
+### Documentação (Fumadocs - Pages)
+- **Status**: Live sob [https://646eeab5.oinbox-docs.pages.dev](https://646eeab5.oinbox-docs.pages.dev).
+- **Arquitetura**: Next.js 16 com manual file mapping para estabilidade de build.
 
-1. [ ] **Secrets**: Garantir que chaves de API (Google, Stripe) estejam no `wrangler secret`.
-2. [ ] **Observability**: Monitorar logs no Datadog/Cloudflare Dashboard.
-3. [ ] **New Features**: Iniciar desenvolvimento de novas funcionalidades (ex: Assinaturas).
+## Decisões Fixas
+- **Normalização de Email**: Todos os emails DEVEM ser minúsculos.
+- **Prioridade de Rota**: Rotas autenticadas têm precedência.
+- **Gestão de Segredos**: Proibido o uso de senhas reais ou chaves de API em arquivos `.test.ts`.
+- **Deploy de Docs**: Utilizar exportação estática e Wrangler CLI para garantir bypass de permissões locais.
 
-## Key Files Changed Recently
+## Próximos 3 Passos
+1. Refinar a renderização MDX das subpáginas (atualmente em fallback visual).
+2. Configurar o domínio customizado `docs.oinbox.oconnector.tech` no Cloudflare.
+3. Integrar links da documentação no Sidebar do Dashboard principal.
 
-- `shared/types/index.ts`
-- `src/types.ts`
-- `backend/src/routes/leads.ts`
+## Riscos Identificados
+- **Incompatibilidade de Versões**: Conflitos entre Fumadocs v14 e v16 requerem manutenção manual do `source.ts`.
+- **Permissões de Cache (EPERM)**: Restrições no diretório `.npm/_cacache` impedem atualizações limpas de pacotes via CLI.

@@ -3,7 +3,7 @@ import ChatList from '@/components/Inbox/ChatList';
 import ChatWindow from '@/components/Inbox/ChatWindow';
 import { Conversation, Message, Platform } from '@shared/types';
 import { apiService } from '@/services/apiService';
-import { Loader2, MessageCircle } from 'lucide-react';
+import { Loader2, MessageCircle, QrCode, Smartphone, ArrowRight } from 'lucide-react';
 import { useToast } from '@/contexts/ToastContext';
 
 const InboxPage: React.FC = () => {
@@ -144,12 +144,34 @@ const InboxPage: React.FC = () => {
       <div className="flex-1 bg-gray-50">
         {activeId ? (
           <ChatWindow conversation={activeConversation} onSendMessage={handleSendMessage} />
-        ) : (
+        ) : conversations.length > 0 ? (
           <div className="h-full flex flex-col items-center justify-center text-gray-400 p-8 text-center">
             <MessageCircle size={64} className="mb-4 text-gray-300" />
             <h3 className="text-xl font-semibold text-gray-600">Sua Caixa de Entrada</h3>
             <p className="max-w-md mt-2">
               Selecione uma conversa para começar a atender seus clientes com o poder da IA.
+            </p>
+          </div>
+        ) : (
+          <div className="h-full flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-orange-50 to-white">
+            <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center mb-6">
+              <Smartphone size={36} className="text-orange-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-gray-800 mb-2">Conecte seu WhatsApp</h3>
+            <p className="max-w-md text-gray-600 mb-6">
+              Sua caixa de entrada está vazia. Conecte seu WhatsApp para começar a receber e
+              responder mensagens com IA.
+            </p>
+            <a
+              href="/app/whatsapp"
+              className="inline-flex items-center gap-3 bg-orange-600 hover:bg-orange-700 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all"
+            >
+              <QrCode size={20} />
+              Conectar WhatsApp
+              <ArrowRight size={18} />
+            </a>
+            <p className="text-xs text-gray-400 mt-4">
+              Escaneie o QR Code com seu celular para vincular o WhatsApp
             </p>
           </div>
         )}

@@ -6,7 +6,7 @@ import { generateSocialKit } from '../services/marketingService';
 const marketing = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // Auth required
-marketing.use('/*', authMiddleware);
+// marketing.use('/*', authMiddleware); // Auth global em index.ts
 
 /**
  * POST /api/marketing/generate

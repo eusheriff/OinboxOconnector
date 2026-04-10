@@ -6,7 +6,7 @@ import { getPlan } from '../config/plans';
 
 const users = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-users.use('*', authMiddleware);
+// users.use('*', authMiddleware); // Auth global
 
 // GET /api/users - List team members
 users.get('/', async (c) => {

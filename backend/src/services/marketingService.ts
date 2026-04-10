@@ -80,23 +80,28 @@ FORMATO DE RESPOSTA (JSON estrito):
 Responda APENAS o JSON, sem markdown ou explicações.
 `;
 
-  const apiKey = env.OPENAI_API_KEY;
-  const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const apiKey = env.GROQ_API_KEY;
+  const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
 
-  const response = await fetch(geminiUrl, {
+  const response = await fetch(groqUrl, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.8, // More creative
-        maxOutputTokens: 2048,
-      },
+      model: 'llama-3.3-70b-versatile',
+      messages: [
+        { role: 'user', content: prompt },
+      ],
+      temperature: 0.8,
+      max_tokens: 2048,
+      response_format: { type: 'json_object' },
     }),
   });
 
   const data: any = await response.json();
-  const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+  const text = data.choices?.[0]?.message?.content;
 
   // Clean and parse JSON
   const jsonStr = text

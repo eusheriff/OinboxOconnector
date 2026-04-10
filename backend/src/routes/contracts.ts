@@ -5,7 +5,7 @@ import { generateContractHtml } from '../services/contractService';
 
 const contracts = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-contracts.use('/*', authMiddleware);
+// contracts.use('/*', authMiddleware); // Auth global em index.ts
 
 /**
  * POST /api/contracts/generate

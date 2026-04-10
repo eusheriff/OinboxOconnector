@@ -3,12 +3,19 @@ import { Building2, Lock, Mail, Loader2, ArrowRight, HelpCircle, Eye, EyeOff } f
 
 interface LoginPageProps {
   onLogin: (email: string, pass: string) => Promise<void>;
+  onClientLogin: (email: string, pass: string) => Promise<void>;
   onBack: () => void;
   onRegisterClick?: () => void;
 }
 
-const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick }) => {
+const LoginPage: React.FC<LoginPageProps> = ({
+  onLogin,
+  onClientLogin,
+  onBack,
+  onRegisterClick,
+}) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [isClientMode, setIsClientMode] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -17,11 +24,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
     setIsLoading(true);
 
     try {
-      // Chama a função de login real do App
-      await onLogin(email, password);
-      // Se der sucesso, o componente será desmontado pelo App.tsx, não precisamos fazer nada.
+      if (isClientMode) {
+        await onClientLogin(email, password);
+      } else {
+        await onLogin(email, password);
+      }
     } catch (error) {
-      // Se der erro, paramos o loading para o usuário tentar de novo
       setIsLoading(false);
     }
   };
@@ -35,13 +43,33 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
         >
           <Building2 className="w-7 h-7 text-primary-foreground" />
         </div>
-        <h2 className="text-3xl font-extrabold text-foreground tracking-tight">Acesse sua conta</h2>
+        <h2 className="text-3xl font-extrabold text-foreground tracking-tight">
+          {isClientMode ? 'Portal do Cliente' : 'Acesse sua conta'}
+        </h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          Ou{' '}
-          <button onClick={onBack} className="font-medium text-primary hover:text-primary/80">
-            volte para a página inicial
-          </button>
+          {isClientMode
+            ? 'Acompanhe seus leads e propriedades'
+            : 'Gerencie sua imobiliária com IA'}
         </p>
+
+        <div className="mt-6 flex justify-center p-1 bg-muted rounded-lg inline-flex mx-auto">
+          <button
+            onClick={() => setIsClientMode(false)}
+            className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${
+              !isClientMode ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
+            }`}
+          >
+            Acesso Corretor
+          </button>
+          <button
+            onClick={() => setIsClientMode(true)}
+            className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${
+              isClientMode ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'
+            }`}
+          >
+            Acesso Cliente
+          </button>
+        </div>
       </div>
 
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -49,7 +77,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-bold text-foreground">
-                Email corporativo
+                {isClientMode ? 'Email do Cliente' : 'Email corporativo'}
               </label>
               <div className="mt-1 relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -123,9 +151,19 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin, onBack, onRegisterClick 
               <button
                 type="submit"
                 disabled={isLoading}
-                className="w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-md shadow-primary/20 text-sm font-bold text-primary-foreground bg-primary hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-70"
+                className={`w-full flex justify-center items-center gap-2 py-3 px-4 border border-transparent rounded-lg shadow-md text-sm font-bold text-primary-foreground transition-all disabled:opacity-70 ${
+                  isClientMode
+                    ? 'bg-blue-600 hover:bg-blue-700 shadow-blue-600/20'
+                    : 'bg-primary hover:bg-primary/90 shadow-primary/20'
+                }`}
               >
-                {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Entrar no Dashboard'}
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : isClientMode ? (
+                  'Entrar no Portal'
+                ) : (
+                  'Entrar no Dashboard'
+                )}
                 {!isLoading && <ArrowRight className="w-4 h-4" />}
               </button>
             </div>

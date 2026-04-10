@@ -4,17 +4,18 @@ import { Bindings, Variables } from '../bindings';
 /**
  * Rate Limiter baseado em D1 para Cloudflare Workers.
  * Usa sliding window de 1 minuto por IP + rota.
+ *
+ * @param maxRequests - requests por janela
+ * @param failClose - se true, bloqueia o request se D1 falhar (recomendado para rotas de auth)
  */
 
 const WINDOW_MS = 60_000; // 1 minuto
 const DEFAULT_MAX_REQUESTS = 10; // requests por janela
 
-interface RateLimitEntry {
-  count: number;
-  window_start: number;
-}
-
-export const rateLimiter = (maxRequests: number = DEFAULT_MAX_REQUESTS) => {
+export const rateLimiter = (
+  maxRequests: number = DEFAULT_MAX_REQUESTS,
+  failClose: boolean = false,
+) => {
   return async (c: Context<{ Bindings: Bindings; Variables: Variables }>, next: Next) => {
     const ip =
       c.req.header('x-forwarded-for') ||
@@ -59,8 +60,19 @@ export const rateLimiter = (maxRequests: number = DEFAULT_MAX_REQUESTS) => {
           .run();
       }
     } catch {
-      // Se D1 falhar, permite passar (fail-open). Logar erro mas nao bloquear legítimo.
-      console.warn('[RateLimiter] D1 unavailable, allowing request');
+      if (failClose) {
+        // Fail-close: bloqueia se D1 falhar (proteção contra força bruta durante indisponibilidade)
+        console.error('[RateLimiter] D1 unavailable, blocking request (fail-close mode)');
+        return c.json(
+          {
+            error: 'Service Unavailable',
+            retry_after: 30,
+          },
+          503,
+        );
+      }
+      // Fail-open: permite passar para não bloquear tráfego legítimo
+      console.warn('[RateLimiter] D1 unavailable, allowing request (fail-open mode)');
     }
 
     await next();

@@ -66,7 +66,7 @@ describe('WhatsApp Webhook', () => {
       .mockResolvedValueOnce({ results: [{ content: 'Empresa XPTO' }] });
 
     const payload = {
-      instance: 'user_user123',
+      instance: 'tenant_tenant-123',
       event: 'messages.upsert',
       data: {
         key: { remoteJid: '5511999999999@s.whatsapp.net', fromMe: false, id: 'msg-1' },
@@ -93,7 +93,7 @@ describe('WhatsApp Webhook', () => {
       expect.anything(),
       'tenant-123',
       '5511999999999',
-      'Olá, sou a IA.',
+      'Recebemos sua mensagem! Um de nossos consultores irá responder em breve.',
     );
   });
 

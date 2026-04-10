@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { MOCK_PROPERTIES } from '@/constants';
 import { Property } from '@shared/types';
 import { MapPin, Navigation, X, Loader2, Sparkles, ExternalLink, Building2 } from 'lucide-react';
-import { askLocationAssistant, GroundingSource } from '@/services/openaiService';
+import { askLocationAssistant, GroundingSource } from '@/services/aiService';
 
 const PropertyMap: React.FC = () => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null);

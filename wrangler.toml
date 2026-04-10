@@ -28,21 +28,19 @@ bucket_name = "oconnector-images"
 binding = "AI"
 
 [vars]
+# IA — Ollama com Gemma 4 (disponível via servidor local)
+# Para dev local: configure OLLAMA_URL no .dev.vars
+# Para produção: use wrangler secret put OLLAMA_URL http://seu-servidor:11434
 STRIPE_PRICE_EXTRA_SEAT = "price_1SnTGCBGBVDzrAhzuL7ICFwJ"
 STRIPE_PRICE_EXTRA_AI = "price_1SnTGPBGBVDzrAhzL7GPpFqT"
 STRIPE_PRICE_PRO = "price_1SnQxcBGBVDzrAhzxO2rdJ31"
 STRIPE_PRICE_BASIC = "price_1SnQxUBGBVDzrAhzlMMZwDjM"
-# API Keys e segredos devem ser configurados via wrangler secret put:
-#   wrangler secret put JWT_SECRET
-#   wrangler secret put OPENAI_API_KEY
-#   wrangler secret put STRIPE_SECRET_KEY
-#   wrangler secret put STRIPE_WEBHOOK_SECRET
-#   wrangler secret put EVOLUTION_API_KEY
-#   wrangler secret put GOOGLE_PLACES_API_KEY
+# Segredos configurados via wrangler secret put:
+#   EVOLUTION_API_URL, EVOLUTION_API_KEY
+#   JWT_SECRET, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, etc.
 
 [env.production]
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "oinbox-db"
-# database_id de producao deve ser configurado via variavel de ambiente
-# database_id = "USE_ENV_VAR_D1_PROD_ID"
+database_id = "567a1b9f-6f59-4a6b-953e-89ba1eda2b74"

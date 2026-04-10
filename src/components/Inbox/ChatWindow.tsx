@@ -23,7 +23,7 @@ import {
   askLocationAssistant,
   GroundingSource,
   fastAgentResponse,
-} from '@/services/openaiService';
+} from '@/services/aiService';
 import { useToast } from '@/contexts/ToastContext';
 
 interface ChatWindowProps {
@@ -238,11 +238,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
         {conversation.messages.map((msg) => (
           <div key={msg.id} className={`flex ${msg.isStaff ? 'justify-end' : 'justify-start'}`}>
             <div
-              className={`max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-3 shadow-sm relative group ${
-                msg.isStaff
+              className={`max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-3 shadow-sm relative group ${msg.isStaff
                   ? 'bg-primary text-primary-foreground rounded-br-none'
                   : 'bg-card text-foreground rounded-bl-none border border-border'
-              }`}
+                }`}
             >
               {msg.type === 'audio' ? (
                 <AudioPlayerBubble duration={msg.audioDuration || '0:00'} />

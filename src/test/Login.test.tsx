@@ -4,6 +4,7 @@ import { describe, it, expect, vi } from 'vitest';
 
 describe('LoginPage Component', () => {
   const mockOnLogin = vi.fn();
+  const mockOnClientLogin = vi.fn();
   const mockOnBack = vi.fn();
   const mockOnRegisterClick = vi.fn();
   const mockRegister = vi.fn();
@@ -22,7 +23,12 @@ describe('LoginPage Component', () => {
 
   it('renders login form correctly', () => {
     render(
-      <LoginPage onLogin={mockOnLogin} onBack={mockOnBack} onRegisterClick={mockOnRegisterClick} />,
+      <LoginPage
+        onLogin={mockOnLogin}
+        onClientLogin={mockOnClientLogin}
+        onBack={mockOnBack}
+        onRegisterClick={mockOnRegisterClick}
+      />,
     );
     expect(screen.getByLabelText('Email corporativo')).toBeInTheDocument();
     expect(screen.getByLabelText('Senha')).toBeInTheDocument();
@@ -31,7 +37,12 @@ describe('LoginPage Component', () => {
 
   it('calls onLogin with credentials on valid submit', async () => {
     render(
-      <LoginPage onLogin={mockOnLogin} onBack={mockOnBack} onRegisterClick={mockOnRegisterClick} />,
+      <LoginPage
+        onLogin={mockOnLogin}
+        onClientLogin={mockOnClientLogin}
+        onBack={mockOnBack}
+        onRegisterClick={mockOnRegisterClick}
+      />,
     );
 
     fireEvent.change(screen.getByLabelText('Email corporativo'), {
@@ -48,7 +59,12 @@ describe('LoginPage Component', () => {
 
   it('validates empty fields', async () => {
     render(
-      <LoginPage onLogin={mockOnLogin} onBack={mockOnBack} onRegisterClick={mockOnRegisterClick} />,
+      <LoginPage
+        onLogin={mockOnLogin}
+        onClientLogin={mockOnClientLogin}
+        onBack={mockOnBack}
+        onRegisterClick={mockOnRegisterClick}
+      />,
     );
     fireEvent.click(screen.getByRole('button', { name: /Entrar/i }));
 

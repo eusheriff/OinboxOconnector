@@ -2,6 +2,7 @@ import { Hono } from 'hono';
 import { ScheduledEvent, ExecutionContext } from '@cloudflare/workers-types';
 import { handleEmail } from './email-handler';
 import { cors } from 'hono/cors';
+import { jwtVerify } from 'jose';
 import { Bindings, Variables } from './bindings';
 import authRoutes from './routes/auth';
 import adminRoutes from './routes/admin';
@@ -28,6 +29,8 @@ import notificationsRoutes from './routes/notifications';
 import { errorLoggingMiddleware, requestLoggingMiddleware } from './middleware/logging';
 import { foreignKeyMiddleware } from './middleware/foreignKey';
 import { tenantEnforcementMiddleware } from './middleware/tenantEnforcement';
+import { circuitBreakers } from './utils/circuitBreaker';
+import { createDatadogLogger } from './utils/datadog';
 
 const app = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -60,17 +63,114 @@ app.use('/*', errorLoggingMiddleware);
 app.use('/*', requestLoggingMiddleware);
 app.use('/*', foreignKeyMiddleware);
 
-// Tenant Enforcement em todas as rotas autenticadas
-// (exceto /api/auth que tem login público e /api/health)
+// Auth Global — JWT verification + Trial/Subscription Gate
+// O middleware é executado para TODAS as rotas, mas faz skip automático
+// para paths que não precisam de auth.
+app.use('/*', async (c, next) => {
+  const path = c.req.path;
+  // Rotas públicas: não precisa de auth
+  if (
+    path.startsWith('/api/auth') ||
+    path === '/api/health' ||
+    path.startsWith('/api/health/circuit-breakers') ||
+    path.startsWith('/api/whatsapp/webhook') ||
+    path.startsWith('/api/portals/feed') ||
+    path.startsWith('/api/evolution/webhook')
+  ) {
+    return next();
+  }
+
+  const authHeader = c.req.header('Authorization');
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return c.json({ error: 'Unauthorized: no header' }, 401);
+  }
+
+  const token = authHeader.split(' ')[1];
+  try {
+    const jwtSecret = c.env.JWT_SECRET;
+    if (!jwtSecret) {
+      return c.json({ error: 'Server configuration error: JWT_SECRET not set' }, 500);
+    }
+    const secret = new TextEncoder().encode(jwtSecret);
+    const { payload } = await jwtVerify(token, secret);
+
+    const user = {
+      sub: payload.sub as string,
+      tenantId: payload.tenantId as string,
+      role: payload.role as string,
+      name: payload.name as string,
+      email: payload.email as string,
+    };
+    c.set('user', user);
+
+    // === TRIAL / SUBSCRIPTION GATE ===
+    const normalizedRole = user.role?.toLowerCase() || '';
+    const isSuperAdmin = normalizedRole === 'superadmin' || normalizedRole === 'super_admin';
+    
+    if (!isSuperAdmin) {
+      const tenant = await c.env.DB.prepare(
+        'SELECT trial_ends_at, subscription_end, stripe_subscription_id, plan FROM tenants WHERE id = ?',
+      )
+        .bind(user.tenantId)
+        .first<{
+          trial_ends_at: string | null;
+          subscription_end: string | null;
+          stripe_subscription_id: string | null;
+          plan: string;
+        }>();
+
+      if (tenant) {
+        const now = new Date();
+        const expiryStr = tenant.subscription_end || tenant.trial_ends_at;
+        const trialEnds = expiryStr ? new Date(expiryStr) : null;
+        const hasActiveSub = !!tenant.stripe_subscription_id;
+        const isTrialActive = trialEnds && trialEnds > now;
+
+        if (!hasActiveSub && !isTrialActive) {
+          console.warn(`[Trial Gate] ACCESS DENIED (402) for Tenant: ${user.tenantId}. Expiry: ${expiryStr}`);
+          return c.json(
+            {
+              error: 'Período de teste expirado. Assine para continuar.',
+              code: 'TRIAL_EXPIRED',
+              redirect: '/admin/billing',
+              debug: {
+                tenantId: user.tenantId,
+                expiry: expiryStr,
+              }
+            },
+            402,
+          );
+        }
+      }
+    }
+    // =================================
+
+    return next();
+  } catch (error) {
+    console.error(`[GlobalAuth] JWT verification failed:`, error);
+    return c.json({ error: 'Unauthorized: invalid token' }, 401);
+  }
+});
+
+// Tenant Enforcement — DEPOIS do auth (user já está no contexto)
 app.use('/api/admin/*', tenantEnforcementMiddleware);
 app.use('/api/client/*', tenantEnforcementMiddleware);
 app.use('/api/crm/*', tenantEnforcementMiddleware);
 app.use('/api/properties/*', tenantEnforcementMiddleware);
-app.use('/api/portals/*', tenantEnforcementMiddleware);
+app.use('/api/portals/configs', tenantEnforcementMiddleware);
+app.use('/api/portals/configs/*', tenantEnforcementMiddleware);
+app.use('/api/portals/validate/*', tenantEnforcementMiddleware);
+app.use('/api/portals/bulk-publish', tenantEnforcementMiddleware);
+app.use('/api/portals/publications/*', tenantEnforcementMiddleware);
 app.use('/api/platform/*', tenantEnforcementMiddleware);
 app.use('/api/billing/*', tenantEnforcementMiddleware);
 app.use('/api/ai/*', tenantEnforcementMiddleware);
-app.use('/api/whatsapp/*', tenantEnforcementMiddleware);
+app.use('/api/whatsapp/status', tenantEnforcementMiddleware);
+app.use('/api/whatsapp/qrcode', tenantEnforcementMiddleware);
+app.use('/api/whatsapp/send', tenantEnforcementMiddleware);
+app.use('/api/whatsapp/messages', tenantEnforcementMiddleware);
+app.use('/api/whatsapp/reconnect', tenantEnforcementMiddleware);
+app.use('/api/whatsapp/logout', tenantEnforcementMiddleware);
 app.use('/api/users/*', tenantEnforcementMiddleware);
 app.use('/api/marketing/*', tenantEnforcementMiddleware);
 app.use('/api/contracts/*', tenantEnforcementMiddleware);
@@ -171,7 +271,23 @@ app.get('/api/health', async (c) => {
   );
 });
 
-import { createDatadogLogger } from './utils/datadog';
+// Circuit Breaker Metrics — para monitorar saúde dos serviços externos
+app.get('/api/health/circuit-breakers', async (c) => {
+  const metrics = Object.fromEntries(
+    Object.entries(circuitBreakers).map(([name, cb]) => [name, cb.getMetrics()]),
+  );
+
+  const anyOpen = Object.values(circuitBreakers).some((cb) => cb.getMetrics().state === 'OPEN');
+
+  return c.json(
+    {
+      status: anyOpen ? 'degraded' : 'ok',
+      timestamp: new Date().toISOString(),
+      breakers: metrics,
+    },
+    anyOpen ? 503 : 200,
+  );
+});
 
 // Exported handler for Cron Triggers
 export default {

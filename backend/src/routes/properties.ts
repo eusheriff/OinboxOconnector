@@ -7,7 +7,7 @@ import { generatePropertyDescription } from '../services/aiService';
 const properties = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // Middleware de Auth para todas as rotas
-properties.use('/*', authMiddleware);
+// properties.use('/*', authMiddleware); // Auth global em index.ts
 
 properties.get('/', async (c) => {
   const user = c.get('user');

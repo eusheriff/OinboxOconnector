@@ -5,7 +5,7 @@ import { calculateCommission, getAgentDashboard } from '../services/financeServi
 
 const finance = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-finance.use('/*', authMiddleware);
+// finance.use('/*', authMiddleware); // Auth global em index.ts
 
 /**
  * GET /api/finance/dashboard

@@ -10,7 +10,7 @@ import {
   Loader2,
 } from 'lucide-react';
 import { apiService } from '@/services/apiService';
-import { generateMarketingCaption } from '@/services/openaiService';
+import { generateMarketingCaption } from '@/services/aiService';
 import html2canvas from 'html2canvas';
 import { useToast } from '@/contexts/ToastContext';
 
@@ -207,11 +207,10 @@ const MarketingStudio: React.FC = () => {
             {/* THE ARTWORK */}
             <div
               ref={canvasRef}
-              className={`relative bg-white shadow-2xl overflow-hidden transition-all duration-500 group cursor-default ${
-                selectedTemplate.format === 'story'
+              className={`relative bg-white shadow-2xl overflow-hidden transition-all duration-500 group cursor-default ${selectedTemplate.format === 'story'
                   ? 'w-[360px] h-[640px] rounded-2xl'
                   : 'w-[500px] h-[500px] rounded-none'
-              }`}
+                }`}
             >
               {/* Background Image */}
               <img

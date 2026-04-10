@@ -244,7 +244,8 @@ whatsapp.post('/webhook', async (c) => {
 });
 
 // ==================== ROTAS AUTENTICADAS ====================
-whatsapp.use('/*', authMiddleware);
+// Auth agora é aplicado globalmente em index.ts (antes do tenant enforcement)
+// whatsapp.use('/*', authMiddleware);
 
 // Middleware para garantir instância existente por USUÁRIO
 const ensureInstance = async (

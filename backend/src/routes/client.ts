@@ -4,7 +4,7 @@ import { authMiddleware } from '../middleware/auth';
 
 const client = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-client.use('*', authMiddleware);
+// client.use('*', authMiddleware); // Auth global
 
 client.get('/dashboard', async (c) => {
   const user = c.get('user');

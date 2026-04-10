@@ -43,14 +43,14 @@ describe('apiService', () => {
         json: () => Promise.resolve(mockResponse),
       });
 
-      const result = await apiService.login('test@example.com', 'password123');
+      const result = await apiService.login('test@example.com', 'test-pass-000');
 
       expect(result).toEqual(mockResponse);
       expect(mockFetch).toHaveBeenCalledWith(
         expect.stringContaining('/auth/login'),
         expect.objectContaining({
           method: 'POST',
-          body: JSON.stringify({ email: 'test@example.com', password: 'password123' }),
+          body: JSON.stringify({ email: 'test@example.com', password: 'test-pass-000' }),
         }),
       );
     });
@@ -88,7 +88,7 @@ describe('apiService', () => {
       const result = await apiService.register({
         name: 'New User',
         email: 'new@example.com',
-        password: 'password123',
+        password: 'test-pass-000',
       });
 
       expect(result).toEqual(mockResponse);

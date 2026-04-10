@@ -7,52 +7,74 @@ import { rateLimiter } from '../middleware/rateLimiter';
 
 const auth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-// Rate limiting: 5 tentativas de login por minuto por IP
-auth.post('/login', rateLimiter(5), async (c) => {
+// Rate limiting: 20 tentativas de login por minuto por IP (fail-close para proteger contra força bruta)
+auth.post('/login', rateLimiter(20, true), async (c) => {
   const env = c.env;
   if (!env.JWT_SECRET) {
     return c.json({ error: 'Server configuration error' }, 500);
   }
 
   const { email, password } = await c.req.json();
-  const cleanEmail = email?.trim();
+  const cleanEmail = email?.trim().toLowerCase() || '';
+  const cleanPassword = password?.trim() || '';
 
-  console.log(`[Login Attempt] Email: '${cleanEmail}' | Password Length: ${password?.length}`);
+  console.log(`[Login Attempt] Email: '${cleanEmail}' (normalized) | Password Length: ${cleanPassword.length}`);
 
-  // Query no D1 com Join para pegar dados do Tenant
-  const user = await env.DB.prepare(
-    `
-    SELECT users.*, tenants.plan, tenants.subscription_end 
-    FROM users 
-    JOIN tenants ON users.tenant_id = tenants.id 
-    WHERE users.email = ?
-  `,
-  )
-    .bind(cleanEmail)
-    .first<{
-      id: string;
-      tenant_id: string;
-      role: string;
-      name: string;
-      email: string;
-      password_hash: string;
-      plan: string;
-      subscription_end: string;
-    }>();
-
-  if (!user) {
-    console.warn(`[Login Failed] User not found for email: '${cleanEmail}'`);
-    return c.json({ error: 'Credenciais inválidas' }, 401);
+  // Health check do DB antes da query principal
+  try {
+    await env.DB.prepare('SELECT 1').first();
+  } catch (dbError) {
+    console.error(`[Login Critical] D1 Database unreachable:`, dbError);
+    return c.json({ error: 'Erro de conexão com o banco de dados' }, 500);
   }
 
-  // Verifica senha com bcrypt (somente hashes — plaintext removido por segurança)
-  const isValid = await bcrypt.compare(password, user.password_hash);
+  // Query no D1 com Join para pegar dados do Tenant
+  let user;
+  try {
+    user = await env.DB.prepare(
+      `
+      SELECT users.*, tenants.plan, tenants.subscription_end, tenants.trial_ends_at 
+      FROM users 
+      JOIN tenants ON users.tenant_id = tenants.id 
+      WHERE users.email = ?
+    `,
+    )
+      .bind(cleanEmail)
+      .first<{
+        id: string;
+        tenant_id: string;
+        role: string;
+        name: string;
+        email: string;
+        password_hash: string;
+        plan: string;
+        subscription_end: string | null;
+        trial_ends_at: string | null;
+      }>();
+  } catch (queryError) {
+    console.error(`[Login Error] Query failed:`, queryError);
+    return c.json({ error: 'Erro ao consultar banco de dados' }, 500);
+  }
 
-  console.log(`[Login Check] User found: ${user.id} | IsValid: ${isValid}`);
+  if (!user) {
+    console.warn(`[Login Failed] User not found for email: '${cleanEmail}'. Check if user exists in D1 database.`);
+    return c.json({ error: `Usuário não encontrado: ${cleanEmail}` }, 401);
+  }
+
+  // Verifica senha com bcrypt
+  let isValid = false;
+  try {
+    isValid = await bcrypt.compare(cleanPassword, user.password_hash);
+  } catch (bcryptError) {
+    console.error(`[Login Error] Bcrypt comparison failed:`, bcryptError);
+    return c.json({ error: 'Erro interno na verificação de senha' }, 500);
+  }
+
+  console.log(`[Login Check] User found: ${user.id} | IsValid: ${isValid} | Role: ${user.role}`);
 
   if (!isValid) {
-    console.warn(`[Login Failed] Invalid password for user: ${user.id}`);
-    return c.json({ error: 'Credenciais inválidas' }, 401);
+    console.warn(`[Login Failed] Invalid password for user: ${user.id} (${cleanEmail})`);
+    return c.json({ error: 'Credenciais inválidas: senha incorreta' }, 401);
   }
 
   // Gera JWT
@@ -70,18 +92,20 @@ auth.post('/login', rateLimiter(5), async (c) => {
     user: { id: user.id, name: user.name, email: user.email, role: user.role },
     tenantId: user.tenant_id,
     token: token,
-    trialEndsAt: user.subscription_end,
+    trialEndsAt: user.subscription_end || user.trial_ends_at,
     plan: user.plan,
   });
 });
 
 auth.post('/register', rateLimiter(3), async (c) => {
   const env = c.env;
-  const data = await c.req.json();
+  const { email, ...rest } = await c.req.json();
+  const normalizedEmail = email?.trim().toLowerCase();
+  const data = { email: normalizedEmail, ...rest };
 
   // 1. Check if email exists
   const existingUser = await env.DB.prepare('SELECT id FROM users WHERE email = ?')
-    .bind(data.email)
+    .bind(normalizedEmail)
     .first<{ id: string }>();
   if (existingUser) {
     return c.json({ error: 'Este email já está cadastrado.' }, 400);
@@ -184,12 +208,12 @@ auth.get('/me', async (c) => {
       'SELECT id, name, email, role, tenant_id FROM users WHERE id = ?',
     )
       .bind(payload.sub as string)
-      .first<any>();
+      .first<Record<string, unknown>>();
 
     if (!user) return c.json({ error: 'Usuário não encontrado' }, 401);
 
     return c.json({ user });
-  } catch (e) {
+  } catch {
     return c.json({ error: 'Token inválido ou expirado' }, 401);
   }
 });
@@ -200,9 +224,10 @@ auth.post('/client/login', rateLimiter(5), async (c) => {
     return c.json({ error: 'Server configuration error' }, 500);
   }
   const { email, password } = await c.req.json();
+  const cleanEmail = email?.trim().toLowerCase() || '';
 
   // Busca cliente
-  const client = await env.DB.prepare('SELECT * FROM clients WHERE email = ?').bind(email).first<{
+  const client = await env.DB.prepare('SELECT * FROM clients WHERE email = ?').bind(cleanEmail).first<{
     id: string;
     tenant_id: string;
     name: string;

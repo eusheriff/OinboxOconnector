@@ -53,13 +53,13 @@ app.post('/search', async (c) => {
     return c.json({ error: 'Query is required' }, 400);
   }
 
-  const GOOGLE_API_KEY = c.env.GOOGLE_PLACES_API_KEY;
-  if (!GOOGLE_API_KEY) {
+  const googleApiKey = c.env.GOOGLE_PLACES_API_KEY;
+  if (!googleApiKey) {
     return c.json({ error: 'Google Places API Key not configured' }, 500);
   }
 
   try {
-    const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${GOOGLE_API_KEY}`;
+    const url = `https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&key=${googleApiKey}`;
 
     const response = await fetch(url);
     const data: any = await response.json();

@@ -26,7 +26,10 @@ export type Bindings = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   AI: any; // Cloudflare AI binding or null in Node.js
   JWT_SECRET: string;
-  OPENAI_API_KEY: string; // OpenAI API Key
+  OLLAMA_URL?: string; // URL do servidor Ollama (ex: http://localhost:11434)
+  OLLAMA_MODEL?: string; // Modelo padrão (ex: gemma4:e2b)
+  OPENAI_API_KEY?: string; // OpenAI API Key (fallback)
+  GROQ_API_KEY?: string; // Groq API Key
   DATADOG_API_KEY?: string;
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;

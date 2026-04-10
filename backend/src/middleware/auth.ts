@@ -8,22 +8,25 @@ export const authMiddleware = async (
   next: Next,
 ) => {
   const jwtSecret = c.env.JWT_SECRET;
+  const authHeader = c.req.header('Authorization');
+  const method = c.req.method;
+  const path = c.req.path;
+  console.log(`[Auth] ${method} ${path} | Header: ${authHeader ? `"${authHeader.substring(0, 30)}..."` : 'MISSING'} | Secret: ${jwtSecret ? 'SET' : 'MISSING'}`);
+
   if (!jwtSecret) {
-    // eslint-disable-next-line no-console
-    console.error('JWT_SECRET environment variable not set.');
+    console.error('[Auth] JWT_SECRET not set');
     return c.json({ error: 'Internal Server Error' }, 500);
   }
 
-  const authHeader = c.req.header('Authorization');
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return c.json({ error: 'Unauthorized' }, 401);
+    console.warn(`[Auth] No Bearer token. Header: ${authHeader}`);
+    return c.json({ error: 'Unauthorized: No Bearer token' }, 401);
   }
 
   const token = authHeader.split(' ')[1];
   try {
     const secret = new TextEncoder().encode(jwtSecret);
     const { payload } = await jwtVerify(token, secret);
-
     // Set user in context variables
     c.set('user', {
       sub: payload.sub as string,
@@ -34,32 +37,44 @@ export const authMiddleware = async (
     });
 
     // === TRIAL / SUBSCRIPTION GATE ===
-    // Skip for SuperAdmin or if explicitly skipped via Context Logic (future)
-    if (payload.role !== 'SuperAdmin' && payload.role !== 'super_admin') {
+    const normalizedRole = payload.role?.toString().toLowerCase() || '';
+    const isSuperAdmin = normalizedRole === 'superadmin' || normalizedRole === 'super_admin';
+    
+    if (!isSuperAdmin) {
       // Look up Tenant Status
+      // Alterado para buscar tanto subscription_end quanto trial_ends_at para resiliência
       const tenant = await c.env.DB.prepare(
-        'SELECT trial_ends_at, stripe_subscription_id, plan FROM tenants WHERE id = ?',
+        'SELECT subscription_end, trial_ends_at, stripe_subscription_id, plan FROM tenants WHERE id = ?',
       )
         .bind(payload.tenantId as string)
         .first<{
-          trial_ends_at: string;
+          subscription_end: string | null;
+          trial_ends_at: string | null;
           stripe_subscription_id: string | null;
           plan: string;
         }>();
 
       if (tenant) {
         const now = new Date();
-        const trialEnds = tenant.trial_ends_at ? new Date(tenant.trial_ends_at) : null;
-        const hasActiveSub = !!tenant.stripe_subscription_id; // Simple check. For robustness, verify status via Stripe webhook sync.
-        const isTrialActive = trialEnds && trialEnds > now;
+        // Fallback entre subscription_end (schema base) e trial_ends_at (migração 015)
+        const expiryStr = tenant.subscription_end || tenant.trial_ends_at;
+        const expiryDate = expiryStr ? new Date(expiryStr) : null;
+        
+        const hasActiveSub = !!tenant.stripe_subscription_id; 
+        const isTrialActive = expiryDate && expiryDate > now;
 
         if (!hasActiveSub && !isTrialActive) {
-          console.warn(`[Auth Gate] Access Denied: Trial Expired for Tenant ${payload.tenantId}`);
+          console.warn(`[Auth Gate] ACCESS DENIED (402): Subscription/Trial Expired. Tenant: ${payload.tenantId}`);
+            
           return c.json(
             {
               error: 'Período de teste expirado. Assine para continuar.',
               code: 'TRIAL_EXPIRED',
               redirect: '/admin/billing',
+              debug: {
+                tenantId: payload.tenantId,
+                expiry: expiryStr,
+              }
             },
             402,
           ); // Payment Required
@@ -67,7 +82,8 @@ export const authMiddleware = async (
       }
     }
     // =================================
-  } catch {
+  } catch (error) {
+    console.error(`[Auth] JWT verification failed:`, error);
     return c.json({ error: 'Unauthorized' }, 401);
   }
 

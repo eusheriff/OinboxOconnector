@@ -45,11 +45,38 @@ const getHeaders = (isMultipart = false) => {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   };
 
+  if (!token) {
+    console.warn('[API] WARNING: No auth token found — requests will be unauthenticated');
+  }
+
   if (!isMultipart) {
     headers['Content-Type'] = 'application/json';
   }
 
   return headers;
+};
+
+// Helper para processar respostas e tratar erros globais (ex: 402)
+const handleResponse = async (response: Response) => {
+  if (response.status === 402) {
+    const data = (await response.json().catch(() => ({}))) as any;
+    console.error('[API] 402 Payment Required - Trial Expired', data);
+    
+    // Redirecionamento automático em SPA (usando window.location para garantir que saia do fluxo atual se necessário)
+    const redirectUrl = data.redirect || '/admin/billing';
+    if (window.location.pathname !== redirectUrl) {
+      window.location.href = redirectUrl;
+    }
+    
+    throw new Error(data.error || 'Período de teste expirado. Assine para continuar.');
+  }
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({})) as { error?: string };
+    throw new Error(errorData.error || `Erro ${response.status}: ${response.statusText}`);
+  }
+
+  return response.json();
 };
 
 // Helper para fetch com timeout (evita que a UI trave se o backend não responder)
@@ -125,33 +152,23 @@ export const apiService = {
 
   // Clients
   getTenants: async () => {
-    try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/admin/tenants`, {
-        headers: getHeaders(),
-      });
-      if (!res.ok) throw new Error('Failed to fetch tenants');
-      return await res.json();
-    } catch (e) {
-      throw e;
-    }
+    const res = await fetchWithTimeout(`${API_BASE_URL}/admin/tenants`, {
+      headers: getHeaders(),
+    });
+    return handleResponse(res);
   },
 
   getClients: async (): Promise<Client[]> => {
-    try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/clients`, { headers: getHeaders() });
-      if (!res.ok) throw new Error('Failed to fetch clients');
-      const data: Client[] = await res.json();
-      // Converter datas de string para Date
-      if (Array.isArray(data)) {
-        return data.map((c) => ({
-          ...c,
-          registeredAt: new Date((c as unknown as Record<string, unknown>).created_at as string || Date.now()),
-        }));
-      }
-      return [];
-    } catch (e) {
-      throw e;
+    const res = await fetchWithTimeout(`${API_BASE_URL}/clients`, { headers: getHeaders() });
+    const data = await handleResponse(res);
+    // Converter datas de string para Date
+    if (Array.isArray(data)) {
+      return data.map((c) => ({
+        ...c,
+        registeredAt: new Date((c as unknown as Record<string, unknown>).created_at as string || Date.now()),
+      }));
     }
+    return [];
   },
 
   createClient: async (client: Partial<Client>) => {
@@ -308,14 +325,14 @@ export const apiService = {
     const response = await fetchWithTimeout(`${API_BASE_URL}/whatsapp/status`, {
       headers: getHeaders(),
     });
-    return response.json();
+    return handleResponse(response);
   },
 
   getWhatsAppQrCode: async () => {
     const response = await fetchWithTimeout(`${API_BASE_URL}/whatsapp/qrcode`, {
       headers: getHeaders(),
     });
-    return response.json();
+    return handleResponse(response);
   },
 
   sendWhatsAppMessage: async (
@@ -338,7 +355,7 @@ export const apiService = {
       url += `&remoteJid=${remoteJid}`;
     }
     const response = await fetchWithTimeout(url, { headers: getHeaders() });
-    return response.json();
+    return handleResponse(response);
   },
 
   reconnectWhatsApp: async () => {
@@ -411,7 +428,7 @@ export const apiService = {
     let url = `${API_BASE_URL}/campaigns`;
     if (status) url += `?status=${status}`;
     const response = await fetchWithTimeout(url, { headers: getHeaders() });
-    return response.json();
+    return handleResponse(response);
   },
 
   createCampaign: async (data: CampaignFormData): Promise<{ id: string }> => {
@@ -428,7 +445,7 @@ export const apiService = {
       method: 'POST',
       headers: getHeaders(),
     });
-    return response.json();
+    return handleResponse(response);
   },
 
   deleteCampaign: async (id: string) => {
@@ -436,7 +453,7 @@ export const apiService = {
       method: 'DELETE',
       headers: getHeaders(),
     });
-    return response.json();
+    return handleResponse(response);
   },
 
   // Multi-Platform Publishing
@@ -460,7 +477,7 @@ export const apiService = {
     const response = await fetchWithTimeout(`${API_BASE_URL}/portals/configs`, {
       headers: getHeaders(),
     });
-    return response.json();
+    return handleResponse(response);
   },
 
   savePortalConfig: async (portalId: string, config: any) => {

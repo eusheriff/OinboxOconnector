@@ -93,7 +93,7 @@ billing.post('/webhook', async (c) => {
 });
 
 // Middleware de Auth para outras rotas
-billing.use('*', authMiddleware);
+// billing.use('*', authMiddleware); // Auth global
 // Admin-only: Only tenant admins can access checkout and manage billing
 billing.use('/checkout', requireRole('admin'));
 billing.use('/subscriptions', requireRole('admin'));

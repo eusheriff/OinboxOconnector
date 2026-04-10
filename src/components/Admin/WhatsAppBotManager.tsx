@@ -10,6 +10,7 @@ import {
   Wifi,
   WifiOff,
   Copy,
+  Activity,
 } from 'lucide-react';
 
 interface WhatsAppStatus {
@@ -288,6 +289,5 @@ const WhatsAppBotManager: React.FC = () => {
 
 // Icon helper since 'Activity' was not imported in the original file I might need to import it properly
 // But assume lucide-react is available as per checking SuperAdminLeadCapture
-import { Activity } from 'lucide-react';
 
 export default WhatsAppBotManager;

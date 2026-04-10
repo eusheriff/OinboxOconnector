@@ -35,9 +35,9 @@ export const createMockDB = () => {
 
 export const createMockEnv = (db: ReturnType<typeof createMockDB>) => ({
   DB: db,
-  JWT_SECRET: 'test-secret-key-for-jwt',
-  OPENAI_API_KEY: 'sk-test-mock-key',
-  STRIPE_SECRET_KEY: 'sk_test_mock',
-  STRIPE_WEBHOOK_SECRET: 'whsec_test_mock',
+  JWT_SECRET: 'test-jwt-secret-placeholder',
+  OPENAI_API_KEY: 'sk-test-mock-openai-key-placeholder',
+  STRIPE_SECRET_KEY: 'sk_test_mock_stripe_key_placeholder',
+  STRIPE_WEBHOOK_SECRET: 'whsec_test_mock_webhook_placeholder',
   // Add other bindings as needed
 });

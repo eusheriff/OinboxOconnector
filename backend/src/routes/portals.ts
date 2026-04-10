@@ -234,7 +234,8 @@ portals.post('/api/:tenantId', async (c) => {
 
 // Aplicar middleware de auth para todas as rotas abaixo
 const portalsAuth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
-portalsAuth.use('/*', authMiddleware);
+// Auth já é aplicado globalmente em index.ts
+// portalsAuth.use('/*', authMiddleware);
 
 // Publicação em lote - POST /api/portals/bulk-publish
 portalsAuth.post('/bulk-publish', async (c) => {

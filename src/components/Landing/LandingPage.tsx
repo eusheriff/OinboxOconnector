@@ -20,7 +20,6 @@ import {
 } from 'lucide-react';
 import { Button } from '../UI/button';
 import { Badge } from '../UI/badge';
-import { PublicChatWidget } from '../PublicChatWidget';
 
 interface LandingPageProps {
   onNavigateLogin: () => void;
@@ -522,7 +521,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin, onNavigateRe
         </div>
       )}
 
-      <PublicChatWidget />
     </div>
   );
 };

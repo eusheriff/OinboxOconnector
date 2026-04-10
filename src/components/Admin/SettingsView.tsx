@@ -52,7 +52,7 @@ const SettingsView: React.FC = () => {
           {/* Gemini Check */}
           <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border">
             <div>
-              <div className="font-semibold">Google Gemini AI</div>
+              <div className="font-semibold">Groq AI</div>
               <div className="text-sm text-muted-foreground">
                 Key:{' '}
                 {geminiStatus === 'success'

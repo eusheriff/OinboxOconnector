@@ -6,7 +6,7 @@ import {
   getRateLimitStatus,
   cleanupOldRateLimits,
 } from '../utils/aiRateLimiter';
-import { callGPT4oMini, callGPT4o } from '../services/aiService';
+import { callGemma } from '../services/aiService';
 
 const aiRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -39,20 +39,22 @@ aiRoutes.post('/public-chat', async (c) => {
       '\n\nPergunta do usuário: ' +
       prompt;
 
-    // 3. Chamar GPT-4o-mini diretamente
-    const response = await callGPT4oMini(c.env.OPENAI_API_KEY, fullPrompt);
+    // 3. Chamar Gemma 4 via Ollama
+    const ollamaUrl = c.env.OLLAMA_URL || 'http://localhost:11434';
+    const response = await callGemma(ollamaUrl, fullPrompt);
 
     const duration = Date.now() - startTime;
 
     await logger?.info('Public chat request completed', {
       session_id,
-      provider: 'openai',
+      provider: 'ollama',
+      model: 'gemma4:e2b',
       duration_ms: duration,
       response_length: response.length,
     });
 
-    await logger?.metric('oinbox.ai.public_chat.duration', duration, ['provider:openai']);
-    await logger?.metric('oinbox.ai.public_chat.success', 1, ['provider:openai']);
+    await logger?.metric('oinbox.ai.public_chat.duration', duration, ['provider:ollama']);
+    await logger?.metric('oinbox.ai.public_chat.success', 1, ['provider:ollama']);
 
     return c.json({ text: response });
   } catch (error: unknown) {
@@ -73,7 +75,7 @@ aiRoutes.post('/public-chat', async (c) => {
   }
 });
 
-aiRoutes.use('*', authMiddleware);
+// aiRoutes.use('*', authMiddleware); // Auth global
 
 // Endpoint para verificar status dos limites
 aiRoutes.get('/limits', async (c) => {
@@ -127,21 +129,15 @@ aiRoutes.post('/generate', async (c) => {
   const fullPrompt =
     'Contexto da conversa: ' + JSON.stringify(context || {}) + '\n\n' + 'Usuário: ' + prompt;
 
-  // 2. Verificar rate limit do OpenAI
-  const openaiLimit = await checkAndIncrementRateLimit(c.env.DB, user.tenantId, 'openai');
-
-  if (!openaiLimit.allowed) {
-    return c.json({ error: 'Limite de IA atingido para hoje' }, 429);
-  }
-
-  // 3. Usar GPT-4o-mini
-  const response = await callGPT4oMini(c.env.OPENAI_API_KEY, fullPrompt, fullSystemPrompt);
+  // 2. Chamar Gemma 4 via Ollama
+  const ollamaUrl = c.env.OLLAMA_URL || 'http://localhost:11434';
+  const response = await callGemma(ollamaUrl, fullPrompt, fullSystemPrompt);
 
   return c.json({
     text: response,
     _meta: {
-      model: 'gpt-4o-mini',
-      openaiRemaining: openaiLimit.remaining,
+      model: 'gemma4:e2b',
+      provider: 'ollama',
     },
   });
 });
@@ -165,14 +161,9 @@ aiRoutes.post('/chat', async (c) => {
 
     const fullPrompt = message + '\n\nHistórico: ' + JSON.stringify(history || []);
 
-    // Verificar rate limit do OpenAI
-    const openaiLimit = await checkAndIncrementRateLimit(c.env.DB, user.tenantId, 'openai');
-
-    if (!openaiLimit.allowed) {
-      return c.json({ error: 'Limite de IA atingido' }, 429);
-    }
-
-    const reply = await callGPT4o(c.env.OPENAI_API_KEY, fullPrompt, systemPrompt);
+    // Chamar Gemma 4 via Ollama
+    const ollamaUrl = c.env.OLLAMA_URL || 'http://localhost:11434';
+    const reply = await callGemma(ollamaUrl, fullPrompt, systemPrompt);
 
     if (!reply) {
       return c.json({ error: 'Não consegui processar sua solicitação.' }, 500);
@@ -180,7 +171,7 @@ aiRoutes.post('/chat', async (c) => {
 
     return c.json({
       reply,
-      _meta: { model: 'gpt-4o' },
+      _meta: { model: 'gemma4:e2b', provider: 'ollama' },
     });
   } catch (e) {
     logger?.error('AI Chat Error', { error: e });

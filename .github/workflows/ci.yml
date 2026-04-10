@@ -44,8 +44,17 @@ jobs:
           cache: 'npm'
       - run: npm ci
       - run: npm run test
-      - run: npm run test:backend
-      - run: npm run test:frontend
+      - run: npm run test:backend -- --coverage
+      - run: npm run test:frontend -- --coverage
+      - name: Upload coverage reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-reports
+          path: |
+            coverage/
+            backend/coverage/
+          retention-days: 7
 
   build:
     name: Build

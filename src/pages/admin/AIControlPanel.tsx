@@ -12,7 +12,7 @@ interface AIConfig {
 const AIControlPanel: React.FC = () => {
   const { addToast } = useToast();
   const [config, setConfig] = useState<AIConfig>({
-    model: 'gemini-1.5-flash',
+    model: 'llama-3.3-70b-versatile',
     systemPrompt: '',
     maxTokens: 2048,
     temperature: 0.7,
@@ -99,9 +99,9 @@ const AIControlPanel: React.FC = () => {
               onChange={(e) => setConfig({ ...config, model: e.target.value })}
               className="w-full bg-background border border-border rounded-lg p-3 text-white focus:ring-2 focus:ring-purple-500 outline-none"
             >
-              <option value="gemini-1.5-flash">Gemini 1.5 Flash (Recomendado)</option>
-              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-              <option value="gpt-4o">GPT-4o (OpenAI)</option>
+              <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Groq - Recomendado)</option>
+              <option value="llama-3.1-8b-instant">Llama 3.1 8B Instant (Groq - Rapido)</option>
+              <option value="mixtral-8x7b-32768">Mixtral 8x7B (Groq)</option>
             </select>
           </div>
 
@@ -147,7 +147,7 @@ const AIControlPanel: React.FC = () => {
             </div>
           </div>
           <p className="text-sm text-gray-500">
-            * Estimativa baseada no uso atual e preços da API do Google Cloud.
+            * Estimativa baseada no uso atual e precos da API Groq.
           </p>
         </div>
       </div>
