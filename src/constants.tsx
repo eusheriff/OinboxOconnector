@@ -9,10 +9,19 @@ import {
   Appointment,
   Tenant,
 } from './types';
-import { MessageCircle, Instagram, Mail } from 'lucide-react';
+import {
+  MessageCircle,
+  Instagram,
+  Mail,
+  Send,
+  Twitter,
+  Music2,
+  MessageSquare,
+  Smartphone,
+} from 'lucide-react';
 
-// Helper to render platform icons
-export const getPlatformIcon = (platform: Platform) => {
+// Helper to render platform icons — agora com TODOS os canais
+export const getPlatformIcon = (platform: Platform | string) => {
   switch (platform) {
     case Platform.WHATSAPP:
       return <MessageCircle className="w-4 h-4 text-green-500" />;
@@ -20,9 +29,53 @@ export const getPlatformIcon = (platform: Platform) => {
       return <Instagram className="w-4 h-4 text-pink-500" />;
     case Platform.EMAIL:
       return <Mail className="w-4 h-4 text-blue-500" />;
+    case Platform.FACEBOOK:
+      return <MessageCircle className="w-4 h-4 text-blue-600" />;
+    case Platform.TELEGRAM:
+      return <Send className="w-4 h-4 text-[#0088CC]" />;
+    case Platform.X_TWITTER:
+      return <Twitter className="w-4 h-4 text-gray-800" />;
+    case Platform.TIKTOK:
+      return <Music2 className="w-4 h-4 text-black" />;
+    case Platform.LINE:
+      return <MessageSquare className="w-4 h-4 text-[#06C755]" />;
+    case Platform.SMS:
+      return <Smartphone className="w-4 h-4 text-yellow-600" />;
     default:
+      // Suporte para strings lowercase (channel_type do backend)
+      if (typeof platform === 'string') {
+        const p = platform.toLowerCase();
+        if (p === 'facebook') return <MessageCircle className="w-4 h-4 text-blue-600" />;
+        if (p === 'instagram') return <Instagram className="w-4 h-4 text-pink-500" />;
+        if (p === 'telegram') return <Send className="w-4 h-4 text-[#0088CC]" />;
+        if (p === 'x') return <Twitter className="w-4 h-4 text-gray-800" />;
+        if (p === 'tiktok') return <Music2 className="w-4 h-4 text-black" />;
+        if (p === 'line') return <MessageSquare className="w-4 h-4 text-[#06C755]" />;
+        if (p === 'whatsapp') return <MessageCircle className="w-4 h-4 text-green-500" />;
+        if (p === 'email') return <Mail className="w-4 h-4 text-blue-500" />;
+        if (p === 'sms') return <Smartphone className="w-4 h-4 text-yellow-600" />;
+      }
       return <MessageCircle className="w-4 h-4 text-gray-500" />;
   }
+};
+
+// Label amigavel para cada canal
+export const getPlatformLabel = (platform: Platform | string): string => {
+  if (typeof platform === 'string') {
+    const labels: Record<string, string> = {
+      facebook: 'Facebook',
+      instagram: 'Instagram',
+      telegram: 'Telegram',
+      x: 'X (Twitter)',
+      tiktok: 'TikTok',
+      line: 'Line',
+      whatsapp: 'WhatsApp',
+      email: 'Email',
+      sms: 'SMS',
+    };
+    return labels[platform.toLowerCase()] || platform;
+  }
+  return platform;
 };
 
 export const OLLAMA_MODELS = [
@@ -193,6 +246,7 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
     lastMessageTime: new Date(),
     unreadCount: 1,
     tags: ['Interessado', 'Compra'],
+    status: 'open',
     associatedPropertyId: 'prop-1',
     messages: [
       {
@@ -239,6 +293,7 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
     lastMessageTime: new Date(Date.now() - 3600000),
     unreadCount: 0,
     tags: ['Dúvida', 'Aluguel'],
+    status: 'open',
     associatedPropertyId: 'prop-2',
     messages: [
       {
@@ -268,6 +323,7 @@ export const MOCK_CONVERSATIONS: Conversation[] = [
     lastMessageTime: new Date(Date.now() - 86400000),
     unreadCount: 0,
     tags: ['Parceiro', 'Documentação'],
+    status: 'open',
     messages: [
       {
         id: 'm1',

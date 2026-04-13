@@ -1,11 +1,8 @@
 import { Hono } from 'hono';
 import { Bindings, Variables } from '../bindings';
-import { superAuthMiddleware } from '../middleware/auth';
 import { Lead } from '../../../shared/types'; // Importando do Shared
 
 const leads = new Hono<{ Bindings: Bindings; Variables: Variables }>();
-
-leads.use('*', superAuthMiddleware);
 
 // Helper para mapear snake_case do BD para camelCase do Domain
 function mapLeadFromDb(dbLead: any): Lead {

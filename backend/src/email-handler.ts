@@ -157,14 +157,42 @@ export async function handleEmail(message: EmailMessage, env: Bindings, ctx: Exe
     // NAO fingir WhatsApp - isso causava confusão entre canais
 
     if (leadPhone || leadEmail) {
-      // Inserir na tabela geral de mensagens do CRM
+      // Get or Create channel for email
+      const channelName = 'Email Inbox';
+      let channelId = await env.DB.prepare(
+        "SELECT id FROM channels WHERE tenant_id = ? AND provider = 'email'"
+      ).bind(tenantId).first<{id: string}>();
+
+      if (!channelId) {
+        const newChannelId = crypto.randomUUID();
+        await env.DB.prepare(
+          "INSERT INTO channels (id, tenant_id, provider, name) VALUES (?, ?, 'email', ?)"
+        ).bind(newChannelId, tenantId, channelName).run();
+        channelId = { id: newChannelId };
+      }
+
+      // Get or Create Conversation
+      let conversation = await env.DB.prepare(
+        "SELECT id FROM conversations WHERE tenant_id = ? AND channel_id = ? AND contact_id = ? AND status != 'resolved'"
+      ).bind(tenantId, channelId.id, finalClientId).first<{id: string}>();
+
+      if (!conversation) {
+        const newConvId = crypto.randomUUID();
+        await env.DB.prepare(
+          "INSERT INTO conversations (id, tenant_id, channel_id, contact_id, status) VALUES (?, ?, ?, ?, 'open')"
+        ).bind(newConvId, tenantId, channelId.id, finalClientId).run();
+        conversation = { id: newConvId };
+      }
+
+      // Salvar como Omnichannel Message
       await env.DB.prepare(
-        `INSERT INTO messages (id, tenant_id, client_id, role, content, created_at)
-         VALUES (?, ?, ?, 'user', ?, ?)`,
+        `INSERT INTO omnichannel_messages (id, tenant_id, conversation_id, sender_type, sender_id, content, message_type, created_at)
+         VALUES (?, ?, ?, 'contact', ?, ?, 'text', ?)`
       )
         .bind(
           crypto.randomUUID(),
           tenantId,
+          conversation.id,
           finalClientId,
           `[${source}] ${leadMessage}`,
           new Date().toISOString(),

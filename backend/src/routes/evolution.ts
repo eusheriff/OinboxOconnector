@@ -138,7 +138,7 @@ async function evolutionRequest(
 }
 
 // GET /api/evolution/status - Status da conexão WhatsApp
-evolution.get('/status', superAuthMiddleware, async (c) => {
+evolution.get('/status', async (c) => {
   const baseUrl = c.env.EVOLUTION_API_URL;
   const apiKey = c.env.EVOLUTION_API_KEY;
 
@@ -180,7 +180,7 @@ evolution.get('/status', superAuthMiddleware, async (c) => {
 });
 
 // POST /api/evolution/connect - Iniciar pareamento QR Code
-evolution.post('/connect', superAuthMiddleware, async (c) => {
+evolution.post('/connect', async (c) => {
   const baseUrl = c.env.EVOLUTION_API_URL;
   const apiKey = c.env.EVOLUTION_API_KEY;
 
@@ -232,7 +232,7 @@ evolution.post('/connect', superAuthMiddleware, async (c) => {
 });
 
 // POST /api/evolution/send - Enviar mensagem individual
-evolution.post('/send', superAuthMiddleware, async (c) => {
+evolution.post('/send', async (c) => {
   const { phone, message, leadId } = await c.req.json();
 
   if (!phone || !message) {
@@ -299,7 +299,7 @@ evolution.post('/send', superAuthMiddleware, async (c) => {
 });
 
 // POST /api/evolution/batch - Enviar mensagens em lote (para campanhas)
-evolution.post('/batch', superAuthMiddleware, async (c) => {
+evolution.post('/batch', async (c) => {
   const { campaignId, delaySeconds = 30 } = await c.req.json();
 
   if (!campaignId) {

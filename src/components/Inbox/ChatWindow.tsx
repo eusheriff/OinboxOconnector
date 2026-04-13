@@ -15,6 +15,9 @@ import {
   Mic,
   Play,
   Pause,
+  Lock,
+  UserCheck,
+  CheckCircle2
 } from 'lucide-react';
 import { apiService } from '@/services/apiService';
 import {
@@ -28,7 +31,8 @@ import { useToast } from '@/contexts/ToastContext';
 
 interface ChatWindowProps {
   conversation: Conversation | null;
-  onSendMessage: (text: string) => void;
+  onSendMessage: (text: string, isPrivate?: boolean) => void;
+  onStatusChange?: (status: 'bot' | 'open' | 'resolved') => void;
 }
 
 const AudioPlayerBubble: React.FC<{ duration: string }> = ({ duration }) => {
@@ -54,7 +58,7 @@ const AudioPlayerBubble: React.FC<{ duration: string }> = ({ duration }) => {
   );
 };
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage, onStatusChange }) => {
   const { addToast } = useToast();
   const [inputText, setInputText] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -63,6 +67,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
   const [groundingSources, setGroundingSources] = useState<GroundingSource[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [propertyContext, setPropertyContext] = useState<Property | null>(null);
+  const [sendAsPrivate, setSendAsPrivate] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -122,8 +127,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
 
   const handleSend = () => {
     if (!inputText.trim()) return;
-    onSendMessage(inputText);
+    onSendMessage(inputText, sendAsPrivate);
     setInputText('');
+    setSendAsPrivate(false);
     setGroundingSources([]); // Clear sources after sending
   };
 
@@ -212,9 +218,28 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
             </div>
           </div>
         </div>
-        <button className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
-          <MoreVertical className="w-5 h-5" />
-        </button>
+        
+        <div className="flex items-center gap-2">
+          {conversation.status === 'bot' ? (
+            <button 
+              onClick={() => onStatusChange?.('open')}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all shadow-md"
+            >
+              <UserCheck className="w-4 h-4" /> Assumir Conversa
+            </button>
+          ) : conversation.status === 'open' ? (
+            <button 
+              onClick={() => onStatusChange?.('resolved')}
+              className="bg-slate-700 hover:bg-slate-600 text-gray-200 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all"
+            >
+              <CheckCircle2 className="w-4 h-4" /> Finalizar
+            </button>
+          ) : null}
+
+          <button className="p-2 hover:bg-gray-100 rounded-full text-gray-500 transition-colors">
+            <MoreVertical className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
@@ -235,28 +260,41 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
           </div>
         )}
 
-        {conversation.messages.map((msg) => (
-          <div key={msg.id} className={`flex ${msg.isStaff ? 'justify-end' : 'justify-start'}`}>
-            <div
-              className={`max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-3 shadow-sm relative group ${msg.isStaff
-                  ? 'bg-primary text-primary-foreground rounded-br-none'
-                  : 'bg-card text-foreground rounded-bl-none border border-border'
+        {conversation.messages.map((msg) => {
+          const isNote = msg.type === 'private_note';
+          return (
+            <div key={msg.id} className={`flex ${msg.isStaff ? 'justify-end' : 'justify-start'}`}>
+              <div
+                className={`max-w-[75%] md:max-w-[60%] rounded-2xl px-4 py-3 shadow-sm relative group ${
+                  isNote
+                    ? 'bg-yellow-100 text-yellow-900 border border-yellow-200 w-full max-w-none text-center italic mx-8'
+                    : msg.isStaff
+                    ? 'bg-primary text-primary-foreground rounded-br-none'
+                    : 'bg-card text-foreground rounded-bl-none border border-border'
                 }`}
-            >
-              {msg.type === 'audio' ? (
-                <AudioPlayerBubble duration={msg.audioDuration || '0:00'} />
-              ) : (
-                <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-              )}
-
-              <span
-                className={`text-[10px] block mt-1 text-right opacity-70 ${msg.isStaff ? 'text-blue-100' : 'text-gray-400'}`}
               >
-                {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
+                {isNote && (
+                  <div className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-yellow-700 mb-1 uppercase tracking-tight">
+                    <Lock size={10} /> Nota Interna (Staff Online)
+                  </div>
+                )}
+                {msg.type === 'audio' ? (
+                  <AudioPlayerBubble duration={msg.audioDuration || '0:00'} />
+                ) : (
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                )}
+
+                <span
+                  className={`text-[10px] block mt-1 text-right opacity-70 ${
+                    isNote ? 'text-yellow-600' : msg.isStaff ? 'text-blue-100' : 'text-gray-400'
+                  }`}
+                >
+                  {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
 
@@ -328,10 +366,23 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage }) 
 
           <button
             onClick={() => handleAiAssist('friendly')}
-            disabled={isGenerating}
-            className="flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1.5 rounded-full hover:bg-emerald-100 transition-colors whitespace-nowrap"
+            disabled={isGenerating || sendAsPrivate}
+            className="flex items-center gap-1.5 text-xs bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1.5 rounded-full hover:bg-emerald-100 transition-colors whitespace-nowrap disabled:opacity-30"
           >
             Amigável
+          </button>
+
+          <div className="flex-1"></div>
+
+          <button
+            onClick={() => setSendAsPrivate(!sendAsPrivate)}
+            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full transition-all font-bold ${
+              sendAsPrivate 
+                ? 'bg-yellow-500 text-white shadow-inner' 
+                : 'bg-yellow-50 text-yellow-700 border border-yellow-200 hover:bg-yellow-100'
+            }`}
+          >
+            <Lock className="w-3 h-3" /> {sendAsPrivate ? 'Nota Privada Ativada' : 'Modo Nota Interna'}
           </button>
         </div>
 

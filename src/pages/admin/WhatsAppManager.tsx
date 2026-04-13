@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, RefreshCw, Smartphone, CheckCircle, XCircle, LogOut } from 'lucide-react';
+import { MessageCircle, RefreshCw, Smartphone, CheckCircle, XCircle, LogOut, Facebook, ShieldCheck } from 'lucide-react';
 import ConfirmationModal from '@/components/UI/ConfirmationModal';
 import { useToast } from '@/contexts/ToastContext';
+import { apiService } from '@/services/apiService';
 
 interface WhatsAppStatus {
   status: 'connected' | 'disconnected';
@@ -21,6 +22,7 @@ const WhatsAppManager: React.FC = () => {
   const [connectionStatus, setConnectionStatus] = useState<
     'connected' | 'disconnected' | 'connecting'
   >('disconnected');
+  const [connectionType, setConnectionType] = useState<'evolution' | 'meta' | null>(null);
   const { addToast } = useToast();
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
@@ -38,28 +40,53 @@ const WhatsAppManager: React.FC = () => {
   const fetchStatus = async () => {
     setLoading(true);
     try {
-      // Usando fetch direto ou apiService extendido. Aqui vou usar fetch direto por enquanto para garantir endpoint correto
-      const token = localStorage.getItem('oinbox_token');
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/whatsapp/status`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
-      const data = (await response.json()) as WhatsAppStatus;
+      const data = (await apiService.getWhatsAppStatus()) as any;
 
       if (data.status === 'connected') {
         setConnectionStatus('connected');
+        setConnectionType(data.provider === 'whatsapp_cloud' ? 'meta' : 'evolution');
         setStatus(data);
         setQrCode(null);
       } else {
         setConnectionStatus('disconnected');
-        // Se desconectado, buscar QR Code
+        setConnectionType(null);
         fetchQrCode();
       }
     } catch {
-      // console.error('Failed to fetch WhatsApp status', error);
       setConnectionStatus('disconnected');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMetaLogin = async () => {
+    try {
+      setLoading(true);
+      const { url } = (await apiService.getMetaAuthUrl()) as any;
+      
+      // Abrir Popup Oficial
+      const width = 600;
+      const height = 700;
+      const left = window.screenX + (window.outerWidth - width) / 2;
+      const top = window.screenY + (window.outerHeight - height) / 2;
+      
+      const popup = window.open(
+        url,
+        'MetaOAuth',
+        `width=${width},height=${height},left=${left},top=${top}`
+      );
+
+      // Listener para o fechamento
+      const checkPopup = setInterval(() => {
+        if (!popup || popup.closed) {
+          clearInterval(checkPopup);
+          fetchStatus();
+          addToast('success', 'Conexão Meta finalizada. Verificando status...');
+        }
+      }, 1000);
+
+    } catch (e) {
+      addToast('error', 'Falha ao iniciar login Meta OAuth.');
     } finally {
       setLoading(false);
     }
@@ -181,10 +208,12 @@ const WhatsAppManager: React.FC = () => {
                   <CheckCircle size={48} className="text-green-500" />
                 </div>
                 <h4 className="text-2xl font-bold text-white">Conectado</h4>
-                <p className="text-gray-400">Instância: {status?.instanceName || 'Ativa'}</p>
-                <p className="text-green-400 text-sm bg-green-400/10 px-3 py-1 rounded-full">
-                  Evolution API v2
-                </p>
+                <p className="text-gray-400">Instância: {status?.instanceName || 'Canal Oficial'}</p>
+                <div className="flex gap-2">
+                   <p className={`text-sm px-3 py-1 rounded-full ${connectionType === 'meta' ? 'bg-blue-400/10 text-blue-400' : 'bg-green-400/10 text-green-400'}`}>
+                    {connectionType === 'meta' ? 'WhatsApp Cloud API (Meta)' : 'Evolution API (QRCode)'}
+                  </p>
+                </div>
               </>
             ) : (
               <>
@@ -212,9 +241,33 @@ const WhatsAppManager: React.FC = () => {
 
         {/* Configuration / Instructions */}
         <div className="bg-card p-6 rounded-xl border border-border shadow-lg">
-          <h3 className="text-xl font-semibold text-gray-200 mb-4">Instruções</h3>
-          <div className="space-y-4 text-gray-300">
-            <p>Para conectar seu WhatsApp ao Euimob:</p>
+          <h3 className="text-xl font-semibold text-gray-200 mb-4">Configuração</h3>
+          <div className="space-y-6 text-gray-300">
+            {/* META OAUTH BUTTON */}
+            <div className="p-4 bg-blue-600/10 border border-blue-600/20 rounded-xl space-y-3">
+              <div className="flex items-center gap-2 text-blue-400 font-bold">
+                <ShieldCheck size={20} />
+                WhatsApp Oficial (Recomendado)
+              </div>
+              <p className="text-sm text-gray-400">
+                Conecte-se diretamente à API oficial da Meta. Mais estável, sem quedas e aprovado pelo WhatsApp.
+              </p>
+              <button 
+                onClick={handleMetaLogin}
+                disabled={loading || connectionStatus === 'connected'}
+                className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-lg"
+              >
+                <Facebook size={20} />
+                Conectar com Facebook
+              </button>
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-slate-700/50"></span></div>
+              <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-gray-500">Ou use o método clássico</span></div>
+            </div>
+
+            <p>Para conectar via QRCode (Evolution API):</p>
             <ol className="list-decimal pl-5 space-y-2">
               <li>Abra o WhatsApp no seu celular</li>
               <li>

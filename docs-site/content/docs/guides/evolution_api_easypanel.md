@@ -29,7 +29,7 @@ Image: atendai/evolution-api:latest
 
 Adicione estas variáveis em **"Environment"**:
 
-```env
+```bash
 # Servidor
 SERVER_URL=https://evolution.seudominio.com
 
@@ -101,7 +101,7 @@ Use a API Key que você definiu em `AUTHENTICATION_API_KEY`.
 
 Edite o arquivo `.env` do projeto Oinbox:
 
-```env
+```bash
 EVOLUTION_API_URL=https://evolution.seudominio.com
 EVOLUTION_API_KEY=SUA_CHAVE_SECRETA_AQUI
 ```

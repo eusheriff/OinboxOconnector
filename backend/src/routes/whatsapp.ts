@@ -78,59 +78,32 @@ whatsapp.post('/webhook', async (c) => {
 
       await logger?.info(`[WhatsApp] Mensagem salva`, { tenantId, messageId });
 
-      // AGENTE IA - Responder automaticamente se for mensagem recebida (inbound)
+        // AGENTE IA - Responder automaticamente se for mensagem recebida (inbound)
       if (!isFromMe) {
-        // LEAD OPS: Check for Human Handover
-        // Se o lead já está atribuído a alguém, a IA NÃO deve responder (exceto se for configurada como copiloto)
-        // Para MVP: Se assigned_to existe, SILÊNCIO (corretor assume).
-
-        // Normalize phone for lookup (remove suffix)
         const phoneClean = remoteJid!.replace('@s.whatsapp.net', '');
         const lead = await repo.findLeadByPhone(tenantId, phoneClean);
 
+        // OBTÉM OU CRIA A CONVERSA (Status inicial é 'bot')
+        const conversation = await repo.getOrCreateOmniConversation(tenantId, remoteJid!, lead?.id);
+
         if (lead) {
-          // STOP AUTOMATION & UPDATE CRM
-          // await repo.updateLeadStatus(lead.id, 'responded'); // Method might not exist
+          // UPDATE CRM metrics
           await env.DB.prepare(
-            "UPDATE leads SET status = 'responded', responded_at = CURRENT_TIMESTAMP WHERE id = ?",
-          )
-            .bind(lead.id)
-            .run();
+            "UPDATE leads SET status = 'responded', responded_at = CURRENT_TIMESTAMP WHERE id = ?"
+          ).bind(lead.id).run();
 
           await env.DB.prepare(
-            "UPDATE campaign_leads SET status = 'stopped' WHERE lead_id = ? AND status IN ('active', 'pending')",
-          )
-            .bind(lead.id)
-            .run();
-          await logger?.info('[WhatsApp] Automação parada (Lead respondeu)', { leadId: lead.id });
+            "UPDATE campaign_leads SET status = 'stopped' WHERE lead_id = ? AND status IN ('active', 'pending')"
+          ).bind(lead.id).run();
         }
 
-        if (lead && lead.assigned_to) {
-          await logger?.info('[WhatsApp] Silenciando IA (Lead atribuído)', {
-            leadId: lead.id,
-            assignedTo: lead.assigned_to,
-          });
-
-          // Criar notificação para o corretor responsável
-          const notificationId = crypto.randomUUID();
-          const phoneClean = remoteJid!.replace('@s.whatsapp.net', '');
-          await env.DB.prepare(
-            `INSERT INTO notifications (id, tenant_id, user_id, type, title, message, metadata)
-             VALUES (?, ?, ?, 'handover', 'Lead respondeu no WhatsApp', ?, ?)`,
-          )
-            .bind(
-              notificationId,
-              tenantId,
-              lead.assigned_to,
-              `O lead ${phoneClean} respondeu e precisa de atenção. A IA foi silenciada.`,
-              JSON.stringify({ leadId: lead.id, phone: phoneClean, content: messageContent }),
-            )
-            .run();
-
-          return c.json({ received: true, action: 'human_handover', notificationId });
+        // HANDOFF CHECK: A IA só "fala" na conversa se o status for explícitamente 'bot'
+        if (conversation.status !== 'bot') {
+          await logger?.info('[WhatsApp] IA Silenciada (Conversa em Handoff/Open / Humano na linha)', { convId: conversation.id, status: conversation.status });
+          return c.json({ received: true, action: 'bypassed_to_human' });
         }
 
-        await logger?.info('[WhatsApp] Acionando Agente de Vendas (Sales Specialist)...');
+        await logger?.info('[WhatsApp] Acionando Agente de Vendas (Captain/IA)...');
 
         // 1. ANÁLISE DE INTENÇÃO (Autopilot CRM)
         let agentResponseText = '';
@@ -144,28 +117,38 @@ whatsapp.post('/webhook', async (c) => {
 
           await logger?.info(`[Sales Specialist] Intent Detected: ${intent}`, { analysis });
 
-          // 2. MOVIMENTAÇÃO AUTÔNOMA CRM
-          if (lead) {
-            if (intent === 'INTERESTED') {
-              // Move to Hot Lead
-              await env.DB.prepare(
-                "UPDATE leads SET status = 'hot_lead', unread_count = unread_count + 1 WHERE id = ?",
+          // 2. MOVIMENTAÇÃO AUTÔNOMA CRM & HANDOFF
+          if (intent === 'INTERESTED' || intent === 'SUPPORT') {
+            // Transbordo Expresso
+            await env.DB.prepare("UPDATE conversations SET status = 'open' WHERE id = ?").bind(conversation.id).run();
+            await logger?.info(`[WhatsApp] ➡️ HANDOFF! Intent ${intent}. Bot silenciado.`, { convId: conversation.id });
+
+            // Notification
+            if (lead) {
+               await env.DB.prepare(
+                `INSERT INTO notifications (id, tenant_id, user_id, type, title, message, metadata)
+                 VALUES (?, ?, ?, 'handover', 'Suporte/Interesse Solicitado', ?, ?)`
               )
-                .bind(lead.id)
-                .run();
-              if (!agentResponseText)
-                agentResponseText = 'Ótimo! Vou pedir para um consultor te chamar agora mesmo.';
-            } else if (intent === 'NOT_INTERESTED') {
-              // Archive
-              await env.DB.prepare("UPDATE leads SET status = 'archived' WHERE id = ?")
-                .bind(lead.id)
-                .run();
-              if (!agentResponseText) agentResponseText = 'Entendido. Agradecemos a atenção!';
-            } else if (intent === 'SUPPORT') {
-              await env.DB.prepare("UPDATE leads SET status = 'needs_support' WHERE id = ?")
-                .bind(lead.id)
+                .bind(
+                  crypto.randomUUID(),
+                  tenantId,
+                  lead.assigned_to || null,
+                  `O lead ${phoneClean} tem intenção de ${intent}. Assuma o chat imediatamente.`,
+                  JSON.stringify({ leadId: lead.id, phone: phoneClean, intent })
+                )
                 .run();
             }
+
+            if (lead && intent === 'INTERESTED') {
+              await env.DB.prepare("UPDATE leads SET status = 'hot_lead', unread_count = unread_count + 1 WHERE id = ?").bind(lead.id).run();
+              if (!agentResponseText) agentResponseText = 'Ótimo! Vou te transferir para um especialista agora mesmo.';
+            } else if (lead && intent === 'SUPPORT') {
+              await env.DB.prepare("UPDATE leads SET status = 'needs_support' WHERE id = ?").bind(lead.id).run();
+              if (!agentResponseText) agentResponseText = 'Certo, estou te transferindo para o nosso atendimento humano!';
+            }
+          } else if (intent === 'NOT_INTERESTED' && lead) {
+             await env.DB.prepare("UPDATE leads SET status = 'archived' WHERE id = ?").bind(lead.id).run();
+             if (!agentResponseText) agentResponseText = 'Entendido. Agradecemos a atenção!';
           }
         } catch (e) {
           console.error('Failed to analyze intent:', e);
@@ -365,7 +348,7 @@ whatsapp.post('/send', async (c) => {
   // Consistência: todas as instâncias são tenant-based (igual status, qrcode, reconnect, logout)
   const instanceName = `tenant_${tenantId}`;
 
-  const { number, message, mediaUrl, mediaType } = await c.req.json();
+  const { number, message, mediaUrl, mediaType, isPrivate } = await c.req.json();
 
   if (!number || !message) {
     return c.json({ error: 'Número e mensagem são obrigatórios' }, 400);
@@ -374,34 +357,99 @@ whatsapp.post('/send', async (c) => {
   const formattedNumber = formatWhatsAppJid(number);
 
   try {
-    let endpoint = `/message/sendText/${instanceName}`;
-    let body: Record<string, unknown> = {
-      number: formattedNumber,
-      text: message,
-    };
+    let evolutionData = null;
 
-    if (mediaUrl && mediaType) {
-      endpoint = `/message/sendMedia/${instanceName}`;
-      body = {
-        number: formattedNumber,
-        mediatype: mediaType,
-        media: mediaUrl,
-        caption: message,
-      };
+    // Busca Canal de WhatsApp do Tenant
+    const channel = await c.env.DB.prepare(
+      "SELECT id, provider, config FROM channels WHERE tenant_id = ? AND status = 'active' AND provider IN ('whatsapp', 'whatsapp_cloud') LIMIT 1"
+    ).bind(tenantId).first<{id: string, provider: string, config: string}>();
+
+    if (!channel && !isPrivate) {
+       return c.json({ error: 'Nenhum canal ativo de WhatsApp encontrado' }, 400);
     }
 
-    const response = await evolutionFetch(env, endpoint, {
-      method: 'POST',
-      body: JSON.stringify(body),
-    });
+    // Se NÃO for nota privada, envia para o Mundo Externo (WhatsApp real)
+    if (!isPrivate && channel) {
+      if (channel.provider === 'whatsapp_cloud') {
+         // ENVIO OFICIAL META GRAPH API
+         const config = JSON.parse(channel.config || '{}');
+         const token = config.oauth_access_token;
+         const phoneId = config.phone_number_id;
 
-    const data = await response.json();
+         if (!token || !phoneId) {
+            throw new Error('Canal Cloud API não completou configuração (Falta Telefone ou Token)');
+         }
 
-    // Salvar mensagem
+         const metaUrl = `https://graph.facebook.com/v21.0/${phoneId}/messages`;
+         
+         let payload: any = {
+           messaging_product: "whatsapp",
+           recipient_type: "individual",
+           to: formattedNumber,
+         };
+
+         if (mediaUrl && mediaType) {
+            const isImage = mediaType.startsWith('image');
+            payload.type = isImage ? 'image' : 'document';
+            payload[payload.type] = {
+               link: mediaUrl,
+               caption: message || ''
+            };
+         } else {
+            payload.type = 'text';
+            payload.text = { body: message };
+         }
+
+         const metaResp = await fetch(metaUrl, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+         });
+
+         const metaData = await metaResp.json() as any;
+         if (!metaResp.ok) throw new Error(`Meta API Error: ${JSON.stringify(metaData)}`);
+         
+         evolutionData = metaData; // re-use variable names for brevity
+
+      } else {
+         // ENVIO EVOLUTION API (BAILEYS)
+         let endpoint = `/message/sendText/${instanceName}`;
+         let body: Record<string, unknown> = {
+           number: formattedNumber,
+           text: message,
+         };
+
+         if (mediaUrl && mediaType) {
+           endpoint = `/message/sendMedia/${instanceName}`;
+           body = {
+             number: formattedNumber,
+             mediatype: mediaType,
+             media: mediaUrl,
+             caption: message,
+           };
+         }
+
+         const response = await evolutionFetch(env, endpoint, {
+           method: 'POST',
+           body: JSON.stringify(body),
+         });
+
+         evolutionData = await response.json();
+      }
+    }
+
+    // Salvar mensagem localmente na timeline (seja publica ou privada)
     const messageId = crypto.randomUUID();
     const repo = new WhatsAppRepository(
       env.DB as unknown as import('@cloudflare/workers-types').D1Database,
     );
+
+    // Identificar tipo e status reais 
+    const finalMessageType = isPrivate ? 'private_note' : (mediaUrl ? 'image' : 'text');
+    const finalStatus = isPrivate ? 'sent' : 'queued'; // Notas privadas já nascem 'sent' localmente
 
     await repo.saveMessage({
       id: messageId,
@@ -410,12 +458,13 @@ whatsapp.post('/send', async (c) => {
       message_id: undefined, // outbound msg id from evolution? data.key.id?
       content: message,
       media_url: mediaUrl,
+      message_type: finalMessageType,
       direction: 'outbound',
-      status: 'sent',
+      status: finalStatus,
       created_at: new Date().toISOString(),
     });
 
-    return c.json({ success: true, messageId, evolutionResponse: data });
+    return c.json({ success: true, messageId, isPrivate, evolutionResponse: evolutionData });
   } catch (error) {
     const err = error as Error;
     return c.json({ error: err.message }, 500);
@@ -442,6 +491,60 @@ whatsapp.get('/messages', async (c) => {
   } catch (error) {
     const err = error as Error;
     return c.json({ error: err.message }, 500);
+  }
+});
+
+// Listar Conversas Ativas (Inbox)
+whatsapp.get('/conversations', async (c) => {
+  const env = c.env;
+  const user = c.get('user');
+  const tenantId = user?.tenantId || 'default';
+
+  try {
+    const repo = new WhatsAppRepository(env.DB as unknown as import('@cloudflare/workers-types').D1Database);
+    const conversations = await repo.getConversations(tenantId);
+    return c.json({ conversations });
+  } catch (error) {
+    return c.json({ error: (error as Error).message }, 500);
+  }
+});
+
+// Mensagens por Conversa
+whatsapp.get('/conversations/:id/messages', async (c) => {
+  const env = c.env;
+  const conversationId = c.req.param('id');
+  const limit = parseInt(c.req.query('limit') || '50', 10);
+
+  try {
+    const repo = new WhatsAppRepository(env.DB as unknown as import('@cloudflare/workers-types').D1Database);
+    const messages = await repo.getConversationMessages(conversationId, limit);
+    return c.json({ messages });
+  } catch (error) {
+    return c.json({ error: (error as Error).message }, 500);
+  }
+});
+
+// Mudar Status (Handoff)
+whatsapp.patch('/conversations/:id/status', async (c) => {
+  const env = c.env;
+  const conversationId = c.req.param('id');
+  const user = c.get('user');
+  const { status } = await c.req.json();
+
+  if (!['bot', 'open', 'resolved'].includes(status)) {
+    return c.json({ error: 'Status inválido' }, 400);
+  }
+
+  try {
+    const repo = new WhatsAppRepository(env.DB as unknown as import('@cloudflare/workers-types').D1Database);
+    
+    // Se estiver assumindo (bot -> open), assina pro user atual
+    const assignedTo = status === 'open' ? user?.sub : undefined;
+
+    await repo.updateConversationStatus(conversationId, status, assignedTo);
+    return c.json({ success: true, status, assignedTo });
+  } catch (error) {
+    return c.json({ error: (error as Error).message }, 500);
   }
 });
 

@@ -132,4 +132,35 @@ export const circuitBreakers = {
     recoveryTimeout: 90_000, // 1.5 minutos
     successThreshold: 2,
   }),
+  // Novos canais sociais
+  facebook: new CircuitBreaker('Facebook', {
+    failureThreshold: 5,
+    recoveryTimeout: 60_000,
+    successThreshold: 2,
+  }),
+  instagram: new CircuitBreaker('Instagram', {
+    failureThreshold: 5,
+    recoveryTimeout: 60_000,
+    successThreshold: 2,
+  }),
+  x: new CircuitBreaker('X', {
+    failureThreshold: 5,
+    recoveryTimeout: 60_000,
+    successThreshold: 2,
+  }),
+  telegram: new CircuitBreaker('Telegram', {
+    failureThreshold: 5,
+    recoveryTimeout: 45_000,
+    successThreshold: 2,
+  }),
+  tiktok: new CircuitBreaker('TikTok', {
+    failureThreshold: 5,
+    recoveryTimeout: 60_000,
+    successThreshold: 2,
+  }),
+  line: new CircuitBreaker('Line', {
+    failureThreshold: 5,
+    recoveryTimeout: 60_000,
+    successThreshold: 2,
+  }),
 };

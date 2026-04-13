@@ -26,6 +26,10 @@ import evolutionRoutes from './routes/evolution';
 import qualificationsRoutes from './routes/qualifications';
 import buyerLeadsRoutes from './routes/buyer-leads';
 import notificationsRoutes from './routes/notifications';
+import cannedResponsesRoutes from './routes/canned_responses';
+import whatsappOauthRoutes from './routes/whatsapp_oauth';
+import channelsRoutes from './routes/channels';
+import omnichannelRoutes from './routes/omnichannel';
 import { errorLoggingMiddleware, requestLoggingMiddleware } from './middleware/logging';
 import { foreignKeyMiddleware } from './middleware/foreignKey';
 import { tenantEnforcementMiddleware } from './middleware/tenantEnforcement';
@@ -39,16 +43,14 @@ app.use(
   '/*',
   cors({
     origin: (origin) => {
-      const allowedOrigins = [
-        'https://oinbox.oconnector.tech',
-        'https://www.oinbox.oconnector.tech',
-        'https://api.oinbox.oconnector.tech',
-        'http://localhost:5173',
-        'http://localhost:5174',
-        'http://localhost:3000',
-      ];
-      if (!origin || allowedOrigins.includes(origin)) return origin || allowedOrigins[0];
-      return null; // Block unknown origins
+      if (!origin) return 'https://oinbox.oconnector.tech';
+      const url = new URL(origin);
+      const isAllowed = 
+        url.hostname === 'localhost' ||
+        url.hostname.endsWith('.pages.dev') ||
+        url.hostname.endsWith('.oconnector.tech');
+      
+      return isAllowed ? origin : null;
     },
     allowHeaders: ['Content-Type', 'Authorization', 'x-tenant-id'],
     allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
@@ -75,7 +77,8 @@ app.use('/*', async (c, next) => {
     path.startsWith('/api/health/circuit-breakers') ||
     path.startsWith('/api/whatsapp/webhook') ||
     path.startsWith('/api/portals/feed') ||
-    path.startsWith('/api/evolution/webhook')
+    path.startsWith('/api/evolution/webhook') ||
+    path.startsWith('/api/whatsapp-oauth/callback')
   ) {
     return next();
   }
@@ -183,6 +186,7 @@ app.use('/api/evolution/*', tenantEnforcementMiddleware);
 app.use('/api/qualifications/*', tenantEnforcementMiddleware);
 app.use('/api/buyer-leads/*', tenantEnforcementMiddleware);
 app.use('/api/notifications/*', tenantEnforcementMiddleware);
+app.use('/api/canned-responses/*', tenantEnforcementMiddleware);
 
 // Routes
 app.route('/api/auth', authRoutes);
@@ -211,6 +215,34 @@ app.route('/api/qualifications', qualificationsRoutes);
 // Enterprise Lead Marketplace
 app.route('/api/buyer-leads', buyerLeadsRoutes);
 app.route('/api/notifications', notificationsRoutes);
+app.route('/api/canned-responses', cannedResponsesRoutes);
+app.route('/api/whatsapp-oauth', whatsappOauthRoutes);
+app.route('/api/channels', channelsRoutes);
+app.route('/api/omnichannel', omnichannelRoutes);
+
+// Global Error Handler - Garantir sempre JSON
+app.onError((err, c) => {
+  console.error('[GlobalError]', err);
+  return c.json(
+    {
+      error: 'Internal Server Error',
+      message: err.message,
+      requestId: c.req.header('x-request-id'),
+    },
+    500,
+  );
+});
+
+// 404 Not Found Handler - Garantir sempre JSON
+app.notFound((c) => {
+  return c.json(
+    {
+      error: 'Not Found',
+      message: `The requested path ${c.req.path} does not exist.`,
+    },
+    404,
+  );
+});
 
 // Health Check — com status de dependências
 app.get('/api/health', async (c) => {

@@ -10,8 +10,8 @@ import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
 let DefaultIcon = L.icon({
-  iconUrl: icon,
-  shadowUrl: iconShadow,
+  iconUrl: icon as any,
+  shadowUrl: iconShadow as any,
   iconSize: [25, 41],
   iconAnchor: [12, 41],
 });

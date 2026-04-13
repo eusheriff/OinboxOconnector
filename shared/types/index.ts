@@ -21,7 +21,29 @@ export enum Platform {
   CHAVES_NA_MAO = 'Chaves na Mão',
   REALIZA = 'Realiza',
   FACEBOOK_MARKETPLACE = 'Facebook Marketplace',
+  // Novos canais omnichannel
+  TELEGRAM = 'Telegram',
+  X_TWITTER = 'X',
+  TIKTOK = 'TikTok',
+  LINE = 'Line',
+  SMS = 'SMS',
 }
+
+// Providers de canais sociais (backend)
+export type SocialChannelProvider =
+  | 'facebook'
+  | 'instagram'
+  | 'x'
+  | 'telegram'
+  | 'tiktok'
+  | 'line';
+
+// Todos os providers de canal (existentes + novos)
+export type ChannelProvider =
+  | 'whatsapp'
+  | 'email'
+  | 'livechat'
+  | SocialChannelProvider;
 
 // Status de publicação em portais
 export enum PublicationStatus {
@@ -166,9 +188,12 @@ export interface Message {
   text: string;
   timestamp: Date;
   isStaff: boolean;
-  type?: 'text' | 'audio' | 'image' | 'video' | 'document';
+  type?: 'text' | 'audio' | 'image' | 'video' | 'document' | 'private_note';
   audioDuration?: string;
   mediaUrl?: string;
+  isPrivate?: boolean;
+  direction?: 'inbound' | 'outbound';
+  status?: string;
 }
 
 export interface Conversation {
@@ -185,6 +210,8 @@ export interface Conversation {
   aiSummary?: string;
   clientProfile?: ClientProfile;
   documents?: ClientDocument[];
+  status: 'bot' | 'open' | 'resolved';
+  assignedTo?: string;
 }
 
 export interface Appointment {
@@ -364,4 +391,168 @@ export interface PortalPublishResponse {
   external_id?: string;
   external_url?: string;
   error?: string;
+}
+
+// === OMNICHANNEL SOCIAL CHANNELS ===
+
+// Status de conexão de um canal
+export type ChannelConnectionStatus =
+  | 'connected'
+  | 'disconnected'
+  | 'error'
+  | 'connecting'
+  | 'token_expired'
+  | 'webhook_not_registered';
+
+// Config de canal social
+export interface SocialChannelConfig {
+  id: string;
+  tenant_id: string;
+  provider: ChannelProvider;
+  name: string;
+  status: ChannelConnectionStatus;
+  config?: Record<string, any>;
+  created_at: string;
+  updated_at?: string;
+}
+
+// Token OAuth de canal
+export interface ChannelOAuthToken {
+  id: string;
+  channel_id: string;
+  provider: SocialChannelProvider;
+  access_token?: string;
+  refresh_token?: string;
+  token_type: string;
+  expires_at?: string;
+  page_id?: string;
+  page_name?: string;
+  bot_username?: string;
+  account_id?: string;
+  raw_token_response?: string; // JSON completo para dados extras (ex: bot_token Telegram)
+  created_at: string;
+  updated_at: string;
+}
+
+// Config de webhook de canal
+export interface ChannelWebhookConfig {
+  id: string;
+  channel_id: string;
+  provider: SocialChannelProvider;
+  webhook_url?: string;
+  verify_token?: string;
+  webhook_id?: string;
+  app_id?: string;
+  is_webhook_registered: boolean;
+  last_verified_at?: string;
+}
+
+// Métricas de canal
+export interface ChannelMetrics {
+  id: string;
+  tenant_id: string;
+  provider: ChannelProvider;
+  messages_sent_today: number;
+  messages_received_today: number;
+  active_conversations: number;
+  rate_limit_hits: number;
+  webhook_failures: number;
+  last_reset_at: string;
+  updated_at: string;
+}
+
+// Mensagem normalizada do omnichannel
+export interface NormalizedMessage {
+  id: string;
+  tenant_id: string;
+  conversation_id: string;
+  sender_type: 'contact' | 'agent' | 'bot' | 'system';
+  sender_id?: string;
+  content: string;
+  message_type: 'text' | 'image' | 'video' | 'document' | 'audio' | 'sticker' | 'location' | 'contact' | 'template';
+  media_url?: string;
+  external_id?: string; // ID na plataforma externa
+  channel_type: ChannelProvider;
+  channel_message_id?: string;
+  sender_platform?: string;
+  raw_payload?: string; // JSON original da plataforma
+  is_forwarded: boolean;
+  reply_to_message_id?: string;
+  metadata?: Record<string, any>;
+  status: 'sent' | 'delivered' | 'read' | 'failed';
+  created_at: string;
+}
+
+// Conversa omnichannel expandida
+export interface OmnichannelConversation {
+  id: string;
+  tenant_id: string;
+  channel_id: string;
+  contact_id: string;
+  contact_type: 'client' | 'lead';
+  status: 'open' | 'resolved' | 'snoozed' | 'bot';
+  assigned_to?: string;
+  channel_type: ChannelProvider;
+  external_conversation_id?: string;
+  contact_phone?: string;
+  contact_email?: string;
+  contact_platform_id?: string; // ID na plataforma (PSID, etc)
+  contact_profile_pic?: string;
+  contact_name?: string;
+  unread_count: number;
+  metadata?: Record<string, any>;
+  last_message_at: string;
+  created_at: string;
+}
+
+// Payload de mensagem recebida via webhook (formato raw)
+export interface WebhookMessagePayload {
+  provider: SocialChannelProvider;
+  raw: Record<string, any>;
+  // Facebook/Instagram
+  sender_id?: string;
+  recipient_id?: string;
+  message_text?: string;
+  message_attachments?: Array<{ type: string; payload?: Record<string, any>; url?: string }>;
+  // Telegram
+  chat_id?: number;
+  message_id?: number;
+  // X/Twitter
+  source_user_id?: string;
+  target_user_id?: string;
+  // TikTok
+  open_id?: string;
+  // Line
+  line_user_id?: string;
+  line_group_id?: string;
+}
+
+// Request para conectar canal via OAuth
+export interface ConnectChannelRequest {
+  provider: SocialChannelProvider;
+  code?: string; // Authorization code (Facebook, Instagram, X, TikTok)
+  state?: string; // CSRF state
+  bot_token?: string; // Telegram bot token
+  app_id?: string; // App ID (se fornecido pelo usuário)
+  app_secret?: string; // App secret (se fornecido pelo usuário)
+}
+
+// Response de conexão de canal
+export interface ConnectChannelResponse {
+  success: boolean;
+  channel?: SocialChannelConfig;
+  token?: ChannelOAuthToken;
+  webhook_config?: ChannelWebhookConfig;
+  error?: string;
+  oauth_url?: string; // URL para redirect OAuth
+}
+
+// Lista de canais de um tenant
+export interface TenantChannelsResponse {
+  channels: Array<{
+    channel: SocialChannelConfig;
+    token?: Partial<ChannelOAuthToken>;
+    webhook_config?: Partial<ChannelWebhookConfig>;
+    metrics?: Partial<ChannelMetrics>;
+  }>;
 }

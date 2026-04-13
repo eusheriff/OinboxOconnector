@@ -11,11 +11,11 @@ export default async function Page({
   const page = source.getPage(params.slug);
   if (!page) notFound();
 
-  // @ts-ignore
-  const MDX = page.data.body;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const MDX = (page.data as any).Body;
 
   return (
-    <DocsPage toc={page.data.toc} full={page.data.full}>
+    <DocsPage full={(page.data as any).full}>
       <div className="mx-auto max-w-5xl px-4 py-8">
         <DocsBody>
           <h1>{page.data.title}</h1>

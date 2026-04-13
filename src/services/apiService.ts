@@ -340,13 +340,37 @@ export const apiService = {
     message: string,
     mediaUrl?: string,
     mediaType?: string,
+    isPrivate?: boolean,
   ) => {
     const response = await fetchWithTimeout(`${API_BASE_URL}/whatsapp/send`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({ number, message, mediaUrl, mediaType }),
+      body: JSON.stringify({ number, message, mediaUrl, mediaType, isPrivate }),
     });
     return response.json();
+  },
+
+  getConversations: async (): Promise<{ conversations: any[] }> => {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/whatsapp/conversations`, {
+      headers: getHeaders(),
+    });
+    return handleResponse(response) as any;
+  },
+
+  getConversationMessages: async (id: string, limit = 50): Promise<{ messages: any[] }> => {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/whatsapp/conversations/${id}/messages?limit=${limit}`, {
+      headers: getHeaders(),
+    });
+    return handleResponse(response) as any;
+  },
+
+  updateConversationStatus: async (id: string, status: 'bot' | 'open' | 'resolved'): Promise<any> => {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/whatsapp/conversations/${id}/status`, {
+      method: 'PATCH',
+      headers: getHeaders(),
+      body: JSON.stringify({ status }),
+    });
+    return handleResponse(response);
   },
 
   getWhatsAppMessages: async (limit = 50, remoteJid?: string) => {
@@ -372,6 +396,21 @@ export const apiService = {
       headers: getHeaders(),
     });
     return response.json();
+  },
+  
+  // WhatsApp Meta OAuth
+  getMetaAuthUrl: async () => {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/whatsapp-oauth/login`, {
+      headers: getHeaders(),
+    });
+    return handleResponse(response);
+  },
+
+  getMetaPhones: async () => {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/whatsapp-oauth/phones`, {
+      headers: getHeaders(),
+    });
+    return handleResponse(response);
   },
 
   // Prospecting (Super Admin)
@@ -495,6 +534,50 @@ export const apiService = {
       headers: getHeaders(),
     });
     return response.json();
+  },
+
+  // === OMNICHANNEL SOCIAL CHANNELS ===
+
+  getOmnichannelConversations: async (): Promise<{ success: boolean; conversations: any[] }> => {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/omnichannel/conversations`, {
+      headers: getHeaders(),
+    });
+    return handleResponse(response) as any;
+  },
+
+  getOmnichannelMessages: async (convId: string, limit = 50): Promise<{ success: boolean; messages: any[] }> => {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/omnichannel/conversations/${convId}/messages?limit=${limit}`, {
+      headers: getHeaders(),
+    });
+    return handleResponse(response) as any;
+  },
+
+  sendOmnichannelMessage: async (
+    conversationId: string,
+    content: string,
+    messageType = 'text',
+    mediaUrl?: string,
+  ): Promise<{ success: boolean; message_id?: string }> => {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/omnichannel/send`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        conversation_id: conversationId,
+        content,
+        message_type: messageType,
+        media_url: mediaUrl,
+      }),
+    });
+    return handleResponse(response) as any;
+  },
+
+  updateOmnichannelStatus: async (convId: string, status: 'bot' | 'open' | 'resolved'): Promise<{ success: boolean }> => {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/omnichannel/conversations/${convId}/status`, {
+      method: 'PATCH',
+      headers: getHeaders(),
+      body: JSON.stringify({ status }),
+    });
+    return handleResponse(response) as any;
   },
 
   // Legacy Support

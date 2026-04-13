@@ -38,9 +38,3 @@ STRIPE_PRICE_BASIC = "price_1SnQxUBGBVDzrAhzlMMZwDjM"
 # Segredos configurados via wrangler secret put:
 #   EVOLUTION_API_URL, EVOLUTION_API_KEY
 #   JWT_SECRET, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, etc.
-
-[env.production]
-[[env.production.d1_databases]]
-binding = "DB"
-database_name = "oinbox-db"
-database_id = "567a1b9f-6f59-4a6b-953e-89ba1eda2b74"

@@ -39,6 +39,10 @@ export type Bindings = {
   // Evolution API (WhatsApp)
   EVOLUTION_API_URL?: string;
   EVOLUTION_API_KEY?: string;
+  META_APP_ID?: string;
+  META_APP_SECRET?: string;
+  META_CONFIG_ID?: string;
+  META_WEBHOOK_VERIFY_TOKEN?: string;
   // Worker Public URL (for webhooks)
   PUBLIC_WORKER_URL?: string;
   // Stripe Add-on Prices
@@ -46,6 +50,10 @@ export type Bindings = {
   STRIPE_PRICE_EXTRA_AI?: string;
   // Google APIs
   GOOGLE_PLACES_API_KEY?: string;
+  // Neon (Postgres) & Upstash (Redis)
+  NEON_DATABASE_URL?: string;
+  UPSTASH_REDIS_REST_URL?: string;
+  UPSTASH_REDIS_REST_TOKEN?: string;
   // Quotas e Limites
   PLACES_MONTHLY_LIMIT?: string;
 };

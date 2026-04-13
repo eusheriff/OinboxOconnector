@@ -132,7 +132,7 @@ const MarketingStudio: React.FC = () => {
                     className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition-colors border ${selectedProperty?.id === prop.id ? 'bg-blue-50 border-blue-500' : 'border-transparent hover:bg-gray-50'}`}
                   >
                     <img
-                      src={prop.image || 'https://via.placeholder.com/150'}
+                      src={prop.image || 'https://placehold.co/150'}
                       className="w-10 h-10 rounded object-cover"
                       alt=""
                     />
@@ -214,7 +214,7 @@ const MarketingStudio: React.FC = () => {
             >
               {/* Background Image */}
               <img
-                src={selectedProperty.image || 'https://via.placeholder.com/500'}
+                src={selectedProperty.image || 'https://placehold.co/500'}
                 crossOrigin="anonymous"
                 className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-[2s]"
                 alt=""

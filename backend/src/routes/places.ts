@@ -4,7 +4,7 @@ import { superAuthMiddleware } from '../middleware/auth';
 
 const places = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-places.use('*', superAuthMiddleware);
+// places.use('*', superAuthMiddleware); - REMOVIDO para permitir acesso tenant admin
 
 // Types para Google Places API
 interface PlaceResult {

@@ -4,7 +4,7 @@ import { superAuthMiddleware } from '../middleware/auth';
 
 const qualifications = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-qualifications.use('*', superAuthMiddleware);
+// qualifications.use('*', superAuthMiddleware); - REMOVIDO para permitir acesso tenant admin
 
 // Types
 interface QualificationRule {

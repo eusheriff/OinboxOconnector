@@ -19,14 +19,12 @@
     "test": "vitest run",
     "test:backend": "vitest run -c backend/vitest.config.ts",
     "test:frontend": "vitest run -c vite.config.ts",
-    "lint": "eslint . --ext .ts,.tsx",
+    "lint": "eslint .",
     "format": "prettier --write ."
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/sortable": "^10.0.0",
-    "@google/genai": "^1.30.0",
-    "@google/generative-ai": "^0.24.1",
     "@hono/node-server": "^1.19.7",
     "@radix-ui/react-slot": "^1.2.4",
     "@react-google-maps/api": "^2.20.8",

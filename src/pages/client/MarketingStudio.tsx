@@ -9,25 +9,25 @@ export default function MarketingStudio() {
       id: '1',
       name: 'Story Moderno',
       type: 'Story',
-      image: 'https://via.placeholder.com/300x533/e2e8f0/94a3b8?text=Story+Template+1',
+      image: 'https://placehold.co/300x533/e2e8f0/94a3b8?text=Story+Template+1',
     },
     {
       id: '2',
       name: 'Post Feed Clean',
       type: 'Feed',
-      image: 'https://via.placeholder.com/400x400/e2e8f0/94a3b8?text=Feed+Template+1',
+      image: 'https://placehold.co/400x400/e2e8f0/94a3b8?text=Feed+Template+1',
     },
     {
       id: '3',
       name: 'Destaque Venda',
       type: 'Story',
-      image: 'https://via.placeholder.com/300x533/e2e8f0/94a3b8?text=Story+Template+2',
+      image: 'https://placehold.co/300x533/e2e8f0/94a3b8?text=Story+Template+2',
     },
     {
       id: '4',
       name: 'Carrossel Info',
       type: 'Feed',
-      image: 'https://via.placeholder.com/400x400/e2e8f0/94a3b8?text=Feed+Template+2',
+      image: 'https://placehold.co/400x400/e2e8f0/94a3b8?text=Feed+Template+2',
     },
   ];
 

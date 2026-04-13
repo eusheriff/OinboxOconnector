@@ -97,16 +97,52 @@ CREATE TABLE IF NOT EXISTS ai_usage (
 CREATE INDEX IF NOT EXISTS idx_ai_usage_created_at ON ai_usage(created_at);
 CREATE INDEX IF NOT EXISTS idx_ai_usage_tenant_id ON ai_usage(tenant_id);
 
-CREATE TABLE IF NOT EXISTS messages (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    tenant_id TEXT,
-    client_id TEXT NOT NULL,
-    role TEXT NOT NULL, -- 'user' or 'assistant'
-    content TEXT NOT NULL,
+-- (Omnichannel)
+CREATE TABLE IF NOT EXISTS channels (
+    id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL,
+    provider TEXT NOT NULL, -- 'whatsapp', 'email', 'livechat'
+    name TEXT NOT NULL,
+    config TEXT, -- JSON credentials/settings
+    status TEXT DEFAULT 'active',
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (client_id) REFERENCES clients(id)
+    FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
 );
-CREATE INDEX IF NOT EXISTS idx_messages_client_id ON messages(client_id);
+CREATE INDEX IF NOT EXISTS idx_channels_tenant ON channels(tenant_id);
+
+CREATE TABLE IF NOT EXISTS conversations (
+    id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL,
+    channel_id TEXT NOT NULL,
+    contact_id TEXT NOT NULL, -- reference to clients.id or leads.id
+    contact_type TEXT DEFAULT 'client', -- 'client' or 'lead'
+    status TEXT DEFAULT 'open', -- 'open', 'resolved', 'snoozed', 'bot'
+    assigned_to TEXT, -- user_id (agent)
+    last_message_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
+    FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_conversations_tenant ON conversations(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_conversations_status ON conversations(status);
+CREATE INDEX IF NOT EXISTS idx_conversations_assigned ON conversations(assigned_to);
+
+CREATE TABLE IF NOT EXISTS omnichannel_messages (
+    id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL,
+    conversation_id TEXT NOT NULL,
+    sender_type TEXT NOT NULL, -- 'contact', 'agent', 'bot', 'system'
+    sender_id TEXT, -- client_id, user_id, ou admin_id
+    content TEXT NOT NULL,
+    message_type TEXT DEFAULT 'text', -- 'text', 'image', 'document', 'template'
+    media_url TEXT,
+    external_id TEXT, -- ID na plataforma terceira
+    status TEXT DEFAULT 'sent', 
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
+    FOREIGN KEY (conversation_id) REFERENCES conversations(id) ON DELETE CASCADE
+);
+CREATE INDEX IF NOT EXISTS idx_omni_messages_conversation ON omnichannel_messages(conversation_id);
 
 CREATE TABLE IF NOT EXISTS chat_history (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -162,18 +198,7 @@ CREATE TABLE IF NOT EXISTS broadcasts (
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS whatsapp_messages (
-    id TEXT PRIMARY KEY,
-    tenant_id TEXT,
-    remote_jid TEXT NOT NULL,
-    message_id TEXT,
-    content TEXT,
-    media_url TEXT,
-    direction TEXT, -- 'inbound' | 'outbound'
-    status TEXT DEFAULT 'pending',
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-CREATE INDEX IF NOT EXISTS idx_whatsapp_messages_remote_jid ON whatsapp_messages(remote_jid);
+-- whatsapp_messages substituído por omnichannel_messages nativamente
 
 -- 5. Leads (Captura e Lead Ops)
 -- Tabela sincronizada com leads.ts e novos requisitos de Lead Ops
@@ -330,6 +355,17 @@ CREATE INDEX IF NOT EXISTS idx_campaign_messages_campaign ON campaign_messages(c
 CREATE INDEX IF NOT EXISTS idx_campaign_messages_status ON campaign_messages(status);
 CREATE INDEX IF NOT EXISTS idx_campaign_messages_lead ON campaign_messages(lead_id);
 
+-- 14. Collaboration Tools
+CREATE TABLE IF NOT EXISTS canned_responses (
+    id TEXT PRIMARY KEY,
+    tenant_id TEXT NOT NULL,
+    shortcut TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE,
+    UNIQUE(tenant_id, shortcut)
+);
+CREATE INDEX IF NOT EXISTS idx_canned_responses_tenant ON canned_responses(tenant_id);
 -- 13. Notifications (para alertas internos, ex: human handover)
 CREATE TABLE IF NOT EXISTS notifications (
     id TEXT PRIMARY KEY,
@@ -348,10 +384,9 @@ CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(tenant_id, is_read) WHERE is_read = FALSE;
 
 -- Índices de tabelas intermediárias (definidos aqui após CREATE TABLE)
-CREATE INDEX IF NOT EXISTS idx_messages_tenant_id ON messages(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_messages_created_at ON messages(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_omni_messages_tenant_id ON omnichannel_messages(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_omni_messages_created_at ON omnichannel_messages(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_leads_tenant_id ON leads(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_whatsapp_messages_tenant ON whatsapp_messages(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_ai_usage_tenant_date ON ai_usage(tenant_id, created_at DESC);
 
 -- Índices finais

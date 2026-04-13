@@ -41,7 +41,7 @@ export default function MapPage() {
           </div>
           <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-white p-2 rounded-lg shadow-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
             <img
-              src="https://via.placeholder.com/150x100"
+              src="https://placehold.co/150x100"
               alt="Property"
               className="w-full h-24 object-cover rounded-md mb-2"
             />

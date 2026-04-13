@@ -45,6 +45,7 @@
     "node_modules",
     "nanobrowser",
     "backend/src/_deprecated",
-    "docs"
+    "docs",
+    "docs-site"
   ]
 }
