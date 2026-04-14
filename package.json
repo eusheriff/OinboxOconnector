@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "dev:backend": "wrangler dev",
     "build": "tsc && vite build",
     "build:backend": "tsc -p backend/tsconfig.json",
