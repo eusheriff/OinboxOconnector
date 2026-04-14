@@ -1,4 +1,4 @@
-# Auditoria Técnica Completa - OInbox
+# Auditoria Técnica Completa - Oconnector
 
 **Data**: 2026-01-17  
 **Auditor**: Antigravity (Pipeline L3)  

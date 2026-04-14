@@ -121,7 +121,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin, onNavigateRe
             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center shadow-lg shadow-orange-500/20 text-white transform rotate-3 hover:rotate-0 transition-transform">
               <span className="font-bold text-xl">O</span>
             </div>
-            <span className="font-bold text-xl tracking-tight text-slate-900">Oinbox</span>
+            <span className="font-bold text-xl tracking-tight text-slate-900">Oconnector</span>
           </div>
 
           <div className="hidden md:flex items-center gap-8">
@@ -476,7 +476,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin, onNavigateRe
             <div className="w-8 h-8 bg-orange-600 rounded-lg flex items-center justify-center text-white font-bold">
               O
             </div>
-            <span className="text-white font-bold text-lg">Oinbox</span>
+            <span className="text-white font-bold text-lg">Oconnector</span>
           </div>
           <div className="text-sm">
             &copy; 2025 OBot. Todos os direitos reservados. Desenvolvido por{' '}

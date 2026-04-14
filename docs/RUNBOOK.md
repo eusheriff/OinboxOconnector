@@ -1,4 +1,4 @@
-# Operational Runbook � Oinbox Backend
+# Operational Runbook � Oconnector Backend
 
 > Para operadores, SREs e desenvolvedores em plantão.
 
@@ -8,8 +8,8 @@
 
 | Componente | Tecnologia | Localização |
 |------------|-----------|-------------|
-| Frontend | React SPA (Vite) � Cloudflare Pages | `oinbox.oconnector.tech` |
-| Backend | Hono � Cloudflare Worker | `api.oinbox.oconnector.tech` |
+| Frontend | React SPA (Vite) � Cloudflare Pages | `Oconnector.oconnector.tech` |
+| Backend | Hono � Cloudflare Worker | `api.Oconnector.oconnector.tech` |
 | Banco | Cloudflare D1 (SQLite edge) | Edge Cloudflare |
 | Storage | Cloudflare R2 | `oconnector-images` bucket |
 | WhatsApp | Evolution API (BAutomationleys) | VPS GCP (tunnel Cloudflare) |
@@ -30,7 +30,7 @@ curl -s http://localhost:8787/api/health | jq .
 curl -s http://localhost:8787/api/health/circuit-breakers | jq .
 
 # Produção
-curl -s https://api.oinbox.oconnector.tech/api/health | jq .
+curl -s https://api.Oconnector.oconnector.tech/api/health | jq .
 ```
 
 **Respostas esperadas:**
@@ -119,7 +119,7 @@ wrangler deploy   # produção
    ```bash
    wrangler deploy --dry-run
    ```
-2. Verificar logs no Datadog: pesquisar por `service:oinbox-backend`
+2. Verificar logs no Datadog: pesquisar por `service:Oconnector-backend`
 3. Verificar se `JWT_SECRET` está configurado:
    ```bash
    wrangler secret list
@@ -143,7 +143,7 @@ wrangler deploy   # produção
 
 ### 3.4 WhatsApp desconectado
 
-1. Verificar status da instância na Evolution API:
+1. Verificar status da inst|ncia na Evolution API:
    ```bash
    curl http://localhost:8080/instance/fetchInstances -H "apikey: <API_KEY>"
    ```
@@ -193,10 +193,10 @@ O D1 tem backup automático pelo Cloudflare, mas para export manual:
 
 ```bash
 # Exportar banco local
-wrangler d1 export oinbox-db --local --output=backup.sql
+wrangler d1 export Oconnector-db --local --output=backup.sql
 
 # Produção (requer acesso direto)
-wrangler d1 export oinbox-db --output=backup-prod.sql
+wrangler d1 export Oconnector-db --output=backup-prod.sql
 ```
 
 ### 5.2 R2 (Imagens)
@@ -210,11 +210,11 @@ Para backup externo, usar `rclone` ou API do R2.
 
 ### 6.1 Datadog
 
-- Logs: pesquisar por `service:oinbox-backend`
+- Logs: pesquisar por `service:Oconnector-backend`
 - Métricas custom:
-  - `oinbox.http.request.duration` � latência das requisições
-  - `oinbox.http.error` � contagem de erros por status code
-  - `oinbox.exception.unhandled` � exceções não tratadas
+  - `Oconnector.http.request.duration` � latência das requisições
+  - `Oconnector.http.error` � contagem de erros por status code
+  - `Oconnector.exception.unhandled` � exceções não tratadas
 
 ### 6.2 Correlation IDs
 
@@ -243,7 +243,7 @@ Toda resposta HTTP inclui o header `X-Correlation-ID`. Use para traçar uma requ
 
 ### WhatsApp parado
 
-- [ ] Verificar status da instância na Evolution API
+- [ ] Verificar status da inst|ncia na Evolution API
 - [ ] Reconectar com QR code se necessário
 - [ ] Verificar se webhook está sendo entregue ao backend
 - [ ] Verificar logs da Evolution API

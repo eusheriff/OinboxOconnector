@@ -1,10 +1,10 @@
-# API Reference - OInbox
+# API Reference - Oconnector
 
 Documentação das rotas da API REST.
 
 ## Base URL
 
-- **Produção**: `https://api.oinbox.oconnector.tech`
+- **Produção**: `https://api.Oconnector.oconnector.tech`
 - **Local**: `http://localhost:8787`
 
 ## Autenticação

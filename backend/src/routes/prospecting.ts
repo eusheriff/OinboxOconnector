@@ -110,7 +110,7 @@ app.post('/analyze', async (c) => {
     const pitch =
       hubData.result?.response ||
       hubData.response ||
-      `Olá ${lead.name}, gostaria de apresentar o OInbox. Posso te mandar um vídeo?`;
+      `Olá ${lead.name}, gostaria de apresentar o Oconnector. Posso te mandar um vídeo?`;
 
     await c.env.DB.prepare('UPDATE prospects SET ai_pitch = ?, ai_analysis = ? WHERE id = ?')
       .bind(pitch, 'Pitch Generated', id)

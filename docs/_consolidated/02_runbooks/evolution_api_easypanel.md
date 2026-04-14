@@ -57,7 +57,7 @@ LOG_LEVEL=ERROR
 LOG_COLOR=true
 
 # Configurações WhatsApp
-CONFIG_SESSION_PHONE_CLIENT=Oinbox
+CONFIG_SESSION_PHONE_CLIENT=Oconnector
 CONFIG_SESSION_PHONE_NAME=Chrome
 QRCODE_LIMIT=30
 QRCODE_COLOR=#F97316
@@ -97,9 +97,9 @@ Use a API Key que você definiu em `AUTHENTICATION_API_KEY`.
 
 ---
 
-## Passo 8: Configurar no Oinbox
+## Passo 8: Configurar no Oconnector
 
-Edite o arquivo `.env` do projeto Oinbox:
+Edite o arquivo `.env` do projeto Oconnector:
 
 ```env
 EVOLUTION_API_URL=https://evolution.seudominio.com

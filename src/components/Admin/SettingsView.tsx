@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import { Zap, CheckCircle2 } from 'lucide-react';
 
 const SettingsView: React.FC = () => {
-  const [geminiStatus, setGeminiStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
+  const [automationStatus, setAutomationStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
     'idle',
   );
-  const [geminiResponse, setGeminiResponse] = useState('');
+  const [automationResponse, setAutomationResponse] = useState('');
 
-  const testGeminiConnection = async () => {
-    setGeminiStatus('loading');
+  const testAutomationConnection = async () => {
+    setAutomationStatus('loading');
     try {
       // Lógica movida para o backend (Segurança)
       const token = localStorage.getItem('token');
       const response = await fetch(
-        `${import.meta.env.VITE_API_URL || 'https://api.oinbox.oconnector.tech'}/api/admin/test-ai-connection`,
+        `${import.meta.env.VITE_API_URL || 'https://api.Oconnector.oconnector.tech'}/api/admin/test-automation-connection`,
         {
           method: 'POST',
           headers: {
@@ -29,18 +29,18 @@ const SettingsView: React.FC = () => {
         throw new Error(data.error || 'Erro ao testar conexão');
       }
 
-      setGeminiResponse(data.message || 'Connection OK');
-      setGeminiStatus('success');
+      setAutomationResponse(data.message || 'Connection OK');
+      setAutomationStatus('success');
     } catch (error: any) {
-      console.error('Gemini Error:', error);
-      setGeminiResponse(`Error: ${error.message || 'Unknown error'}`);
-      setGeminiStatus('error');
+      console.error('Automation Error:', error);
+      setAutomationResponse(`Error: ${error.message || 'Unknown error'}`);
+      setAutomationStatus('error');
     }
   };
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-foreground mb-6"> Configurações & Integrações</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">Configurações & Integrações</h1>
 
       <div className="bg-card p-6 rounded-xl border border-border shadow-sm max-w-2xl">
         <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
@@ -49,30 +49,30 @@ const SettingsView: React.FC = () => {
         </h3>
 
         <div className="space-y-4">
-          {/* Gemini Check */}
+          {/* Automation Check */}
           <div className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border">
             <div>
-              <div className="font-semibold">Groq AI</div>
+              <div className="font-semibold">Automation Engine (Core)</div>
               <div className="text-sm text-muted-foreground">
-                Key:{' '}
-                {geminiStatus === 'success'
+                Status:{' '}
+                {automationStatus === 'success'
                   ? 'Conectado (Backend) '
                   : 'Gerenciado pelo Servidor '}
               </div>
-              {geminiResponse && (
+              {automationResponse && (
                 <div
-                  className={`mt-2 text-sm p-2 rounded ${geminiStatus === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
+                  className={`mt-2 text-sm p-2 rounded ${automationStatus === 'success' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}
                 >
-                  Resposta: {geminiResponse}
+                  Resposta: {automationResponse}
                 </div>
               )}
             </div>
             <button
-              onClick={testGeminiConnection}
-              disabled={geminiStatus === 'loading'}
+              onClick={testAutomationConnection}
+              disabled={automationStatus === 'loading'}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 disabled:opacity-50 text-sm font-medium transition-colors"
             >
-              {geminiStatus === 'loading' ? 'Testando...' : 'Testar Conexão'}
+              {automationStatus === 'loading' ? 'Testando...' : 'Testar Conexão'}
             </button>
           </div>
 

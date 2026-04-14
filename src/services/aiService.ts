@@ -85,7 +85,7 @@ const callBackendAI = async (
   systemPrompt?: string,
   sessionId?: string,
 ): Promise<string> => {
-  const apiUrl = import.meta.env.VITE_API_URL || 'https://api.oinbox.oconnector.tech';
+  const apiUrl = import.meta.env.VITE_API_URL || 'https://api.Oconnector.oconnector.tech';
 
   try {
     const response = await fetch(`${apiUrl}/api/ai/generate`, {
@@ -394,7 +394,7 @@ export const askGlobalAgent = async (
   _history: Record<string, unknown>[],
   sessionId?: string,
 ): Promise<string> => {
-  const apiUrl = import.meta.env.VITE_API_URL || 'https://api.oinbox.oconnector.tech';
+  const apiUrl = import.meta.env.VITE_API_URL || 'https://api.Oconnector.oconnector.tech';
 
   try {
     const response = await fetch(`${apiUrl}/api/ai/public-chat`, {
@@ -403,7 +403,7 @@ export const askGlobalAgent = async (
       body: JSON.stringify({
         prompt: message,
         systemPrompt:
-          'Você é a IA do Oinbox, uma plataforma de gestão imobiliária com inteligência artificial.',
+          'Você é a IA do Oconnector, uma plataforma de gestão imobiliária com inteligência artificial.',
         session_id: sessionId,
       }),
     });

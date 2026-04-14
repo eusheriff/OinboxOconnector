@@ -32,7 +32,7 @@ const PropertyList: React.FC<PropertyListProps> = ({
 
   const [showFeedModal, setShowFeedModal] = useState(false);
   const tenantId = authStorage.getTenantId();
-  const feedUrl = `https://api.oinbox.oconnector.tech/api/feed/${tenantId}/zap.xml`;
+  const feedUrl = `https://api.Oconnector.oconnector.tech/api/feed/${tenantId}/zap.xml`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(feedUrl);

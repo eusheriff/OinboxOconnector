@@ -64,7 +64,7 @@ interface SuperAdminLeadCaptureProps {
 }
 
 // API Base URL - Hardcoded for Stability in Production (matches apiService.ts strategy)
-const API_BASE = 'https://api.oinbox.oconnector.tech';
+const API_BASE = 'https://api.Oconnector.oconnector.tech';
 
 // Dados mock do funil - TODO: Fetch real stats
 const mockFunnelData = {

@@ -127,7 +127,7 @@ export function createDatadogLogger(env: any): DatadogLogger | null {
 
   return new DatadogLogger({
     apiKey,
-    service: 'oinbox-backend',
+    service: 'Oconnector-backend',
     env: env.ENVIRONMENT || 'production',
     version: '1.0.0',
   });

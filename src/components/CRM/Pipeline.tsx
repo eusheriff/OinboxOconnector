@@ -151,7 +151,7 @@ const Pipeline: React.FC<PipelineProps> = () => {
   useEffect(() => {
     const fetchLeads = async () => {
       try {
-        const token = localStorage.getItem('oinbox_token');
+        const token = localStorage.getItem('Oconnector_token');
         const response = await fetch(
           `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/leads`,
           {
@@ -173,7 +173,7 @@ const Pipeline: React.FC<PipelineProps> = () => {
   // Update lead status on backend
   const updateLeadStatus = async (leadId: string, newStatus: string) => {
     try {
-      const token = localStorage.getItem('oinbox_token');
+      const token = localStorage.getItem('Oconnector_token');
       await fetch(
         `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/leads/${leadId}`,
         {

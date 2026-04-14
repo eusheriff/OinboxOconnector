@@ -183,12 +183,12 @@ const WhatsAppBotManager: React.FC = () => {
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Activity className="w-5 h-5 text-blue-500" />
-            Status da Instância
+            Status da Inst|ncia
           </h3>
 
           <div className="space-y-4">
             <div className="flex justify-between items-center py-2 border-b border-gray-100">
-              <span className="text-gray-500">Instância ID</span>
+              <span className="text-gray-500">Inst|ncia ID</span>
               <span className="font-mono text-gray-900 bg-gray-100 px-2 py-1 rounded">
                 {instanceName || 'Carregando...'}
               </span>

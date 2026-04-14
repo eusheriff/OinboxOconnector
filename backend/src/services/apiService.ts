@@ -11,7 +11,7 @@ export const apiService = {
   },
   generateXMLFeed: async (env: Bindings, portal: string, tenantId: string, xmlUrls: string[]) => {
     // Logic to save these XML URLs preference could be added here if we had a table for it
-    return `https://api.oinbox.oconnector.tech/api/portals/feed/${tenantId}.xml`;
+    return `https://api.Oconnector.oconnector.tech/api/portals/feed/${tenantId}.xml`;
   },
   registerWebhook: async (env: Bindings, portal: string, tenantId: string, webhookUrl: string) => {
     // Save webhook URL (mocking persistence for now as we don't have a webhooks table for portals specifically)

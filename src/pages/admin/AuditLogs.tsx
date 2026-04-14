@@ -19,7 +19,7 @@ const AuditLogs: React.FC = () => {
         const response = await fetch(
           `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/admin/audit-logs`,
           {
-            headers: { Authorization: `Bearer ${localStorage.getItem('oinbox_token')}` },
+            headers: { Authorization: `Bearer ${localStorage.getItem('Oconnector_token')}` },
           },
         );
         const data = (await response.json()) as AuditLog[];

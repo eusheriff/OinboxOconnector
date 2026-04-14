@@ -157,8 +157,8 @@ describe('apiService', () => {
 
   describe('headers', () => {
     it('should include tenant-id from localStorage', async () => {
-      localStorageMock.store['oinbox_tenant_id'] = 'my-tenant-123';
-      localStorageMock.store['oinbox_token'] = 'my-jwt-token';
+      localStorageMock.store['Oconnector_tenant_id'] = 'my-tenant-123';
+      localStorageMock.store['Oconnector_token'] = 'my-jwt-token';
 
       mockFetch.mockResolvedValueOnce({
         ok: true,

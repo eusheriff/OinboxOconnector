@@ -49,7 +49,7 @@ const CampaignManager: React.FC = () => {
 
   // Form State
   const [newName, setNewName] = useState('');
-  const [newTemplate, setNewTemplate] = useState('Olá {{name}}, tudo bem? Sou da OInbox.');
+  const [newTemplate, setNewTemplate] = useState('Olá {{name}}, tudo bem? Sou da Oconnector.');
   const [newFollowup, setNewFollowup] = useState('Olá {{name}}, conseguiu ver minha mensagem?');
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const CampaignManager: React.FC = () => {
   const fetchCampaigns = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('https://api.oinbox.oconnector.tech/api/campaigns', {
+      const response = await fetch('https://api.Oconnector.oconnector.tech/api/campaigns', {
         headers: apiService.getHeaders(),
       });
       if (response.ok) {
@@ -77,7 +77,7 @@ const CampaignManager: React.FC = () => {
 
   const fetchStats = async (id: string) => {
     try {
-      const res = await fetch(`https://api.oinbox.oconnector.tech/api/campaigns/${id}`, {
+      const res = await fetch(`https://api.Oconnector.oconnector.tech/api/campaigns/${id}`, {
         headers: apiService.getHeaders(),
       });
       const data = (await res.json()) as any;
@@ -89,7 +89,7 @@ const CampaignManager: React.FC = () => {
 
   const handleCreate = async () => {
     try {
-      const res = await fetch('https://api.oinbox.oconnector.tech/api/campaigns', {
+      const res = await fetch('https://api.Oconnector.oconnector.tech/api/campaigns', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ const CampaignManager: React.FC = () => {
   const handleStart = async (id: string) => {
     if (!confirm('Deseja iniciar esta campanha? Leads qualificados entrarão na fila.')) return;
     try {
-      const res = await fetch(`https://api.oinbox.oconnector.tech/api/campaigns/${id}/start`, {
+      const res = await fetch(`https://api.Oconnector.oconnector.tech/api/campaigns/${id}/start`, {
         method: 'POST',
         headers: apiService.getHeaders(),
       });
@@ -138,7 +138,7 @@ const CampaignManager: React.FC = () => {
   const handleDelete = async (id: string) => {
     if (!confirm('Tem certeza? Isso apagará todo o histórico desta campanha.')) return;
     try {
-      await fetch(`https://api.oinbox.oconnector.tech/api/campaigns/${id}`, {
+      await fetch(`https://api.Oconnector.oconnector.tech/api/campaigns/${id}`, {
         method: 'DELETE',
         headers: apiService.getHeaders(),
       });

@@ -1,4 +1,4 @@
-# Projeto Oinbox - Estado Atual
+# Projeto Oconnector - Estado Atual
 
 ## Resumo Executivo
 Resolvida a crise de acesso em produção e instabilidade de assets. Corrigidos erros 500 no banco D1 (schema divergente), erros de assets (via.placeholder.com desativado) e erros de sintaxe no build do frontend. Sistema agora opera em estado estável com deploy automatizado via Wrangler.

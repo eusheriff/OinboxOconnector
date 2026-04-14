@@ -8,7 +8,7 @@ import { Bindings, Variables } from '../bindings';
  * vari√°vel de contexto para todas as queries subsequentes.
  *
  * Uso nas rotas: ler c.get('user').tenantId ao inv√©s de confiar
- * em header x-tenant-id ou par√¢metros do request.
+ * em header x-tenant-id ou par|metros do request.
  *
  * Este middleware N√O filtra queries automaticamente ‚ ele garante
  * que o tenant correto esteja no contexto para que as rotas o usem.

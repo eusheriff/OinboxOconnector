@@ -64,7 +64,7 @@ const Sidebar: React.FC<SidebarProps> = ({ onLogout, user }) => {
   return (
     <aside className="w-64 bg-sidebar text-sidebar-foreground flex flex-col h-full border-r border-sidebar-border flex-shrink-0 transition-all duration-300">
       <div className="p-4 flex flex-col items-center justify-center border-b border-sidebar-border gap-2">
-        <img src="/oinbox-logo.png" alt="Oinbox Logo" className="h-24 w-auto object-contain" />
+        <img src="/Oconnector-logo.png" alt="Oconnector Logo" className="h-24 w-auto object-contain" />
         {user && (
           <span className="text-xs text-gray-400 font-medium">Olá, {user.name.split(' ')[0]}</span>
         )}

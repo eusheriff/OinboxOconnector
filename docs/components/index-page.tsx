@@ -8,7 +8,7 @@ export function Docs({ children }: { children: ReactNode }) {
     <DocsLayout
       tree={docs}
       nav={{
-        title: 'Oinbox Docs',
+        title: 'Oconnector Docs',
         url: '/',
       }}
     >
@@ -65,7 +65,7 @@ export function IndexPage() {
           v1.0.0
         </div>
         <h1 className="text-4xl sm:text-5xl font-bold tracking-tight mb-4">
-          Documentação Oinbox
+          Documentação Oconnector
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           Sistema Operacional Imobiliário com CRM, Inbox Unificado, 
@@ -93,7 +93,7 @@ export function IndexPage() {
       {/* Footer */}
       <div className="mt-16 text-center text-sm text-muted-foreground">
         <p>
-          Oinbox � Real Estate Operating System
+          Oconnector � Real Estate Operating System
         </p>
         <p className="mt-1">
           Todos os direitos reservados a Oconnector.tech Tecnologia

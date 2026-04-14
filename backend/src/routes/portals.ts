@@ -54,7 +54,7 @@ portals.get('/feed/:tenantId.xml', async (c) => {
 
     xml += '  <Header>\n';
     xml += '    <PublishDate>' + new Date().toISOString() + '</PublishDate>\n';
-    xml += '    <Provider>Oinbox</Provider>\n';
+    xml += '    <Provider>Oconnector</Provider>\n';
     if (tenant) {
       xml += '    <ContactInfo>\n';
       xml += '      <Name>' + escapeXml(tenant.name) + '</Name>\n';

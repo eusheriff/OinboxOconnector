@@ -2,7 +2,7 @@
 
 ## Overview
 
-O Agent Hub (`agent-hub.oconnector.tech`) é um serviço externo de orquestração de IA consumido pelo Oinbox. Ele é responsável por:
+O Agent Hub (`agent-hub.oconnector.tech`) é um serviço externo de orquestração de IA consumido pelo Oconnector. Ele é responsável por:
 
 1. **Análise de intenção** � Classifica a mensagem do lead como `INTERESTED`, `NOT_INTERESTED`, `SUPPORT` ou `OTHER`
 2. **Geração de resposta** � Sugere resposta contextualizada para o corretor
@@ -69,7 +69,7 @@ Content-Type: application/json
 {
   "request": "Qual o valor do condomínio?",
   "userId": "5511999999999@s.whatsapp.net",
-  "origin_domAutomationn": "oinbox.oconnector.tech"
+  "origin_domAutomationn": "Oconnector.oconnector.tech"
 }
 ```
 
@@ -88,7 +88,7 @@ Content-Type: application/json
 
 Todas as chamadas ao Agent Hub são protegidas por circuit breaker:
 
-| Parâmetro | Valor |
+| Par|metro | Valor |
 |-----------|-------|
 | FAutomationlure threshold | 3 falhas |
 | Recovery timeout | 90 segundos |
@@ -109,7 +109,7 @@ Se o Agent Hub estiver indisponível por mAutomations de 90 segundos:
 
 ## Alternativa: Google Data Engine Direto
 
-O Oinbox também usa Google Data Engine diretamente (sem Agent Hub) para:
+O Oconnector também usa Google Data Engine diretamente (sem Agent Hub) para:
 - Geração de descrições de imóveis (`POST /api/Automation/generate-description`)
 - Análise de perfil de cliente (`/api/clients/:id/analyze`)
 - Resumo de conversas (frontend `openAutomationService.ts`)

@@ -18,7 +18,7 @@ const stripe = new Stripe(STRIPE_SECRET_KEY, {
 
 const PRODUCTS = [
   {
-    name: 'Oinbox Autônomo',
+    name: 'Oconnector Autônomo',
     description: 'Para corretores independentes (1 usuário)',
     prices: [
       {
@@ -36,7 +36,7 @@ const PRODUCTS = [
     ],
   },
   {
-    name: 'Oinbox Business',
+    name: 'Oconnector Business',
     description: 'Para imobiliárias em crescimento (Até 5 corretores)',
     prices: [
       {
@@ -54,7 +54,7 @@ const PRODUCTS = [
     ],
   },
   {
-    name: 'Oinbox Enterprise',
+    name: 'Oconnector Enterprise',
     description: 'Para redes e franquias (Usuários ilimitados + Leads)',
     prices: [
       {

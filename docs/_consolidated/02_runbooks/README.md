@@ -1,4 +1,4 @@
-# Runbooks - OInbox
+# Runbooks - Oconnector
 
 ManuAutomations operacionAutomations para desenvolvimento, deploy e troubleshooting.
 

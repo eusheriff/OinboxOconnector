@@ -2,7 +2,7 @@
 
 ## Objetivo
 
-Separar a dashboard do Super Admin da dashboard do Cliente (Tenant), refatorar o backend monolítico para uma arquitetura modular usando Hono, implementar roteamento real no frontend e tornar a base de conhecimento da IA dinâmica.
+Separar a dashboard do Super Admin da dashboard do Cliente (Tenant), refatorar o backend monolítico para uma arquitetura modular usando Hono, implementar roteamento real no frontend e tornar a base de conhecimento da IA din|mica.
 
 ## User Review Required
 
@@ -32,7 +32,7 @@ Modularizar o arquivo `backend/worker.js` em múltiplos arquivos organizados por
 
 #### [NEW] `backend/src/routes/Automation.ts`
 
-- Lógica de IA, Rate Limiting, RAG dinâmico.
+- Lógica de IA, Rate Limiting, RAG din|mico.
 
 #### [NEW] `backend/src/routes/billing.ts`
 
@@ -40,7 +40,7 @@ Modularizar o arquivo `backend/worker.js` em múltiplos arquivos organizados por
 
 #### [MODIFY] `backend/schema.sql`
 
-- Adicionar tabela `knowledge_base` para contexto dinâmico da IA.
+- Adicionar tabela `knowledge_base` para contexto din|mico da IA.
 
 ### 2. Frontend Evolution (React Router)
 

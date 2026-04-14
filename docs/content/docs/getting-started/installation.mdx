@@ -1,11 +1,11 @@
 ---
 title: Instalação
-description: Como instalar e rodar o Oinbox localmente
+description: Como instalar e rodar o Oconnector localmente
 ---
 
 # Instalação
 
-Guia passo a passo para configurar o ambiente de desenvolvimento do Oinbox.
+Guia passo a passo para configurar o ambiente de desenvolvimento do Oconnector.
 
 ## Pré-requisitos
 
@@ -18,8 +18,8 @@ Guia passo a passo para configurar o ambiente de desenvolvimento do Oinbox.
 ## Passo 1: Clone o Repositório
 
 ```bash
-git clone https://github.com/seu-usuario/oinbox.git
-cd oinbox
+git clone https://github.com/seu-usuario/Oconnector.git
+cd Oconnector
 ```
 
 ## Passo 2: Instale Dependências
@@ -55,10 +55,10 @@ npm install -g wrangler
 wrangler login
 
 # Crie o banco D1
-wrangler d1 create oinbox-db
+wrangler d1 create Oconnector-db
 
 # Execute o schema SQL
-wrangler d1 execute oinbox-db --file=./backend/schema.sql --local
+wrangler d1 execute Oconnector-db --file=./backend/schema.sql --local
 ```
 
 ## Passo 5: Rode o Projeto
@@ -75,7 +75,7 @@ npm run dev:backend
 
 ## Verificação
 
-Acesse `http://localhost:5173` no navegador. Você deve ver a landing page do Oinbox.
+Acesse `http://localhost:5173` no navegador. Você deve ver a landing page do Oconnector.
 
 ## Próximos Passos
 

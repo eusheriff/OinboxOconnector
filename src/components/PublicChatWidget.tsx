@@ -12,7 +12,7 @@ interface PublicChatWidgetProps {
 }
 
 export function PublicChatWidget({
-  title = 'Manú | OInbox AI',
+  title = 'Manú | Oconnector AI',
   apiUrl = 'https://hub.oconnector.tech/v1/hub/respond',
 }: PublicChatWidgetProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,10 +24,10 @@ export function PublicChatWidget({
 
   // Initialize Session
   useEffect(() => {
-    let sid = localStorage.getItem('oinbox_guest_session'); // Diferente key para isolar sessão se necessário, mas pode ser compartilhado
+    let sid = localStorage.getItem('Oconnector_guest_session'); // Diferente key para isolar sessão se necessário, mas pode ser compartilhado
     if (!sid) {
       sid = `guest-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`;
-      localStorage.setItem('oinbox_guest_session', sid);
+      localStorage.setItem('Oconnector_guest_session', sid);
     }
     setSessionId(sid);
   }, []);
@@ -128,7 +128,7 @@ export function PublicChatWidget({
               <div className="bg-orange-100 p-4 rounded-full mb-3">
                 <Bot className="w-8 h-8 text-orange-600" />
               </div>
-              <p className="text-sm font-medium text-slate-900">Olá! Sou a Manú do OInbox.</p>
+              <p className="text-sm font-medium text-slate-900">Olá! Sou a Manú do Oconnector.</p>
               <p className="text-xs mt-1 max-w-[200px]">Posso ajudar com CRM e Inbox Unificado?</p>
             </div>
           )}

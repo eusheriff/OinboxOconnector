@@ -173,7 +173,7 @@ app.post('/:id/connect', async (c) => {
       return c.json({ success: false, error: 'Channel not found' }, 404);
     }
 
-    const publicUrl = c.env.PUBLIC_WORKER_URL || 'https://api.oinbox.oconnector.tech';
+    const publicUrl = c.env.PUBLIC_WORKER_URL || 'https://api.Oconnector.oconnector.tech';
 
     switch (channel.provider) {
       case 'facebook': {
@@ -344,7 +344,7 @@ app.get('/:id/oauth/callback', async (c) => {
       return c.json({ error: 'Channel not found' }, 404);
     }
 
-    const publicUrl = c.env.PUBLIC_WORKER_URL || 'https://api.oinbox.oconnector.tech';
+    const publicUrl = c.env.PUBLIC_WORKER_URL || 'https://api.Oconnector.oconnector.tech';
 
     switch (channel.provider) {
       case 'facebook': {

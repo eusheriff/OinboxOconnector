@@ -25,7 +25,7 @@ export const errorLoggingMiddleware = async (c: Context, next: Next) => {
         origin: c.req.header('origin'),
       });
 
-      await logger?.metric('oinbox.http.error', 1, [
+      await logger?.metric('Oconnector.http.error', 1, [
         'status:' + status,
         'method:' + c.req.method,
         'path:' + c.req.path,
@@ -47,7 +47,7 @@ export const errorLoggingMiddleware = async (c: Context, next: Next) => {
       headers: headers,
     });
 
-    await logger?.metric('oinbox.exception.unhandled', 1, [
+    await logger?.metric('Oconnector.exception.unhandled', 1, [
       'method:' + c.req.method,
       'path:' + c.req.path,
       'error:' + (error.name || 'unknown'),
@@ -103,7 +103,7 @@ export const requestLoggingMiddleware = async (c: Context, next: Next) => {
   // Log End
   if (logger) {
     await logger.info('Request completed', responseLogData);
-    await logger.metric('oinbox.http.request.duration', duration, [
+    await logger.metric('Oconnector.http.request.duration', duration, [
       'method:' + c.req.method,
       'status:' + status,
       'path:' + c.req.path,

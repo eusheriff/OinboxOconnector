@@ -1,4 +1,4 @@
-# Oinbox Documentation
+# Oconnector Documentation
 
 Documentation site built with [Fumadocs](https://fumadocs.dev/).
 
@@ -44,5 +44,5 @@ npm run start
 Deploy to Cloudflare Pages:
 
 ```bash
-npx wrangler pages deploy .vercel/output/static --project-name=oinbox-docs
+npx wrangler pages deploy .vercel/output/static --project-name=Oconnector-docs
 ```

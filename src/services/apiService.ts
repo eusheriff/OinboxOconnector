@@ -33,7 +33,7 @@ interface CampaignFormData {
 }
 
 // URL Base da API - usa variável de ambiente com fallback para produção
-const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'https://api.oinbox.oconnector.tech'}/api`;
+const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'https://api.Oconnector.oconnector.tech'}/api`;
 
 // Helper para headers
 const getHeaders = (isMultipart = false) => {

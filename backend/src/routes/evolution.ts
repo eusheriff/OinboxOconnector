@@ -151,20 +151,20 @@ evolution.get('/status', async (c) => {
     const data = (await response.json()) as EvolutionInstance[];
 
     if (!response.ok) {
-      return c.json({ error: 'Falha ao buscar instâncias', connected: false }, 500);
+      return c.json({ error: 'Falha ao buscar inst|ncias', connected: false }, 500);
     }
 
-    // Verificar se existe instância 'oinbox' ou similar
+    // Verificar se existe inst|ncia 'Oconnector' ou similar
     const instance = data.find(
       (i: EvolutionInstance) =>
-        i.instance.instanceName === 'oinbox' || i.instance.instanceName === 'superadmin',
+        i.instance.instanceName === 'Oconnector' || i.instance.instanceName === 'superadmin',
     );
 
     if (!instance) {
       return c.json({
         connected: false,
         status: 'no_instance',
-        message: 'Nenhuma instância configurada',
+        message: 'Nenhuma inst|ncia configurada',
       });
     }
 
@@ -191,7 +191,7 @@ evolution.post('/connect', async (c) => {
   const instanceName = 'superadmin';
 
   try {
-    // Primeiro tentar criar instância
+    // Primeiro tentar criar inst|ncia
     const createResponse = await evolutionRequest(baseUrl, apiKey, '/instance/create', 'POST', {
       instanceName,
       qrcode: true,
@@ -199,7 +199,7 @@ evolution.post('/connect', async (c) => {
     });
 
     if (!createResponse.ok) {
-      // Instância pode já existir, tentar conectar
+      // Inst|ncia pode já existir, tentar conectar
       const connectResponse = await evolutionRequest(
         baseUrl,
         apiKey,
@@ -208,7 +208,7 @@ evolution.post('/connect', async (c) => {
       );
 
       if (!connectResponse.ok) {
-        return c.json({ error: 'Falha ao conectar instância' }, 500);
+        return c.json({ error: 'Falha ao conectar inst|ncia' }, 500);
       }
 
       const qrData = (await connectResponse.json()) as EvolutionQRCode;
@@ -227,7 +227,7 @@ evolution.post('/connect', async (c) => {
     });
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return c.json({ error: `Falha ao criar instância: ${errorMessage}` }, 500);
+    return c.json({ error: `Falha ao criar inst|ncia: ${errorMessage}` }, 500);
   }
 });
 

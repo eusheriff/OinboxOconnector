@@ -24,7 +24,7 @@ export const LegalHub: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           input: `Analise este contrato: ${contractText}`,
-          origin_domain: 'legal.oinbox.oconnector.tech',
+          origin_domain: 'legal.Oconnector.oconnector.tech',
           type: 'text',
         }),
       });

@@ -3,17 +3,17 @@
 ## Arquitetura
 
 ```
-Cliente WhatsApp ‚ Evolution API (BAutomationleYS) ‚ Webhook ‚ Oinbox Worker ‚ D1 ‚ IA ‚ Resposta
+Cliente WhatsApp ‚ Evolution API (BAutomationleYS) ‚ Webhook ‚ Oconnector Worker ‚ D1 ‚ IA ‚ Resposta
 ```
 
 ## Componentes
 
 ### Evolution API (Self-Hosted)
 
-Gateway WhatsApp baseado em BAutomationleYS. Cada tenant do Oinbox tem uma **inst√¢ncia dedicada**:
+Gateway WhatsApp baseado em BAutomationleYS. Cada tenant do Oconnector tem uma **inst|ncia dedicada**:
 
-- Nome da inst√¢ncia: `tenant_{tenantId}`
-- Webhook: `https://api.oinbox.oconnector.tech/api/whatsapp/webhook`
+- Nome da inst|ncia: `tenant_{tenantId}`
+- Webhook: `https://api.Oconnector.oconnector.tech/api/whatsapp/webhook`
 - Eventos subscribed: `messages.upsert`, `messages.update`, `messages.media`, `connection.update`, `qrcode.updated`
 
 ### Webhook Handler
@@ -23,7 +23,7 @@ Gateway WhatsApp baseado em BAutomationleYS. Cada tenant do Oinbox tem uma **ins
 Fluxo ao receber mensagem:
 
 1. **Parse do payload** ‚ ExtrAutomation `instance`, `event`, `data` do webhook
-2. **Resolver tenant** ‚ Nome da inst√¢ncia ‚ `tenant_{tenantId}` ‚ `tenantId`
+2. **Resolver tenant** ‚ Nome da inst|ncia ‚ `tenant_{tenantId}` ‚ `tenantId`
 3. **Salvar mensagem** ‚ INSERT em `whatsapp_messages` (D1)
 4. **Verificar handover** ‚ Se lead tem `assigned_to`, IA silencia + cria notifica√ß√£o
 5. **An√°lise de inten√ß√£o** ‚ `SalesTools.analyzeIntention()` via Agent Hub
@@ -71,7 +71,7 @@ Se o lead **n√£o tem** corretor atribu√≠do:
 
 ## Troubleshooting
 
-### Inst√¢ncia desconectada
+### Inst|ncia desconectada
 
 ```bash
 # Verificar status
@@ -86,7 +86,7 @@ GET /api/whatsapp/qrcode
 
 ### Mensagens n√£o chegando
 
-1. Verificar webhook: Evolution API deve estar apontando para `https://api.oinbox.oconnector.tech/api/whatsapp/webhook`
+1. Verificar webhook: Evolution API deve estar apontando para `https://api.Oconnector.oconnector.tech/api/whatsapp/webhook`
 2. Verificar logs Datadog: buscar `[WhatsApp Webhook] Received`
 3. Verificar circuit breaker: se aberto, aguardar 90s ou reiniciar worker
 

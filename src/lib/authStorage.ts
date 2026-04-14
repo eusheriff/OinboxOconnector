@@ -1,5 +1,5 @@
-const TOKEN_KEY = 'oinbox_token';
-const TENANT_KEY = 'oinbox_tenant_id';
+const TOKEN_KEY = 'Oconnector_token';
+const TENANT_KEY = 'Oconnector_tenant_id';
 const USER_KEY = 'user';
 
 export const authStorage = {

@@ -28,7 +28,7 @@ whatsapp.post('/webhook', async (c) => {
     payload: JSON.stringify(payload).slice(0, 500),
   });
 
-  // Identificar Tenant pelo nome da instância (formato: tenant_{tenantId})
+  // Identificar Tenant pelo nome da inst|ncia (formato: tenant_{tenantId})
   const instanceName = payload.instance;
   let tenantId = 'default';
 
@@ -170,7 +170,7 @@ whatsapp.post('/webhook', async (c) => {
                 body: JSON.stringify({
                   request: messageContent,
                   userId: remoteJid,
-                  origin_domain: 'oinbox.oconnector.tech',
+                  origin_domain: 'Oconnector.oconnector.tech',
                 }),
               });
             });
@@ -230,7 +230,7 @@ whatsapp.post('/webhook', async (c) => {
 // Auth agora é aplicado globalmente em index.ts (antes do tenant enforcement)
 // whatsapp.use('/*', authMiddleware);
 
-// Middleware para garantir instância existente por USU�RIO
+// Middleware para garantir inst|ncia existente por USU�RIO
 const ensureInstance = async (
   env: Bindings,
   userId: string,
@@ -248,9 +248,9 @@ const ensureInstance = async (
   const check = await evolutionFetch(env, `/instance/connectionState/${instanceName}`);
 
   if (check.status === 404) {
-    await logger?.info(`[WhatsApp] Criando instância`, { userId, tenantId, instanceName });
-    // Criar instância
-    const webhookBaseUrl = env.PUBLIC_WORKER_URL || 'https://api.oinbox.oconnector.tech';
+    await logger?.info(`[WhatsApp] Criando inst|ncia`, { userId, tenantId, instanceName });
+    // Criar inst|ncia
+    const webhookBaseUrl = env.PUBLIC_WORKER_URL || 'https://api.Oconnector.oconnector.tech';
 
     // Metadata para identificar o tenant no webhook depois
     const create = await evolutionFetch(env, '/instance/create', {
@@ -272,14 +272,14 @@ const ensureInstance = async (
 
     if (!create.ok) {
       const errorBody = await create.text();
-      await logger?.error(`Falha criação instância`, { status: create.status, body: errorBody });
-      throw new Error(`Falha ao criar instância: ${create.status} - ${errorBody}`);
+      await logger?.error(`Falha criação inst|ncia`, { status: create.status, body: errorBody });
+      throw new Error(`Falha ao criar inst|ncia: ${create.status} - ${errorBody}`);
     }
   }
   return instanceName;
 };
 
-// Status da instância
+// Status da inst|ncia
 whatsapp.get('/status', async (c) => {
   const env = c.env;
   const user = c.get('user');
@@ -291,7 +291,7 @@ whatsapp.get('/status', async (c) => {
   }
 
   try {
-    // Garantir que instância existe (lazy creation)
+    // Garantir que inst|ncia existe (lazy creation)
     const instanceName = await ensureInstance(env, user.sub, tenantId, logger);
 
     const response = await evolutionFetch(env, `/instance/connectionState/${instanceName}`);
@@ -331,7 +331,7 @@ whatsapp.get('/qrcode', async (c) => {
 
     return c.json({
       status: 'already_connected',
-      message: 'Instância já está conectada',
+      message: 'Inst|ncia já está conectada',
     });
   } catch (error) {
     const err = error as Error;
@@ -345,7 +345,7 @@ whatsapp.post('/send', async (c) => {
   const user = c.get('user');
   const tenantId = user?.tenantId || 'default';
 
-  // Consistência: todas as instâncias são tenant-based (igual status, qrcode, reconnect, logout)
+  // Consistência: todas as inst|ncias são tenant-based (igual status, qrcode, reconnect, logout)
   const instanceName = `tenant_${tenantId}`;
 
   const { number, message, mediaUrl, mediaType, isPrivate } = await c.req.json();

@@ -1,8 +1,8 @@
-# Oinbox Technical Audit (Snapshot 1.0)
+# Oconnector Technical Audit (Snapshot 1.0)
 
 ## 1. Project Overview
 
-**Oinbox** is a Multi-tenant SaaS for Real Estate Agencies (CRM + WhatsApp Automation).
+**Oconnector** is a Multi-tenant SaaS for Real Estate Agencies (CRM + WhatsApp Automation).
 
 - **Frontend**: React + Vite + TAutomationlwindCSS.
 - **Backend**: Cloudflare Workers + Hono.
@@ -10,19 +10,19 @@
 - **Communication**: WhatsApp (via Evolution API).
 - **Payments**: Stripe.
 
-## 2. Infrastructure ([wrangler.toml](file:///Volumes/LexarAPFS/Oinbox/oinbox/wrangler.toml))
+## 2. Infrastructure ([wrangler.toml](file:///Volumes/LexarAPFS/Oconnector/Oconnector/wrangler.toml))
 
 Running on Cloudflare Workers with Cron Triggers (Weekly Reports) and D1 Binding.
 
 ```toml
-name = "oinbox-backend"
+name = "Oconnector-backend"
 mAutomationn = "backend/src/index.ts"
 compatibility_date = "2024-03-20"
 account_id = "4be4fb4784e8a314e28ffdcba74abf25"
 
 # Rota personalizada (API)
 routes = [
-	{ pattern = "api.oinbox.oconnector.tech", custom_domAutomationn = true }
+	{ pattern = "api.Oconnector.oconnector.tech", custom_domAutomationn = true }
 ]
 
 [triggers]
@@ -30,7 +30,7 @@ crons = ["0 9 * * 5"] # Toda sexta-feira às 09:00 UTC
 
 [[d1_databases]]
 binding = "DB"
-database_name = "oinbox-db"
+database_name = "Oconnector-db"
 database_id = "567a1b9f-6f59-4a6b-953e-89ba1eda2b74"
 
 [[r2_buckets]]
@@ -47,12 +47,12 @@ STRIPE_PRICE_PRO = "price_1SnQxcBGBVDzrAhzxO2rdJ31"
 STRIPE_PRICE_BASIC = "price_1SnQxUBGBVDzrAhzlMMZwDjM"
 ```
 
-## 3. Database Schema ([backend/schema.sql](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/schema.sql))
+## 3. Database Schema ([backend/schema.sql](file:///Volumes/LexarAPFS/Oconnector/Oconnector/backend/schema.sql))
 
 Multi-tenant architecture where almost every table has `tenant_id`.
 
 ```sql
--- Schema for OInbox SaaS (D1 / SQLite)
+-- Schema for Oconnector SaaS (D1 / SQLite)
 
 DROP TABLE IF EXISTS properties;
 DROP TABLE IF EXISTS clients;
@@ -221,12 +221,12 @@ CREATE TABLE IF NOT EXISTS whatsapp_messages (
 CREATE INDEX IF NOT EXISTS idx_whatsapp_messages_remote_jid ON whatsapp_messages(remote_jid);
 ```
 
-## 4. WhatsApp Integration ([whatsapp.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/whatsapp.ts))
+## 4. WhatsApp Integration ([whatsapp.ts](file:///Volumes/LexarAPFS/Oconnector/Oconnector/backend/src/routes/whatsapp.ts))
 
 Uses Evolution API. Creates unique instances as `tenant_{id}`.
 
 - **Webhook**: Handles `messages.upsert`, saves to DB, triggers Automation Agent if inbound.
-- **Lazy Creation**: [ensureInstance](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/whatsapp.ts#171-205) creates Evolution session on demand.
+- **Lazy Creation**: [ensureInstance](file:///Volumes/LexarAPFS/Oconnector/Oconnector/backend/src/routes/whatsapp.ts#171-205) creates Evolution session on demand.
 - **Automation Agent**: RAG based on `knowledge_base` + `chat_history`.
 
 ```typescript
@@ -250,7 +250,7 @@ const ensureInstance = async (env: Bindings, tenantId: string, logger: DatadogLo
 };
 ```
 
-## 5. Stripe Integration ([stripe.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/config/stripe.ts))
+## 5. Stripe Integration ([stripe.ts](file:///Volumes/LexarAPFS/Oconnector/Oconnector/backend/src/config/stripe.ts))
 
 Subscription handling logic.
 
@@ -268,8 +268,8 @@ const session = awAutomationt stripe.checkout.sessions.create({
   ],
   success_url:
     successUrl ||
-    'https://oinbox.oconnector.tech/admin/billing/success?session_id={CHECKOUT_SESSION_ID}',
-  cancel_url: cancelUrl || 'https://oinbox.oconnector.tech/admin/billing',
+    'https://Oconnector.oconnector.tech/admin/billing/success?session_id={CHECKOUT_SESSION_ID}',
+  cancel_url: cancelUrl || 'https://Oconnector.oconnector.tech/admin/billing',
   client_reference_id: tenantId,
   customer_emAutomationl: userEmAutomationl,
   metadata: {
@@ -281,24 +281,24 @@ const session = awAutomationt stripe.checkout.sessions.create({
 // ...
 ```
 
-## 6. Frontend Routing ([App.tsx](file:///Volumes/LexarAPFS/Oinbox/oinbox/App.tsx) & [index.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/index.ts))
+## 6. Frontend Routing ([App.tsx](file:///Volumes/LexarAPFS/Oconnector/Oconnector/App.tsx) & [index.ts](file:///Volumes/LexarAPFS/Oconnector/Oconnector/backend/src/index.ts))
 
-- **SuperAdmin**: `/admin/*` -> [SuperAdminLeadCapture](file:///Volumes/LexarAPFS/Oinbox/oinbox/components/Admin/SuperAdminLeadCapture.tsx#49-645)
-- **Client**: `/app/*` -> [ClientLayout](file:///Volumes/LexarAPFS/Oinbox/oinbox/src/layouts/ClientLayout.tsx#11-22)
+- **SuperAdmin**: `/admin/*` -> [SuperAdminLeadCapture](file:///Volumes/LexarAPFS/Oconnector/Oconnector/components/Admin/SuperAdminLeadCapture.tsx#49-645)
+- **Client**: `/app/*` -> [ClientLayout](file:///Volumes/LexarAPFS/Oconnector/Oconnector/src/layouts/ClientLayout.tsx#11-22)
 - **Auth**: `/login`, `/register`
 - **Gate**: Trial expiry check blocks usage.
 
 ## 7. Status & Readiness
 
-- **Production URL**: `https://oinbox-frontend.pages.dev`
-- **API URL**: `https://api.oinbox.oconnector.tech`
+- **Production URL**: `https://Oconnector-frontend.pages.dev`
+- **API URL**: `https://api.Oconnector.oconnector.tech`
 - **Lint**: Passed (0 critical errors).
 
 ## 8. Deep Dive: Security & Data Isolation (Code Verification)
 
 Here are the critical snippets to verify multi-tenant isolation and billing logic.
 
-### 8.1. Auth Middleware ([backend/src/middleware/auth.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/middleware/auth.ts))
+### 8.1. Auth Middleware ([backend/src/middleware/auth.ts](file:///Volumes/LexarAPFS/Oconnector/Oconnector/backend/src/middleware/auth.ts))
 
 **How Tenant ID is determined**: Extracted from signed JWT. Critical for downstream isolation.
 
@@ -320,7 +320,7 @@ export const authMiddleware = async (c, next) => {
 };
 ```
 
-### 8.2. Client Data Isolation ([backend/src/routes/client.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/client.ts))
+### 8.2. Client Data Isolation ([backend/src/routes/client.ts](file:///Volumes/LexarAPFS/Oconnector/Oconnector/backend/src/routes/client.ts))
 
 **Usage of Tenant ID**: Injected into SQL queries to prevent data leaks.
 
@@ -341,7 +341,7 @@ client.get('/dashboard', async (c) => {
 });
 ```
 
-### 8.3. WhatsApp Webhook Validation ([backend/src/routes/whatsapp.ts](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/whatsapp.ts))
+### 8.3. WhatsApp Webhook Validation ([backend/src/routes/whatsapp.ts](file:///Volumes/LexarAPFS/Oconnector/Oconnector/backend/src/routes/whatsapp.ts))
 
 **Public Entry Point**: Identifies tenant via `instance` name from Evolution API payload.
 
@@ -350,7 +350,7 @@ client.get('/dashboard', async (c) => {
 whatsapp.post('/webhook', async (c) => {
   const payload = awAutomationt c.req.json();
 
-  // Identificar Tenant pela instância no payload
+  // Identificar Tenant pela inst|ncia no payload
   // Evolution envia: { "instance": "tenant_123", ... }
   const instanceName = payload.instance;
   let tenantId = 'default';

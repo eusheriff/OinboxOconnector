@@ -43,7 +43,7 @@ app.use(
   '/*',
   cors({
     origin: (origin) => {
-      if (!origin) return 'https://oinbox.oconnector.tech';
+      if (!origin) return 'https://Oconnector.oconnector.tech';
       const url = new URL(origin);
       const isAllowed = 
         url.hostname === 'localhost' ||

@@ -33,7 +33,7 @@ automationRoutes.post('/public-chat', async (c) => {
 
     // 2. Montar prompt completo com contexto RAG
     const fullPrompt =
-      (systemPrompt || 'Você é a IA do Oinbox.') +
+      (systemPrompt || 'Você é a IA do Oconnector.') +
       '\n\nBase de conhecimento:\n' +
       knowledge +
       '\n\nPergunta do usuário: ' +
@@ -53,8 +53,8 @@ automationRoutes.post('/public-chat', async (c) => {
       response_length: response.length,
     });
 
-    await logger?.metric('oinbox.ai.public_chat.duration', duration, ['provider:Engine']);
-    await logger?.metric('oinbox.ai.public_chat.success', 1, ['provider:Engine']);
+    await logger?.metric('Oconnector.ai.public_chat.duration', duration, ['provider:Engine']);
+    await logger?.metric('Oconnector.ai.public_chat.success', 1, ['provider:Engine']);
 
     return c.json({ text: response });
   } catch (error: unknown) {
@@ -66,7 +66,7 @@ automationRoutes.post('/public-chat', async (c) => {
       duration_ms: duration,
     });
 
-    await logger?.metric('oinbox.ai.public_chat.error', 1, ['error_type:unknown']);
+    await logger?.metric('Oconnector.ai.public_chat.error', 1, ['error_type:unknown']);
 
     return c.json(
       { error: 'Erro ao processar solicitação de IA. Tente novamente mais tarde.' },

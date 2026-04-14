@@ -17,7 +17,7 @@ Este diretório contém as migrações versionadas para o banco de dados Cloudfl
 | 009 | `009_enterprise_leads.sql` | Enterprise leads |
 | 010 | `010_owner_report.sql` | Owner report |
 | 011 | `011_add_user_phone.sql` | Telefone em users |
-| 012 | `012_oinbox_knowledge_base.sql` | Knowledge base |
+| 012 | `012_Oconnector_knowledge_base.sql` | Knowledge base |
 | 013 | `013_create_contracts.sql` | Contratos |
 | 014 | `014_create_commissions.sql` | Comissões |
 | 015 | `015_add_trial_ends_at.sql` | Trial ends at |
@@ -61,11 +61,11 @@ Exemplos:
 ```bash
 # Executar todas as migrações em sequência
 for f in backend/migrations/*.sql; do
-  wrangler d1 execute oinbox-db --local --file=./$f
+  wrangler d1 execute Oconnector-db --local --file=./$f
 done
 
 # Ou executar apenas o schema completo (para banco novo)
-wrangler d1 execute oinbox-db --local --file=./backend/schema.sql
+wrangler d1 execute Oconnector-db --local --file=./backend/schema.sql
 ```
 
 ### Produção
@@ -73,7 +73,7 @@ wrangler d1 execute oinbox-db --local --file=./backend/schema.sql
 ```bash
 # Executar todas as migrações
 for f in backend/migrations/*.sql; do
-  wrangler d1 execute oinbox-db --file=./$f
+  wrangler d1 execute Oconnector-db --file=./$f
 done
 ```
 
@@ -91,7 +91,7 @@ Para reverter uma migração:
 1. Crie um arquivo de rollback: `0004_minha_migracao_rollback.sql`
 2. Execute manualmente:
    ```bash
-   wrangler d1 execute oinbox-db --file=./backend/migrations/0004_minha_migracao_rollback.sql
+   wrangler d1 execute Oconnector-db --file=./backend/migrations/0004_minha_migracao_rollback.sql
    ```
 3. Remova o registro da tabela `schema_migrations`:
    ```sql

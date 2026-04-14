@@ -1,4 +1,4 @@
-# Arquitetura - OInbox
+# Arquitetura - Oconnector
 
 Esta pasta contém documentação de arquitetura e decisões técnicas (ADRs).
 

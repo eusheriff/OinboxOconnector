@@ -20,7 +20,7 @@
    - Configurados segredos críticos em produção via `wrangler secret put`:
      - `EVOLUTION_API_URL` (Nova URL de produção: evolution.oconnector.tech).
      - `EVOLUTION_API_KEY`, `NEON_DATABASE_URL`, `UPSTASH_REDIS_REST_URL/TOKEN`.
-   - **Deploy bem-sucedido** do worker `oinbox-backend` com as novas definições de infraestrutura.
+   - **Deploy bem-sucedido** do worker `Oconnector-backend` com as novas definições de infraestrutura.
 
 ### Comandos Utilizados
 - `npm run build:backend`: Validação de tipos.
@@ -45,10 +45,10 @@
 
 3. **Correção de Build & Deploy**:
    - Resolvidos 16 erros de compilação TypeScript bloqueando o `npm run build`.
-   - Implementado deploy não-interativo do `oinbox-frontend` no Cloudflare Pages usando Global API Key.
+   - Implementado deploy não-interativo do `Oconnector-frontend` no Cloudflare Pages usando Global API Key.
 
 ### Comandos Utilizados
-- `npx wrangler d1 execute oinbox-db --remote --file=...`: Correção de schema remoto.
+- `npx wrangler d1 execute Oconnector-db --remote --file=...`: Correção de schema remoto.
 - `npm run build`: Validação e empacotamento do frontend.
 - `CLOUDFLARE_API_KEY=... npx wrangler pages deploy dist`: Deploy manual para produção.
 
@@ -65,7 +65,7 @@
    - Deploy do Worker realizado com sucesso, garantindo respostas JSON em todos os cenários de erro (404/500).
 
 2. **Estabilização de CORS**:
-   - Implementada detecção dinâmica de origem no middleware de CORS para suportar subdomínios `*.pages.dev`.
+   - Implementada detecção din|mica de origem no middleware de CORS para suportar subdomínios `*.pages.dev`.
    - Resolvido o `AbortError` que ocorria em ambientes de pré-visualização.
 
 ### Comandos Utilizados

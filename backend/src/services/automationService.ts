@@ -151,7 +151,7 @@ export async function generatePropertyDescription(
 }
 
 /**
- * Executa match semântico entre imóvel e leads candidatos.
+ * Executa match sem|ntico entre imóvel e leads candidatos.
  * Retorna array de IDs dos leads com alta probabilidade de interesse.
  */
 export async function matchProperties(

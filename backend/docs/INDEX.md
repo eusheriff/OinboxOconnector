@@ -1,6 +1,6 @@
-# Documentação Técnica � Oinbox Backend
+# Documentação Técnica � Oconnector Backend
 
-�ndice de documentos técnicos do backend do Oinbox.
+�ndice de documentos técnicos do backend do Oconnector.
 
 ## Arquitetura e Design
 

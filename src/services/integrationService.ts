@@ -1,6 +1,6 @@
 import { authStorage } from '../lib/authStorage';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.oinbox.oconnector.tech/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.Oconnector.oconnector.tech/api';
 
 export const uploadImageToCloudflare = async (file: File): Promise<string> => {
   try {

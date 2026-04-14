@@ -18,13 +18,13 @@ O projeto possui **dois sistemas de rate limiting** independentes:
 - **Storage:** Tabela `rate_limits` no D1 (SQLite)
 - **Chave:** `rate_limit:{ip}:{rota}`
 
-### Parâmetros
+### Par|metros
 
 ```typescript
 rateLimiter(maxRequests: number = 10, failClose: boolean = false)
 ```
 
-| Parâmetro | Default | Descrição |
+| Par|metro | Default | Descrição |
 |-----------|---------|-----------|
 | `maxRequests` | 10 | Requests permitidos por janela de 1 minuto |
 | `failClose` | false | Se `true`, bloqueia quando D1 está indisponível. Se `false`, permite passar |

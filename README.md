@@ -1,6 +1,6 @@
-# Oinbox т Omnichannel Infrastructure for Real Estate Operations
+# Oconnector - Omnichannel Infrastructure for Real Estate Operations
 
-Oinbox is a high-performance, multi-tenant omnichannel infrastructure designed to centralize and automate real estate workflows. Built on a serverless edge-native stack, it provides a unified data layer for communications, property management, and lead orchestration.
+Oconnector is a high-performance, multi-tenant omnichannel infrastructure designed to centralize and automate real estate workflows. Built on a serverless edge-native stack, it provides a unified data layer for communications, property management, and lead orchestration.
 
 ## Technical Architecture
 
@@ -11,7 +11,7 @@ The platform leverages the Cloudflare ecosystem for scalability, low latency, an
 | **Compute** | Cloudflare Workers | Serverless execution at the edge via Hono framework |
 | **Relational Data** | Cloudflare D1 | Multi-tenant SQLite engine with strict schema enforcement |
 | **Object Storage** | Cloudflare R2 | S3-compatible blob storage for documents and assets |
-| **Integration Layer** | Adapter Pattern | Unified interface for 3rd-party APIs (WhatsApp, EmAutomationl, Portals) |
+| **Integration Layer** | Adapter Pattern | Unified interface for 3rd-party APIs (WhatsApp, Email, Portals) |
 | **Front-end** | Unified UI | React 18, TypeScript, and Vite-optimized delivery |
 
 ## Data Model and Security
@@ -46,19 +46,19 @@ A centralized publication engine handles state synchronization between the core 
 ## Project Structure
 
 ```
-oinbox/
-ттт backend/                  # Serverless Compute Layer (Hono)
-т   ттт src/
-т   т   ттт routes/           # RESTful API modules
-т   т   ттт services/         # Core business logic and adapters
-т   т   ттт middleware/       # Auth, Logging, Tenant Enforcement
-т   т   ттт bindings.ts       # Infrastructure type definitions
-т   ттт migrations/           # Incremental schema evolution
-т   ттт schema.sql            # Master D1 relational schema
-ттт src/                      # Client Application (React)
-ттт shared/types/             # Isomorphic TypeScript definitions
-ттт wrangler.toml             # Infrastructure-as-code configuration
-ттт vite.config.ts            # Frontend build pipeline
+Oconnector/
+|-- backend/                  # Serverless Compute Layer (Hono)
+|   |-- src/
+|   |   |-- routes/           # RESTful API modules
+|   |   |-- services/         # Core business logic and adapters
+|   |   |-- middleware/       # Auth, Logging, Tenant Enforcement
+|   |   `-- bindings.ts       # Infrastructure type definitions
+|   |-- migrations/           # Incremental schema evolution
+|   `-- schema.sql            # Master D1 relational schema
+|-- src/                      # Client Application (React)
+|-- shared/types/             # Isomorphic TypeScript definitions
+|-- wrangler.toml             # Infrastructure-as-code configuration
+`-- vite.config.ts            # Frontend build pipeline
 ```
 
 ## Infrastructure Management
@@ -70,7 +70,7 @@ oinbox/
 ### Database Setup
 ```bash
 # Initialize relational storage
-wrangler d1 execute oinbox-db --file=./backend/schema.sql --local
+wrangler d1 execute Oconnector-db --file=./backend/schema.sql --local
 ```
 
 ### Local Development

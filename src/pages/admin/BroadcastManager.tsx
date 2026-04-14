@@ -43,7 +43,7 @@ const BroadcastManager: React.FC = () => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/admin/broadcasts`,
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem('oinbox_token')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('Oconnector_token')}` },
         },
       );
       const data = (await response.json()) as Broadcast[];
@@ -67,7 +67,7 @@ const BroadcastManager: React.FC = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('oinbox_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('Oconnector_token')}`,
           },
           body: JSON.stringify({
             ...newBroadcast,
@@ -90,7 +90,7 @@ const BroadcastManager: React.FC = () => {
         `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/admin/broadcasts/${id}`,
         {
           method: 'DELETE',
-          headers: { Authorization: `Bearer ${localStorage.getItem('oinbox_token')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('Oconnector_token')}` },
         },
       );
       fetchBroadcasts();

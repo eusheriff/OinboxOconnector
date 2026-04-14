@@ -18,10 +18,10 @@ wrangler login
 
 ```bash
 # Criar banco D1 (produção)
-wrangler d1 create oinbox-db
+wrangler d1 create Oconnector-db
 
 # Executar schema
-wrangler d1 execute oinbox-db --file=./backend/schema.sql --remote
+wrangler d1 execute Oconnector-db --file=./backend/schema.sql --remote
 ```
 
 ### Deploy
@@ -49,10 +49,10 @@ npm run build
 ### Deploy no Pages
 
 ```bash
-npx wrangler pages deploy dist --project-name=oinbox-frontend
+npx wrangler pages deploy dist --project-name=Oconnector-frontend
 ```
 
 ## URLs de Produção
 
-- Frontend: https://oinbox.oconnector.tech
-- Backend: https://api.oinbox.oconnector.tech
+- Frontend: https://Oconnector.oconnector.tech
+- Backend: https://api.Oconnector.oconnector.tech

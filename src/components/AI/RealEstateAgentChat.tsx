@@ -16,7 +16,7 @@ const RealEstateAgentChat: React.FC = () => {
   const [messages, setMessages] = useState<{ role: 'user' | 'model'; text: string }[]>([
     {
       role: 'model',
-      text: 'Olá! Sou o Consultor Oinbox. Como posso ajudar você no mercado imobiliário hoje? Fale comigo sobre tendências, investimentos ou burocracia.',
+      text: 'Olá! Sou o Consultor Oconnector. Como posso ajudar você no mercado imobiliário hoje? Fale comigo sobre tendências, investimentos ou burocracia.',
     },
   ]);
   const [inputText, setInputText] = useState('');

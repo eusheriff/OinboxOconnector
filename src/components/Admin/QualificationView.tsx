@@ -14,7 +14,7 @@ interface Lead {
   notes: string;
 }
 
-const API_BASE = 'https://api.oinbox.oconnector.tech';
+const API_BASE = 'https://api.Oconnector.oconnector.tech';
 
 export const QualificationView: React.FC = () => {
   const [unqualifiedLeads, setUnqualifiedLeads] = useState<Lead[]>([]);

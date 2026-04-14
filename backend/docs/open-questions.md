@@ -186,7 +186,7 @@ O frontend lê `localStorage.getItem('oconnector_ai_config')`:
 
 **Conclusão:** **Não existe ambiente de staging.** Há apenas:
 1. Dev local (localhost:5173 + wrangler dev)
-2. Produção (oinbox.oconnector.tech)
+2. Produção (Oconnector.oconnector.tech)
 
 **Risco:** Deploy direto em produção sem teste em ambiente isolado. Migrações D1 são executadas diretamente em produção.
 

@@ -1,4 +1,4 @@
-# Archive - OInbox
+# Archive - Oconnector
 
 Esta pasta contém documentação obsoleta ou histórica que foi mantida para referência.
 

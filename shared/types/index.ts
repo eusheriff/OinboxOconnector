@@ -1,5 +1,5 @@
 /**
- * SHARED TYPES - Oinbox Platform
+ * SHARED TYPES - Oconnector Platform
  *
  * These types are shared between Frontend and Backend.
  * Import from '@/shared/types' (frontend) or '../../../shared/types' (backend)

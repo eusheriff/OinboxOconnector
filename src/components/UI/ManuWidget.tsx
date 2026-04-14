@@ -88,7 +88,7 @@ export const ManuWidget: React.FC = () => {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Olá! Sou a Manú, Especialista em Omnichannel do oInbox. �\nComo posso ajudar a centralizar seu atendimento hoje?',
+        'Olá! Sou a Manú, Especialista em Omnichannel do Oconnector. �\nComo posso ajudar a centralizar seu atendimento hoje?',
     },
   ]);
   const [inputValue, setInputValue] = useState('');
@@ -129,7 +129,7 @@ export const ManuWidget: React.FC = () => {
         body: JSON.stringify({
           request: userMsg.content,
           userId: userId,
-          origin_domain: 'oinbox.oconnector.tech', // Forces oInbox Persona
+          origin_domain: 'Oconnector.oconnector.tech', // Forces Oconnector Persona
         }),
       });
 
@@ -243,7 +243,7 @@ export const ManuWidget: React.FC = () => {
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyDown={handleKeyPress}
-                placeholder="Pergunte sobre oInbox..."
+                placeholder="Pergunte sobre Oconnector..."
                 className="flex-1 bg-transparent outline-none text-sm text-slate-700 placeholder:text-slate-400"
                 disabled={isLoading}
               />

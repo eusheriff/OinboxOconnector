@@ -94,7 +94,7 @@ const WhatsAppManager: React.FC = () => {
 
   const fetchQrCode = async () => {
     try {
-      const token = localStorage.getItem('oinbox_token');
+      const token = localStorage.getItem('Oconnector_token');
       const response = await fetch(
         `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/whatsapp/qrcode`,
         {
@@ -112,7 +112,7 @@ const WhatsAppManager: React.FC = () => {
 
   const performLogout = async () => {
     try {
-      const token = localStorage.getItem('oinbox_token');
+      const token = localStorage.getItem('Oconnector_token');
       await fetch(
         `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/whatsapp/logout`,
         {
@@ -138,7 +138,7 @@ const WhatsAppManager: React.FC = () => {
 
   const handleReconnect = async () => {
     try {
-      const token = localStorage.getItem('oinbox_token');
+      const token = localStorage.getItem('Oconnector_token');
       await fetch(
         `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/whatsapp/reconnect`,
         {
@@ -208,7 +208,7 @@ const WhatsAppManager: React.FC = () => {
                   <CheckCircle size={48} className="text-green-500" />
                 </div>
                 <h4 className="text-2xl font-bold text-white">Conectado</h4>
-                <p className="text-gray-400">Instância: {status?.instanceName || 'Canal Oficial'}</p>
+                <p className="text-gray-400">Inst|ncia: {status?.instanceName || 'Canal Oficial'}</p>
                 <div className="flex gap-2">
                    <p className={`text-sm px-3 py-1 rounded-full ${connectionType === 'meta' ? 'bg-blue-400/10 text-blue-400' : 'bg-green-400/10 text-green-400'}`}>
                     {connectionType === 'meta' ? 'WhatsApp Cloud API (Meta)' : 'Evolution API (QRCode)'}
@@ -276,7 +276,7 @@ const WhatsAppManager: React.FC = () => {
               <li>
                 Toque em <strong>Conectar um aparelho</strong>
               </li>
-              <li>Aponte a câmera para o QR Code ao lado</li>
+              <li>Aponte a c|mera para o QR Code ao lado</li>
             </ol>
 
             <div className="mt-6 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">

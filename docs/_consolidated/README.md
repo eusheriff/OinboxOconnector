@@ -1,6 +1,6 @@
-# Documentação Consolidada - Oinbox
+# Documentação Consolidada - Oconnector
 
-Este diretório centraliza todo o conhecimento técnico e operacional do projeto Oinbox.
+Este diretório centraliza todo o conhecimento técnico e operacional do projeto Oconnector.
 
 ## Estrutura
 

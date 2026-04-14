@@ -1,6 +1,6 @@
 /**
  * NormalizerService - Padroniza mensagens de todos os canais sociais
- * para o formato unificado do Oinbox Inbox.
+ * para o formato unificado do Oconnector Inbox.
  *
  * Canais suportados:
  * - Facebook Messenger

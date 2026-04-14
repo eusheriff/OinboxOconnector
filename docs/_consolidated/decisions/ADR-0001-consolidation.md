@@ -2,7 +2,7 @@
 
 **Data**: 2026-01-17  
 **Status**: Aceito  
-**Contexto**: O projeto OInbox cresceu e apresenta divergências entre definições de tipos no Frontend e Backend, além de documentação dispersa.
+**Contexto**: O projeto Oconnector cresceu e apresenta divergências entre definições de tipos no Frontend e Backend, além de documentação dispersa.
 
 ## Decisão
 

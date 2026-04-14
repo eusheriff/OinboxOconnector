@@ -9,7 +9,7 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const THEME_KEY = 'oinbox_theme';
+const THEME_KEY = 'Oconnector_theme';
 
 const getInitialTheme = (): Theme => {
   try {

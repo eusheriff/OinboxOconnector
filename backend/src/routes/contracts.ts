@@ -41,7 +41,7 @@ contracts.post('/generate', async (c) => {
       contract_id: contractId,
       preview_html: html,
       status: 'Draft',
-      action_url: `https://app.oinbox.com.br/contracts/${contractId}/sign`, // Mock URL
+      action_url: `https://app.Oconnector.com.br/contracts/${contractId}/sign`, // Mock URL
     });
   } catch (e: any) {
     console.error('Contract Generation Error:', e);

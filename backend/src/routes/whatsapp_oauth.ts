@@ -6,11 +6,11 @@ import { createDatadogLogger } from '../utils/datadog';
 const whatsappOauth = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // Rota 1: Gerar URL de Login do Facebook (Embedded Signup)
-// Essa rota precisa ser autenticada (Oinbox tenant ativo)
+// Essa rota precisa ser autenticada (Oconnector tenant ativo)
 whatsappOauth.get('/login', authMiddleware, async (c) => {
   const env = c.env;
   const appId = env.META_APP_ID;
-  const redirectUri = `${env.PUBLIC_WORKER_URL || 'https://api.oinbox.oconnector.tech'}/api/whatsapp-oauth/callback`;
+  const redirectUri = `${env.PUBLIC_WORKER_URL || 'https://api.Oconnector.oconnector.tech'}/api/whatsapp-oauth/callback`;
   const tenantId = c.get('user')?.tenantId;
 
   if (!appId) {
@@ -49,7 +49,7 @@ whatsappOauth.get('/callback', async (c) => {
   }
 
   if (!code || !stateStr) {
-    return c.html('<h1>Erro: Faltam parâmetros de OAuth (code ou state)</h1>', 400);
+    return c.html('<h1>Erro: Faltam par|metros de OAuth (code ou state)</h1>', 400);
   }
 
   let stateParsed;
@@ -66,7 +66,7 @@ whatsappOauth.get('/callback', async (c) => {
     const tokenUrl = new URL('https://graph.facebook.com/v21.0/oauth/access_token');
     tokenUrl.searchParams.append('client_id', env.META_APP_ID || '');
     tokenUrl.searchParams.append('client_secret', env.META_APP_SECRET || '');
-    tokenUrl.searchParams.append('redirect_uri', `${env.PUBLIC_WORKER_URL || 'https://api.oinbox.oconnector.tech'}/api/whatsapp-oauth/callback`);
+    tokenUrl.searchParams.append('redirect_uri', `${env.PUBLIC_WORKER_URL || 'https://api.Oconnector.oconnector.tech'}/api/whatsapp-oauth/callback`);
     tokenUrl.searchParams.append('code', code);
 
     const tokenResponse = await fetch(tokenUrl.toString(), { method: 'GET' });
@@ -114,7 +114,7 @@ whatsappOauth.get('/callback', async (c) => {
       <html>
         <body>
           <h1>Conexão Recebida com Sucesso!</h1>
-          <p>O Oinbox vinculou seu token de acesso. Volte para a plataforma para selecionar o telefone de atendimento.</p>
+          <p>O Oconnector vinculou seu token de acesso. Volte para a plataforma para selecionar o telefone de atendimento.</p>
           <script>
             setTimeout(() => { window.close(); }, 3000);
           </script>
@@ -169,7 +169,7 @@ whatsappOauth.get('/webhook', async (c) => {
   const challenge = c.req.query('hub.challenge');
 
   // Adicione META_WEBHOOK_VERIFY_TOKEN no seu .env futuramente
-  const verifyToken = c.env.META_WEBHOOK_VERIFY_TOKEN || 'oinbox_meta_webhook_secret';
+  const verifyToken = c.env.META_WEBHOOK_VERIFY_TOKEN || 'Oconnector_meta_webhook_secret';
 
   if (mode === 'subscribe' && token === verifyToken) {
     return c.text(challenge || '', 200);
@@ -213,7 +213,7 @@ whatsappOauth.post('/webhook', async (c) => {
           ).bind(`%"phone_number_id":"${metadataPhoneId}"%`).first<{tenant_id: string}>();
 
           if (!channel) {
-             await logger?.warn(`[Meta Webhook] Recebida mensagem para phone_id ${metadataPhoneId} desconhecido no Oinbox.`);
+             await logger?.warn(`[Meta Webhook] Recebida mensagem para phone_id ${metadataPhoneId} desconhecido no Oconnector.`);
              continue;
           }
 

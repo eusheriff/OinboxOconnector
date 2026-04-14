@@ -38,7 +38,7 @@ const FeatureManager: React.FC = () => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/admin/feature-flags`,
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem('oinbox_token')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('Oconnector_token')}` },
         },
       );
       if (!response.ok) {
@@ -68,7 +68,7 @@ const FeatureManager: React.FC = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('oinbox_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('Oconnector_token')}`,
           },
           body: JSON.stringify(flag),
         },
@@ -88,7 +88,7 @@ const FeatureManager: React.FC = () => {
         `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/admin/feature-flags/${key}`,
         {
           method: 'DELETE',
-          headers: { Authorization: `Bearer ${localStorage.getItem('oinbox_token')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('Oconnector_token')}` },
         },
       );
       fetchFlags();

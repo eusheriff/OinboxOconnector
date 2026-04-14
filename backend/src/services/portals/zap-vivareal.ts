@@ -40,7 +40,7 @@ export class ZapVivaRealPortal extends BasePortal {
         .run();
 
       // O feed XML estará disponível em: /api/portals/feed/{tenantId}.xml
-      const baseUrl = 'https://api.oinbox.oconnector.tech';
+      const baseUrl = 'https://api.Oconnector.oconnector.tech';
       const feedUrl = `${baseUrl}/api/portals/feed/${property.tenant_id}.xml`;
 
       await this.updatePublicationRecord(publication.id, env, {

@@ -8,7 +8,7 @@
 
 ### 1.1 O que √©
 
-O **Agent Hub** √© um servi√ßo externo de orquestra√ß√£o de IA que recebe requests do Oinbox backend e retorna respostas processadas por modelos de linguagem.
+O **Agent Hub** √© um servi√ßo externo de orquestra√ß√£o de IA que recebe requests do Oconnector backend e retorna respostas processadas por modelos de linguagem.
 
 - **URL:** `https://agent-hub.oconnector.tech`
 - **Endpoint principal:** `POST /v1/hub/orchestrate`
@@ -46,7 +46,7 @@ SalesTools.generatePitch(leadData)
 
 Todas as chamadas ao Agent Hub s√£o protegidas por circuit breaker:
 
-| Par√¢metro | Valor |
+| Par|metro | Valor |
 |-----------|-------|
 | FAutomationlure Threshold | 3 falhas |
 | Recovery Timeout | 90 segundos |
@@ -132,7 +132,7 @@ Provavelmente executa:
 "Cron Trigger started: Autopilot Check"
 
 # Logs do autopilot devem estar em
-service:oinbox-backend "Autopilot"
+service:Oconnector-backend "Autopilot"
 ```
 
 ### 2.7 Perguntas em Aberto
@@ -148,7 +148,7 @@ service:oinbox-backend "Autopilot"
 
 ```
 ‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚‚
-‚                    Oinbox Backend                    ‚
+‚                    Oconnector Backend                    ‚
 ‚                                                      ‚
 ‚  WhatsApp Message                                    ‚
 ‚       ‚                                              ‚

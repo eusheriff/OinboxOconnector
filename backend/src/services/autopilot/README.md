@@ -122,11 +122,11 @@ O scheduler **não envia mensagens fora do horário comercial** (9h-19h):
 
 ```bash
 # Ver leads qualificados sem campanha
-wrangler d1 execute oinbox-db --local --command \
+wrangler d1 execute Oconnector-db --local --command \
   "SELECT l.id, l.name, l.status FROM leads l LEFT JOIN campaign_leads cl ON l.id = cl.lead_id WHERE l.status = 'qualified' AND cl.id IS NULL;"
 
 # Ver ações pendentes
-wrangler d1 execute oinbox-db --local --command \
+wrangler d1 execute Oconnector-db --local --command \
   "SELECT cl.*, l.name FROM campaign_leads cl JOIN leads l ON cl.lead_id = l.id WHERE cl.status IN ('pending', 'active') AND cl.next_action_at <= CURRENT_TIMESTAMP;"
 
 # Rodar o scheduler manualmente

@@ -22,7 +22,7 @@ const SubscriptionManager: React.FC = () => {
       const response = await fetch(
         `${import.meta.env.VITE_API_URL || 'http://localhost:8787'}/api/billing/plans`,
         {
-          headers: { Authorization: `Bearer ${localStorage.getItem('oinbox_token')}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem('Oconnector_token')}` },
         },
       );
       const data = (await response.json()) as Plan[] | { error?: string };
@@ -42,7 +42,7 @@ const SubscriptionManager: React.FC = () => {
         {
           method: 'POST',
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('oinbox_token')}`,
+            Authorization: `Bearer ${localStorage.getItem('Oconnector_token')}`,
             'Content-Type': 'application/json',
           },
         },
