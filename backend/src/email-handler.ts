@@ -9,7 +9,7 @@ interface EmailMessage {
   raw: ReadableStream;
 }
 
-export async function handleEmail(message: EmailMessage, env: Bindings, ctx: ExecutionContext) {
+export async function handleEmail(message: EmailMessage, env: Bindings, _ctx: ExecutionContext) {
   const parser = new PostalMime();
   const email = await parser.parse(message.raw);
   const logger = createDatadogLogger(env);

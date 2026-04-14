@@ -19,8 +19,6 @@ export function channelWebhookAuth(
   channelRepo: ChannelRepository,
 ): MiddlewareHandler<{ Bindings: Bindings; Variables: Variables }> {
   return async (c, next) => {
-    const path = c.req.path;
-
     // Extrair channel_id da URL ou query params
     // Ex: /api/channels/facebook/webhook?channel_id=xxx
     const channelId = c.req.query('channel_id') || c.req.param('channelId');

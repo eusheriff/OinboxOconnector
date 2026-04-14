@@ -1,6 +1,5 @@
 import { Context, Next } from 'hono';
 import { jwtVerify } from 'jose';
-import { HTTPException } from 'hono/http-exception';
 import { Bindings, Variables } from '../bindings';
 
 export const authMiddleware = async (

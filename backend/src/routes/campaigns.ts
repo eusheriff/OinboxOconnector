@@ -1,11 +1,9 @@
 import { Hono } from 'hono';
 import { Bindings, Variables } from '../bindings';
-import { authMiddleware } from '../middleware/auth';
 
 const campaigns = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // Auth já é aplicado globalmente em index.ts
-// campaigns.use('*', authMiddleware);
 
 // Types matching DB Migration 0014
 interface Campaign {

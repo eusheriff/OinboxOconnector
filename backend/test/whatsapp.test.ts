@@ -3,13 +3,25 @@ import whatsapp from '../src/routes/whatsapp';
 import { createMockDB, createMockEnv } from './utils/mockEnv';
 
 // Mocks de Serviços Externos
-vi.mock('../src/services/agentService', () => ({
-  runAgent: vi.fn(),
-}));
+vi.mock('../src/services/salesTools', () => {
+  const SalesTools = vi.fn();
+  SalesTools.prototype.analyzeIntention = vi.fn().mockResolvedValue({
+    intent: 'OTHER',
+    suggested_reply: '',
+    confidence: 1,
+  });
+  return { SalesTools };
+});
 
 vi.mock('../src/services/whatsappService', () => ({
   sendWhatsAppMessage: vi.fn().mockResolvedValue({ status: 'sent' }),
 }));
+
+// Mock global fetch to avoid real calls
+global.fetch = vi.fn().mockResolvedValue({
+  ok: true,
+  json: async () => ({ result: { response: 'Recebemos sua mensagem! Um de nossos consultores irá responder em breve.' } }),
+});
 
 vi.mock('../src/utils/datadog', () => ({
   createDatadogLogger: vi.fn().mockReturnValue({
@@ -29,41 +41,27 @@ describe('WhatsApp Webhook', () => {
     mockDB = createMockDB();
     mockEnv = createMockEnv(mockDB);
 
-    // Import mocks dynamically to reset/access them
-    const whatsappService = await import('../src/services/whatsappService');
-    sendMsgMock = whatsappService.sendWhatsAppMessage;
-  });
-
-  it('should process inbound message, save to DB, and trigger Agent', async () => {
-    // Setup: User exists for tenant identification
-    mockDB._mocks.firstMock.mockResolvedValue({ tenant_id: 'tenant-123' });
-
-    // Setup: No assigned lead (Agent should reply)
-    // First query is for User/Tenant lookup (mocked above)
-    // Second query is logic to check if Lead is assigned. Return null/empty.
-    // The Webhook handler calls DB.prepare multiple times.
-    // 1. User lookup (to get tenant)
-    // 2. Insert Message
-    // 3. Lead lookup (Human Handover check) ... this is .first()
-    // 4. History lookup ... this is .all()
-    // 5. Knowledge/Context ... this is .all()
-
-    // We need to carefully mock responses in sequence or be generic
-    // Using runMock for Insert is fine (default mock returns success)
-
-    // Sequence of .first() calls:
-    // 1. User lookup -> { tenant_id: 'tenant-123' }
-    // 2. Lead lookup -> null (no lead assigned, or lead not found)
+    // Sequence of .first() calls in whatsapp.ts (REFRESHED):
+    // 1. repo.findLeadByPhone(...) -> lead
+    // 2. repo.getOrCreateOmniConversation(...) -> calls getConversation() -> conversation
     mockDB._mocks.firstMock
-      .mockResolvedValueOnce({ tenant_id: 'tenant-123' })
-      .mockResolvedValueOnce(null);
+      .mockResolvedValueOnce(null) // 1. Lead lookup (returns null)
+      .mockResolvedValueOnce({ id: 'conv-123', status: 'bot' }); // 2. Conversation lookup
 
     // Sequence of .all() calls:
     // 1. History -> []
     // 2. Knowledge -> [{ content: 'Context' }]
     mockDB._mocks.allMock
       .mockResolvedValueOnce({ results: [] })
-      .mockResolvedValueOnce({ results: [{ content: 'Empresa XPTO' }] });
+      .mockResolvedValueOnce({ results: [{ content: 'Empresa Oconnector' }] });
+
+    // Import mocks dynamically to reset/access them
+    const whatsappService = await import('../src/services/whatsappService');
+    sendMsgMock = whatsappService.sendWhatsAppMessage;
+  });
+
+  it('should process inbound message, save to DB, and trigger Agent', async () => {
+    // Sequence is now handled in beforeEach
 
     const payload = {
       instance: 'tenant_tenant-123',

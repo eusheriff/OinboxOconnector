@@ -1,8 +1,6 @@
 import { Hono } from 'hono';
-import { authMiddleware } from '../middleware/auth';
 import { Bindings, Variables } from '../bindings';
 import {
-  checkAndIncrementRateLimit,
   getRateLimitStatus,
   cleanupOldRateLimits,
 } from '../utils/aiRateLimiter';
@@ -110,7 +108,6 @@ automationRoutes.post('/knowledge', async (c) => {
 automationRoutes.post('/generate', async (c) => {
   const user = c.get('user');
   const { prompt, context, systemPrompt } = await c.req.json();
-  const logger = c.get('logger');
 
   // 1. Buscar contexto na base de conhecimento (RAG simples)
   const { results } = await c.env.DB.prepare(

@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import Stripe from 'stripe';
 import { Bindings, Variables } from '../bindings';
-import { authMiddleware, requireRole } from '../middleware/auth';
+import { requireRole } from '../middleware/auth';
 import { sendEmail } from '../utils/email';
 import { PLANS } from '../config/plans';
 
@@ -64,7 +64,7 @@ billing.post('/webhook', async (c) => {
         await sendEmail(
           env,
           user.email,
-          'Pagamento Confirmado! â',
+          'Pagamento Confirmado! ï¿½',
           '<h1>Plano ' +
             planName +
             ' Ativo!</h1>' +

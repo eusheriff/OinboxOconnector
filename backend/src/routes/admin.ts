@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import bcrypt from 'bcryptjs';
 import { Bindings, Variables } from '../bindings';
-import { authMiddleware, superAuthMiddleware } from '../middleware/auth';
+import { superAuthMiddleware } from '../middleware/auth';
 import { generateImpersonationJWT } from '../services/tokenService';
 
 const admin = new Hono<{ Bindings: Bindings; Variables: Variables }>();
@@ -278,7 +278,7 @@ admin.post('/test-automation-connection', async (c) => {
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: "Ping? Responda apenas 'Pong â'" }],
+        messages: [{ role: 'user', content: "Ping? Responda apenas 'Pong ï¿½'" }],
         max_tokens: 10,
       }),
     });

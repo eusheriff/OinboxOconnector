@@ -6,25 +6,14 @@
 /Volumes/LexarAPFS/Oinbox/oinbox/backend/scripts/setup-stripe.ts
   112:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
-/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/email-handler.ts
-  12:73  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
-
-/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/middleware/auth.ts
-  3:10  warning  'HTTPException' is defined but never used  @typescript-eslint/no-unused-vars
-
 /Volumes/LexarAPFS/Oinbox/oinbox/backend/src/middleware/channelWebhookAuth.ts
   22:11  warning  'path' is assigned a value but never used  @typescript-eslint/no-unused-vars
 
 /Volumes/LexarAPFS/Oinbox/oinbox/backend/src/middleware/logging.ts
   34:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
-/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/admin.ts
-  4:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
-
 /Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/automation.ts
-    2:10  warning  'authMiddleware' is defined but never used              @typescript-eslint/no-unused-vars
-    5:3   warning  'checkAndIncrementRateLimit' is defined but never used  @typescript-eslint/no-unused-vars
-  113:9   warning  'logger' is assigned a value but never used             @typescript-eslint/no-unused-vars
+  3:9  warning  Replace `⏎··getRateLimitStatus,⏎··cleanupOldRateLimits,⏎` with `·getRateLimitStatus,·cleanupOldRateLimits·`  prettier/prettier
 
 /Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/billing.ts
     4:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
@@ -259,28 +248,17 @@
   87:66  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
 
 /Volumes/LexarAPFS/Oinbox/oinbox/backend/test/whatsapp.test.ts
-   25:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
-   83:67  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
-  122:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   23:23  warning  Replace `·result:·{·response:·'Recebemos·sua·mensagem!·Um·de·nossos·consultores·irá·responder·em·breve.'·}` with `⏎····result:·{⏎······response:·'Recebemos·sua·mensagem!·Um·de·nossos·consultores·irá·responder·em·breve.',⏎····},⏎·`  prettier/prettier
+   37:20  warning  Unexpected any. Specify a different type                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+   81:67  warning  Unexpected any. Specify a different type                                                                                                                                                                                                @typescript-eslint/no-explicit-any
+  120:55  warning  Unexpected any. Specify a different type                                                                                                                                                                                                @typescript-eslint/no-explicit-any
 
 /Volumes/LexarAPFS/Oinbox/oinbox/docs/app/[[...slug]]/page.tsx
-  12:33  error  Parsing error: ',' expected
+   7:37  warning  Replace `⏎··params,⏎}:·{⏎··params:·Promise<{·slug?:·string[]·}>;⏎` with `·params·}:·{·params:·Promise<{·slug?:·string[]·}>·`                                                                                   prettier/prettier
+  23:16  warning  Replace `⏎········toc={page.data.toc}⏎········full={page.data.full}⏎········tableOfContent={{·style:·'clerk'·}}⏎······` with `·toc={page.data.toc}·full={page.data.full}·tableOfContent={{·style:·'clerk'·}}`  prettier/prettier
 
 /Volumes/LexarAPFS/Oinbox/oinbox/docs/app/layout.tsx
   4:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
-
-/Volumes/LexarAPFS/Oinbox/oinbox/public/sw.js
-  13:1   error  'self' is not defined    no-undef
-  15:5   error  'caches' is not defined  no-undef
-  19:3   error  'self' is not defined    no-undef
-  23:1   error  'self' is not defined    no-undef
-  25:5   error  'caches' is not defined  no-undef
-  26:80  error  'caches' is not defined  no-undef
-  29:3   error  'self' is not defined    no-undef
-  33:1   error  'self' is not defined    no-undef
-  41:5   error  'fetch' is not defined   no-undef
-  46:11  error  'caches' is not defined  no-undef
-  54:16  error  'caches' is not defined  no-undef
 
 /Volumes/LexarAPFS/Oinbox/oinbox/shared/types/index.ts
   324:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
@@ -292,8 +270,6 @@
 
 /Volumes/LexarAPFS/Oinbox/oinbox/src/App.tsx
   30:9  warning  'location' is assigned a value but never used  @typescript-eslint/no-unused-vars
-  46:5  error    Unnecessary try/catch wrapper                  no-useless-catch
-  63:5  error    Unnecessary try/catch wrapper                  no-useless-catch
 
 /Volumes/LexarAPFS/Oinbox/oinbox/src/components/Admin/CampaignManager.tsx
     9:3   warning  'MessageSquare' is defined but never used  @typescript-eslint/no-unused-vars
@@ -502,10 +478,6 @@
   560:40  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
   575:40  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
 
-✖ 323 problems (14 errors, 309 warnings)
+✖ 307 problems (0 errors, 307 warnings)
+  0 errors and 4 warnings potentially fixable with the `--fix` option.
 
-npm notice
-npm notice New major version of npm available! 10.9.2 -> 11.12.1
-npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
-npm notice To update run: npm install -g npm@11.12.1
-npm notice
