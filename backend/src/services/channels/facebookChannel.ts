@@ -2,11 +2,11 @@
  * FacebookChannelService - Facebook Messenger OAuth + Webhook
  *
  * Fluxo:
- * 1. User clica "Conectar Facebook" â†’ gera OAuth URL
- * 2. Callback recebe code â†’ troca por page access token
+ * 1. User clica "Conectar Facebook" â gera OAuth URL
+ * 2. Callback recebe code â troca por page access token
  * 3. Salva token + page_id no D1
  * 4. Registra webhook na Graph API
- * 5. Webhook recebe mensagens â†’ NormalizerService â†’ Inbox
+ * 5. Webhook recebe mensagens â NormalizerService â Inbox
  */
 
 import { HonoContext } from '../../bindings';
@@ -50,7 +50,7 @@ export class FacebookChannelService {
 
   /**
    * Troca authorization code por page access token
-   * Fluxo: code â†’ short-lived token â†’ long-lived token â†’ page token
+   * Fluxo: code â short-lived token â long-lived token â page token
    */
   async exchangeCodeForPageToken(
     code: string,

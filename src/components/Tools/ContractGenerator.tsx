@@ -178,13 +178,13 @@ const ContractGenerator: React.FC = () => {
                   CONTRATO PARTICULAR DE{' '}
                   {contractType === 'sale'
                     ? 'COMPROMISSO DE COMPRA E VENDA'
-                    : 'LOCA√á√ÉO RESIDENCIAL'}
+                    : 'LOCA√√O RESIDENCIAL'}
                 </p>
                 <p className="mb-2">
                   <strong>VENDEDOR/LOCADOR:</strong> Euimob Im√≥veis Ltda, CNPJ 00.000.000/0001-00...
                 </p>
                 <p className="mb-2">
-                  <strong>COMPRADOR/LOCAT√ÅRIO:</strong> {selectedClient?.name.toUpperCase()},
+                  <strong>COMPRADOR/LOCAT√RIO:</strong> {selectedClient?.name.toUpperCase()},
                   portador do email {selectedClient?.email}...
                 </p>
                 <p className="mb-2">

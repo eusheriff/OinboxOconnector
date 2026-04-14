@@ -92,7 +92,7 @@ export const QualificationView: React.FC = () => {
         </h1>
         <p className="text-muted-foreground mt-2 flex items-center gap-2">
           <Sparkles className="w-4 h-4" />
-          Powered by Gemini 2.0 Flash - Análise automática de cada lead
+          Powered by Automation 2.0 Flash - Análise automática de cada lead
         </p>
       </header>
 
@@ -110,7 +110,7 @@ export const QualificationView: React.FC = () => {
           <div className="text-3xl font-bold text-green-500">
             {loading ? '...' : qualifiedLeads.length}
           </div>
-          <div className="text-xs text-muted-foreground mt-1">Aprovados pela IA (score ≥ 50)</div>
+          <div className="text-xs text-muted-foreground mt-1">Aprovados pela IA (score � 50)</div>
         </div>
         <div className="bg-card border border-border rounded-xl p-6">
           <div className="text-sm text-muted-foreground">Score Médio</div>
@@ -144,11 +144,11 @@ export const QualificationView: React.FC = () => {
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                Rating ≥ 4.0 (+20 pts) - negócio bem avaliado
+                Rating � 4.0 (+20 pts) - negócio bem avaliado
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-500" />
-                Reviews ≥ 50 (+25 pts) ou ≥ 20 (+15 pts)
+                Reviews � 50 (+25 pts) ou � 20 (+15 pts)
               </li>
               <li className="flex items-center gap-2">
                 <CheckCircle className="w-4 h-4 text-green-500" />

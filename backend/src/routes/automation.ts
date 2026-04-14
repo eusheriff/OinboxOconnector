@@ -6,12 +6,12 @@ import {
   getRateLimitStatus,
   cleanupOldRateLimits,
 } from '../utils/aiRateLimiter';
-import { callGemma } from '../services/aiService';
+import { callGemma } from '../services/automationService';
 
-const aiRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
+const automationRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
 // PUBLIC ENDPOINT para chatbot da landing page (sem autenticação)
-aiRoutes.post('/public-chat', async (c) => {
+automationRoutes.post('/public-chat', async (c) => {
   const startTime = Date.now();
   const logger = c.get('logger');
 
@@ -39,22 +39,22 @@ aiRoutes.post('/public-chat', async (c) => {
       '\n\nPergunta do usuário: ' +
       prompt;
 
-    // 3. Chamar Gemma 4 via Ollama
-    const ollamaUrl = c.env.OLLAMA_URL || 'http://localhost:11434';
-    const response = await callGemma(ollamaUrl, fullPrompt);
+    // 3. Chamar Gemma 4 via Engine
+    const EngineUrl = c.env.LOCAL_ENGINE_URL || 'http://localhost:11434';
+    const response = await callGemma(EngineUrl, fullPrompt);
 
     const duration = Date.now() - startTime;
 
     await logger?.info('Public chat request completed', {
       session_id,
-      provider: 'ollama',
+      provider: 'Engine',
       model: 'gemma4:e2b',
       duration_ms: duration,
       response_length: response.length,
     });
 
-    await logger?.metric('oinbox.ai.public_chat.duration', duration, ['provider:ollama']);
-    await logger?.metric('oinbox.ai.public_chat.success', 1, ['provider:ollama']);
+    await logger?.metric('oinbox.ai.public_chat.duration', duration, ['provider:Engine']);
+    await logger?.metric('oinbox.ai.public_chat.success', 1, ['provider:Engine']);
 
     return c.json({ text: response });
   } catch (error: unknown) {
@@ -75,16 +75,16 @@ aiRoutes.post('/public-chat', async (c) => {
   }
 });
 
-// aiRoutes.use('*', authMiddleware); // Auth global
+// automationRoutes.use('*', authMiddleware); // Auth global
 
 // Endpoint para verificar status dos limites
-aiRoutes.get('/limits', async (c) => {
+automationRoutes.get('/limits', async (c) => {
   const user = c.get('user');
   const status = await getRateLimitStatus(c.env.DB, user.tenantId);
   return c.json(status);
 });
 
-aiRoutes.get('/knowledge', async (c) => {
+automationRoutes.get('/knowledge', async (c) => {
   const user = c.get('user');
   const { results } = await c.env.DB.prepare(
     'SELECT * FROM knowledge_base WHERE tenant_id = ? ORDER BY created_at DESC',
@@ -94,7 +94,7 @@ aiRoutes.get('/knowledge', async (c) => {
   return c.json(results);
 });
 
-aiRoutes.post('/knowledge', async (c) => {
+automationRoutes.post('/knowledge', async (c) => {
   const user = c.get('user');
   const { content, category } = await c.req.json();
 
@@ -107,7 +107,7 @@ aiRoutes.post('/knowledge', async (c) => {
   return c.json({ success: true });
 });
 
-aiRoutes.post('/generate', async (c) => {
+automationRoutes.post('/generate', async (c) => {
   const user = c.get('user');
   const { prompt, context, systemPrompt } = await c.req.json();
   const logger = c.get('logger');
@@ -129,20 +129,20 @@ aiRoutes.post('/generate', async (c) => {
   const fullPrompt =
     'Contexto da conversa: ' + JSON.stringify(context || {}) + '\n\n' + 'Usuário: ' + prompt;
 
-  // 2. Chamar Gemma 4 via Ollama
-  const ollamaUrl = c.env.OLLAMA_URL || 'http://localhost:11434';
-  const response = await callGemma(ollamaUrl, fullPrompt, fullSystemPrompt);
+  // 2. Chamar Gemma 4 via Engine
+  const EngineUrl = c.env.LOCAL_ENGINE_URL || 'http://localhost:11434';
+  const response = await callGemma(EngineUrl, fullPrompt, fullSystemPrompt);
 
   return c.json({
     text: response,
     _meta: {
       model: 'gemma4:e2b',
-      provider: 'ollama',
+      provider: 'Engine',
     },
   });
 });
 
-aiRoutes.post('/chat', async (c) => {
+automationRoutes.post('/chat', async (c) => {
   const user = c.get('user');
   const { message, history } = await c.req.json();
   const logger = c.get('logger');
@@ -161,9 +161,9 @@ aiRoutes.post('/chat', async (c) => {
 
     const fullPrompt = message + '\n\nHistórico: ' + JSON.stringify(history || []);
 
-    // Chamar Gemma 4 via Ollama
-    const ollamaUrl = c.env.OLLAMA_URL || 'http://localhost:11434';
-    const reply = await callGemma(ollamaUrl, fullPrompt, systemPrompt);
+    // Chamar Gemma 4 via Engine
+    const EngineUrl = c.env.LOCAL_ENGINE_URL || 'http://localhost:11434';
+    const reply = await callGemma(EngineUrl, fullPrompt, systemPrompt);
 
     if (!reply) {
       return c.json({ error: 'Não consegui processar sua solicitação.' }, 500);
@@ -171,7 +171,7 @@ aiRoutes.post('/chat', async (c) => {
 
     return c.json({
       reply,
-      _meta: { model: 'gemma4:e2b', provider: 'ollama' },
+      _meta: { model: 'gemma4:e2b', provider: 'Engine' },
     });
   } catch (e) {
     logger?.error('AI Chat Error', { error: e });
@@ -180,9 +180,9 @@ aiRoutes.post('/chat', async (c) => {
 });
 
 // Endpoint para cleanup (pode ser chamado por cron)
-aiRoutes.post('/cleanup', async (c) => {
+automationRoutes.post('/cleanup', async (c) => {
   const deleted = await cleanupOldRateLimits(c.env.DB);
   return c.json({ deleted, message: `Cleaned up ${deleted} old rate limit records` });
 });
 
-export { aiRoutes };
+export { automationRoutes };

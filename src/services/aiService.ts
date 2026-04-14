@@ -28,11 +28,11 @@ export interface ImageAnalysisResult {
 
 export type Tone = 'formal' | 'friendly';
 
-export type AIProvider = 'openai' | 'ollama';
+export type AIProvider = 'Engine' | 'Engine';
 
-export interface OpenAIConfig {
+export interface EngineConfig {
   provider: AIProvider;
-  ollamaBaseUrl: string;
+  EngineBaseUrl: string;
   selectedModel: string;
   visionModel: string;
 }
@@ -59,7 +59,7 @@ export class AIError extends Error {
 
 // === Configuração de IA ===
 
-const getAIConfig = (): OpenAIConfig => {
+const getAIConfig = (): EngineConfig => {
   const stored = localStorage.getItem('oconnector_ai_config');
   if (stored) {
     try {
@@ -69,10 +69,10 @@ const getAIConfig = (): OpenAIConfig => {
     }
   }
 
-  // Default: Ollama com Gemma 4
+  // Default: Engine com Gemma 4
   return {
-    provider: 'ollama',
-    ollamaBaseUrl: 'http://localhost:11434',
+    provider: 'Engine',
+    EngineBaseUrl: 'http://localhost:11434',
     selectedModel: 'gemma4:e2b',
     visionModel: 'gemma4:e2b',
   };
@@ -130,7 +130,7 @@ const callBackendAI = async (
   }
 };
 
-const callOllamaAPI = async (
+const callEngineAPI = async (
   model: string,
   prompt: string,
   imageBase64?: string,
@@ -146,7 +146,7 @@ const callOllamaAPI = async (
       messages[0].images = [imageBase64];
     }
 
-    const response = await fetch(`${config.ollamaBaseUrl}/api/chat`, {
+    const response = await fetch(`${config.EngineBaseUrl}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -159,8 +159,8 @@ const callOllamaAPI = async (
 
     if (!response.ok) {
       throw new AIError(
-        `Falha ao conectar com Ollama: ${response.status}`,
-        'OLLAMA_ERROR',
+        `Falha ao conectar com Engine: ${response.status}`,
+        'Engine_ERROR',
         response.status >= 500,
       );
     }
@@ -169,7 +169,7 @@ const callOllamaAPI = async (
     const content = data.message?.content;
 
     if (!content) {
-      throw new AIError('Resposta vazia do Ollama', 'OLLAMA_EMPTY', false);
+      throw new AIError('Resposta vazia do Engine', 'Engine_EMPTY', false);
     }
 
     return content;
@@ -180,13 +180,13 @@ const callOllamaAPI = async (
 
     if (error instanceof TypeError && error.message.includes('fetch')) {
       throw new AIError(
-        'Não foi possível conectar com o Ollama local. Verifique se o serviço está rodando.',
-        'OLLAMA_NETWORK_ERROR',
+        'Não foi possível conectar com o Engine local. Verifique se o serviço está rodando.',
+        'Engine_NETWORK_ERROR',
         true,
       );
     }
 
-    throw new AIError('Erro inesperado ao chamar Ollama', 'UNEXPECTED_ERROR', false);
+    throw new AIError('Erro inesperado ao chamar Engine', 'UNEXPECTED_ERROR', false);
   }
 };
 
@@ -229,8 +229,8 @@ export const analyzePropertyImage = async (file: File): Promise<ImageAnalysisRes
   `;
 
   try {
-    if (config.provider === 'ollama') {
-      const text = await callOllamaAPI(config.visionModel || 'qwen3-vl:8b', prompt, base64, true);
+    if (config.provider === 'Engine') {
+      const text = await callEngineAPI(config.visionModel || 'qwen3-vl:8b', prompt, base64, true);
       return parseJsonResponse(text) as unknown as ImageAnalysisResult;
     }
 
@@ -258,8 +258,8 @@ export const generatePropertyDescription = async (
     Máximo 300 caracteres.
   `;
 
-  if (config.provider === 'ollama') {
-    return callOllamaAPI(config.selectedModel, prompt);
+  if (config.provider === 'Engine') {
+    return callEngineAPI(config.selectedModel, prompt);
   }
 
   return callBackendAI(prompt, 'Você é um copywriter imobiliário.');
@@ -274,8 +274,8 @@ export const summarizeConversation = async (
     Conversa: ${messages.map((m) => `${m.sender}: ${m.text}`).join('\n')}
   `;
 
-  if (config.provider === 'ollama') {
-    return callOllamaAPI(config.selectedModel, prompt);
+  if (config.provider === 'Engine') {
+    return callEngineAPI(config.selectedModel, prompt);
   }
 
   return callBackendAI(prompt);
@@ -290,8 +290,8 @@ export const suggestReply = async (
   let prompt = `Aja como um corretor. Sugira resposta ${tone} e curta. Histórico: ${conversationHistory.slice(-5).join('\n')}`;
   if (propertyContext) prompt += `\nContexto Imóvel: ${propertyContext}`;
 
-  if (config.provider === 'ollama') {
-    return callOllamaAPI(config.selectedModel, prompt);
+  if (config.provider === 'Engine') {
+    return callEngineAPI(config.selectedModel, prompt);
   }
 
   return callBackendAI(prompt);
@@ -313,8 +313,8 @@ export const generateMarketingCaption = async (
     Use emojis, hashtags e uma Call to Action (CTA) no final.
   `;
 
-  if (config.provider === 'ollama') {
-    return callOllamaAPI(config.selectedModel, prompt);
+  if (config.provider === 'Engine') {
+    return callEngineAPI(config.selectedModel, prompt);
   }
 
   return callBackendAI(prompt);
@@ -332,8 +332,8 @@ export const analyzeClientProfile = async (
   try {
     let text: string;
 
-    if (config.provider === 'ollama') {
-      text = await callOllamaAPI(config.selectedModel, prompt, undefined, true);
+    if (config.provider === 'Engine') {
+      text = await callEngineAPI(config.selectedModel, prompt, undefined, true);
     } else {
       text = await callBackendAI(prompt, 'Você é um analista de dados. Retorne APENAS JSON.');
     }
@@ -367,13 +367,13 @@ export const fastAgentResponse = async (
     - Nome: ${clientName}
     - Perfil Resumido: ${profileSummary}
 
-    ÚLTIMA MENSAGEM DO CLIENTE: "${lastMessage}"
+    �LTIMA MENSAGEM DO CLIENTE: "${lastMessage}"
   `;
 
   const systemPrompt = `Você é Manú, corretora da Euimob.`;
 
-  if (config.provider === 'ollama') {
-    return callOllamaAPI(config.selectedModel, prompt);
+  if (config.provider === 'Engine') {
+    return callEngineAPI(config.selectedModel, prompt);
   }
 
   return callBackendAI(prompt, systemPrompt, sessionId);
@@ -441,8 +441,8 @@ export const askMarketExpert = async (
   const prompt = `Pergunta: ${message}`;
   const systemPrompt = `Você é um Corretor Sênior Especialista. Responda sobre mercado imobiliário com autoridade e clareza.`;
 
-  if (config.provider === 'ollama') {
-    return callOllamaAPI(config.selectedModel, prompt);
+  if (config.provider === 'Engine') {
+    return callEngineAPI(config.selectedModel, prompt);
   }
 
   return callBackendAI(prompt, systemPrompt, sessionId);

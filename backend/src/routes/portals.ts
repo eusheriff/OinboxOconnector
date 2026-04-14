@@ -229,7 +229,7 @@ portals.post('/api/:tenantId', async (c) => {
 });
 
 // ==========================================
-// ROTAS DE PUBLICA√á√ÉO EM LOTE (COM AUTH)
+// ROTAS DE PUBLICA√√O EM LOTE (COM AUTH)
 // ==========================================
 
 // Aplicar middleware de auth para todas as rotas abaixo

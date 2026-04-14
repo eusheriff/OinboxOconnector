@@ -63,7 +63,7 @@ function DraggableLeadCard({ lead }: { lead: Lead }) {
         </button>
       </div>
 
-      {lead.phone && <div className="text-xs text-gray-500 mb-2">ðŸ“ž {lead.phone}</div>}
+      {lead.phone && <div className="text-xs text-gray-500 mb-2">ð {lead.phone}</div>}
 
       {lead.score > 0 && (
         <div className="mb-3">
@@ -81,7 +81,7 @@ function DraggableLeadCard({ lead }: { lead: Lead }) {
         </div>
         {lead.rating && (
           <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded font-bold">
-            â˜… {lead.rating}
+            â {lead.rating}
           </span>
         )}
       </div>
@@ -112,7 +112,7 @@ function DroppableColumn({
           <span className="text-xs text-gray-400 font-medium">{leads.length} leads</span>
         </div>
         <div className="text-xs font-bold text-muted-foreground bg-gray-100 px-2 py-1 rounded">
-          {total > 0 ? `Score: ${total}` : 'â€”'}
+          {total > 0 ? `Score: ${total}` : 'â'}
         </div>
       </div>
 

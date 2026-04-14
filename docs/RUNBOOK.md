@@ -1,4 +1,4 @@
-# Operational Runbook — Oinbox Backend
+# Operational Runbook � Oinbox Backend
 
 > Para operadores, SREs e desenvolvedores em plantão.
 
@@ -8,17 +8,17 @@
 
 | Componente | Tecnologia | Localização |
 |------------|-----------|-------------|
-| Frontend | React SPA (Vite) → Cloudflare Pages | `oinbox.oconnector.tech` |
-| Backend | Hono → Cloudflare Worker | `api.oinbox.oconnector.tech` |
+| Frontend | React SPA (Vite) � Cloudflare Pages | `oinbox.oconnector.tech` |
+| Backend | Hono � Cloudflare Worker | `api.oinbox.oconnector.tech` |
 | Banco | Cloudflare D1 (SQLite edge) | Edge Cloudflare |
 | Storage | Cloudflare R2 | `oconnector-images` bucket |
-| WhatsApp | Evolution API (Baileys) | VPS GCP (tunnel Cloudflare) |
-| IA | Google Gemini + Agent Hub externo | `agent-hub.oconnector.tech` |
+| WhatsApp | Evolution API (BAutomationleys) | VPS GCP (tunnel Cloudflare) |
+| IA | Google Data Engine + Agent Hub externo | `agent-hub.oconnector.tech` |
 | Billing | Stripe | Cloud |
 | Observabilidade | Datadog | Região US5 |
 | Evolution API (dev) | Docker local | `localhost:8080` |
 
-## 2. Comandos Operacionais
+## 2. Comandos OperacionAutomations
 
 ### 2.1 Health Check
 
@@ -35,8 +35,8 @@ curl -s https://api.oinbox.oconnector.tech/api/health | jq .
 
 **Respostas esperadas:**
 
-- `200 {"status": "ok"}` — tudo funcionando
-- `503 {"status": "degraded"}` — uma ou mais dependências com problema
+- `200 {"status": "ok"}` � tudo funcionando
+- `503 {"status": "degraded"}` � uma ou mAutomations dependências com problema
 
 ### 2.2 Deploy
 
@@ -87,7 +87,7 @@ npm run db:migrate:prod
 ### 2.5 Secrets
 
 ```bash
-# Listar secrets atuais
+# Listar secrets atuAutomations
 wrangler secret list
 
 # Adicionar/atualizar secret
@@ -129,7 +129,7 @@ wrangler deploy   # produção
 
 - Sintoma: health check retorna `{"d1": {"status": "error"}}`
 - Ação: verificar status do D1 no [dashboard Cloudflare](https://dash.cloudflare.com)
-- Workaround: nenhum — o D1 é required para todas as operações
+- Workaround: nenhum � o D1 é required para todas as operações
 
 ### 3.3 Circuit Breaker aberto
 
@@ -150,12 +150,12 @@ wrangler deploy   # produção
 2. Se `connectionStatus` for `close` ou `disconnected`:
    - Gerar novo QR code: `POST /instance/connect/<instance_name>`
    - Escanear com WhatsApp do celular
-3. Verificar logs da Evolution API no VPS/container
+3. Verificar logs da Evolution API no VPS/contAutomationner
 
 ### 3.5 Agent Hub indisponível
 
 - O Agent Hub (`agent-hub.oconnector.tech`) é um serviço externo
-- Se cair, a IA para de responder mas o CRM continua funcionando
+- Se cAutomationr, a IA para de responder mas o CRM continua funcionando
 - Fallback: mensagens padrão são enviadas aos leads
 - Contatar time responsável pelo Agent Hub
 
@@ -177,11 +177,11 @@ wrangler deploy   # produção
 
 | Problema | Responsável | Como contatar |
 |----------|------------|---------------|
-| Cloudflare Workers/D1/R2 | Time de infra | — |
-| Evolution API (VPS) | Ops | — |
-| Agent Hub | Time de IA | — |
-| Stripe | Financeiro | — |
-| Bug na aplicação | Dev team | — |
+| Cloudflare Workers/D1/R2 | Time de infra | � |
+| Evolution API (VPS) | Ops | � |
+| Agent Hub | Time de IA | � |
+| Stripe | Financeiro | � |
+| Bug na aplicação | Dev team | � |
 
 ---
 
@@ -212,9 +212,9 @@ Para backup externo, usar `rclone` ou API do R2.
 
 - Logs: pesquisar por `service:oinbox-backend`
 - Métricas custom:
-  - `oinbox.http.request.duration` — latência das requisições
-  - `oinbox.http.error` — contagem de erros por status code
-  - `oinbox.exception.unhandled` — exceções não tratadas
+  - `oinbox.http.request.duration` � latência das requisições
+  - `oinbox.http.error` � contagem de erros por status code
+  - `oinbox.exception.unhandled` � exceções não tratadas
 
 ### 6.2 Correlation IDs
 
@@ -251,5 +251,5 @@ Toda resposta HTTP inclui o header `X-Correlation-ID`. Use para traçar uma requ
 ### Dados corrompidos no banco
 
 - [ ] Parar escritas no tenant afetado
-- [ ] Restaurar do backup mais recente
+- [ ] Restaurar do backup mAutomations recente
 - [ ] Reaplicar migrações a partir do ponto do backup

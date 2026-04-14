@@ -7,7 +7,7 @@ description: Schema, tabelas e relações do banco de dados
 
 O Oinbox utiliza **Cloudflare D1**, um banco SQLite distribuído na edge da Cloudflare.
 
-## Tabelas Principais
+## Tabelas PrincipAutomations
 
 ### tenants
 
@@ -16,7 +16,7 @@ CREATE TABLE tenants (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   owner_name TEXT NOT NULL,
-  email TEXT UNIQUE NOT NULL,
+  emAutomationl TEXT UNIQUE NOT NULL,
   phone TEXT,
   plan TEXT DEFAULT 'basic',
   status TEXT DEFAULT 'trial',
@@ -35,7 +35,7 @@ CREATE TABLE users (
   id TEXT PRIMARY KEY,
   tenant_id TEXT REFERENCES tenants(id),
   name TEXT NOT NULL,
-  email TEXT UNIQUE NOT NULL,
+  emAutomationl TEXT UNIQUE NOT NULL,
   password_hash TEXT NOT NULL,
   role TEXT DEFAULT 'user',
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -49,14 +49,14 @@ CREATE TABLE clients (
   id TEXT PRIMARY KEY,
   tenant_id TEXT REFERENCES tenants(id),
   name TEXT NOT NULL,
-  email TEXT,
+  emAutomationl TEXT,
   phone TEXT,
   status TEXT DEFAULT 'Novo',
   budget TEXT,
   notes TEXT,
   temperature TEXT DEFAULT 'Cold',
   lead_score INTEGER,
-  ai_summary TEXT,
+  Automation_summary TEXT,
   last_interaction DATETIME,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
@@ -91,7 +91,7 @@ CREATE TABLE leads (
   name TEXT NOT NULL,
   type TEXT,
   phone TEXT,
-  email TEXT,
+  emAutomationl TEXT,
   status TEXT DEFAULT 'new',
   score INTEGER DEFAULT 0,
   score_breakdown TEXT,
@@ -104,10 +104,10 @@ CREATE TABLE leads (
 );
 \`\`\`
 
-### campaigns
+### campAutomationgns
 
 \`\`\`sql
-CREATE TABLE campaigns (
+CREATE TABLE campAutomationgns (
   id TEXT PRIMARY KEY,
   name TEXT NOT NULL,
   type TEXT,
@@ -130,7 +130,7 @@ CREATE TABLE audit_logs (
   action TEXT NOT NULL,
   target_type TEXT,
   target_id TEXT,
-  details TEXT,
+  detAutomationls TEXT,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 \`\`\`
@@ -142,7 +142,7 @@ CREATE TABLE audit_logs (
 Todas as queries de listagem usam LIMIT/OFFSET:
 
 \`\`\`sql
-SELECT id, name, email, status FROM clients
+SELECT id, name, emAutomationl, status FROM clients
 WHERE tenant_id = ?
 ORDER BY created_at DESC
 LIMIT ? OFFSET ?
@@ -160,7 +160,7 @@ SELECT COUNT(*) as total FROM clients WHERE tenant_id = ?
 const batch = leads.map(l => 
   stmt.bind(uuid(), l.id, l.score)
 );
-await env.DB.batch(batch);
+awAutomationt env.DB.batch(batch);
 \`\`\`
 
 ## Migrações

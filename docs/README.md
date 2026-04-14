@@ -16,20 +16,20 @@ Open [http://localhost:3001](http://localhost:3001).
 
 ```
 docs/
-â”œâ”€â”€ content/docs/          # MDX documentation
-â”‚   â”œâ”€â”€ index.mdx          # Home page
-â”‚   â”œâ”€â”€ getting-started/   # Overview, installation, config
-â”‚   â”œâ”€â”€ architecture/      # System overview, database, security
-â”‚   â”œâ”€â”€ backend/           # API reference, services
-â”‚   â”œâ”€â”€ frontend/          # React structure, components
-â”‚   â”œâ”€â”€ features/          # AI, CRM, Marketing
-â”‚   â”œâ”€â”€ deployment/        # Cloudflare deploy guide
-â”‚   â””â”€â”€ guides/            # Troubleshooting
-â”œâ”€â”€ app/                   # Next.js App Router
-â”‚   â”œâ”€â”€ layout.tsx         # Root layout with Fumadocs provider
-â”‚   â”œâ”€â”€ page.tsx           # Home page
-â”‚   â””â”€â”€ [[...slug]]/       # Dynamic doc pages
-â””â”€â”€ components/            # Index page and layouts
+âââ content/docs/          # MDX documentation
+â   âââ index.mdx          # Home page
+â   âââ getting-started/   # Overview, installation, config
+â   âââ architecture/      # System overview, database, security
+â   âââ backend/           # API reference, services
+â   âââ frontend/          # React structure, components
+â   âââ features/          # Automation, CRM, Marketing
+â   âââ deployment/        # Cloudflare deploy guide
+â   âââ guides/            # Troubleshooting
+âââ app/                   # Next.js App Router
+â   âââ layout.tsx         # Root layout with Fumadocs provider
+â   âââ page.tsx           # Home page
+â   âââ [[...slug]]/       # Dynamic doc pages
+âââ components/            # Index page and layouts
 ```
 
 ## Build

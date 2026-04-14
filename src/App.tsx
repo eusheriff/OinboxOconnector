@@ -72,7 +72,7 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ user, setUser }) => {
 
   return (
     <Routes>
-      {/* 1. Áreas Autenticadas (Prioridade Máxima) */}
+      {/* 1. �reas Autenticadas (Prioridade Máxima) */}
       {user && (
         <>
           <Route

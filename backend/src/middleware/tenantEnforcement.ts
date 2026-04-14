@@ -10,7 +10,7 @@ import { Bindings, Variables } from '../bindings';
  * Uso nas rotas: ler c.get('user').tenantId ao invés de confiar
  * em header x-tenant-id ou parâmetros do request.
  *
- * Este middleware NÃO filtra queries automaticamente — ele garante
+ * Este middleware N�O filtra queries automaticamente � ele garante
  * que o tenant correto esteja no contexto para que as rotas o usem.
  */
 export const tenantEnforcementMiddleware = async (

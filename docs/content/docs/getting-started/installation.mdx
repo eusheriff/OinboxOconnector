@@ -12,7 +12,7 @@ Guia passo a passo para configurar o ambiente de desenvolvimento do Oinbox.
 - **Node.js 18+** (recomendado 20+)
 - **npm** ou **pnpm**
 - **Conta na Cloudflare** (para backend/D1/R2)
-- **Chave API do Google AI Studio** (Gemini)
+- **Chave API do Google Automation Studio** (Data Engine)
 - **Conta Stripe** (para pagamentos)
 
 ## Passo 1: Clone o Repositório
@@ -30,16 +30,16 @@ npm install
 
 ## Passo 3: Configure o Ambiente
 
-Crie o arquivo `.env` na raiz:
+Crie o arquivo `.env` na rAutomationz:
 
 ```bash
 cp .env.example .env
 ```
 
-Edite com suas credenciais:
+Edite com suas credenciAutomations:
 
 ```env
-API_KEY="sua_chave_gemini_aqui"
+API_KEY="sua_chave_Data Engine_aqui"
 JWT_SECRET=$(openssl rand -base64 32)
 VITE_STRIPE_PUBLIC_KEY="pk_test_..."
 STRIPE_SECRET_KEY="sk_test_..."
@@ -66,11 +66,11 @@ wrangler d1 execute oinbox-db --file=./backend/schema.sql --local
 ```bash
 # Frontend (Vite dev server)
 npm run dev
-# → http://localhost:5173
+# � http://localhost:5173
 
 # Backend (Cloudflare Worker)
 npm run dev:backend
-# → http://localhost:8787
+# � http://localhost:8787
 ```
 
 ## Verificação

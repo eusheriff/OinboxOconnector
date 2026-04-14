@@ -6,7 +6,7 @@
  * 1. User cria Channel no Line Developers Console
  * 2. Channel Secret + Access Token salvos no D1
  * 3. Webhook URL configurado no Line Console
- * 4. Webhook recebe mensagens â†’ NormalizerService â†’ Inbox
+ * 4. Webhook recebe mensagens â NormalizerService â Inbox
  */
 
 import { HonoContext } from '../../bindings';

@@ -112,7 +112,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full pl-10 pr-10 py-3 border border-border rounded-lg shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm transition-all bg-background text-foreground font-medium"
-                  placeholder="‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢"
+                  placeholder="‚¢‚¢‚¢‚¢‚¢‚¢‚¢‚¢"
                 />
                 <button
                   type="button"
@@ -175,7 +175,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
                 <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-card text-muted-foreground">√Årea do Cliente</span>
+                <span className="px-2 bg-card text-muted-foreground">√rea do Cliente</span>
               </div>
             </div>
 

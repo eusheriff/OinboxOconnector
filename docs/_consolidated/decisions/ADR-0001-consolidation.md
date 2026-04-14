@@ -21,4 +21,4 @@
 
 ## Compliance
 
-Novos desenvolvimentos devem seguir esta estrutura. PRs que introduzam tipos duplicados ou docs na raiz devem ser rejeitados.
+Novos desenvolvimentos devem seguir esta estrutura. PRs que introduzam tipos duplicados ou docs na rAutomationz devem ser rejeitados.

@@ -136,7 +136,7 @@ export async function handleEmail(message: EmailMessage, env: Bindings, ctx: Exe
       // Create Client
       await env.DB.prepare(
         `
-              INSERT INTO clients (id, tenant_id, name, email, phone, status, ai_summary)
+              INSERT INTO clients (id, tenant_id, name, email, phone, status, automation_summary)
               VALUES (?, ?, ?, ?, ?, 'Novo', ?)
           `,
       )

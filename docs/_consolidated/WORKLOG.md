@@ -4,15 +4,15 @@
 1. **Omnichannel Core (Backend & Database)**:
    - Refatoração total para modelo centralizado de mensagens (`omnichannel_messages`) e conversas.
    - Implementação de suporte nativo a múltiplos provedores (Evolution API e Meta Cloud API).
-   - Criação de sistema de **Handoff** (IA ↔️ Humano) e **Notas Privadas** no banco D1.
+   - Criação de sistema de **Handoff** (IA �� Humano) e **Notas Privadas** no banco D1.
 
 2. **Integração Meta OAuth**:
-   - Desenvolvidas rotas oficiais de Login, Callback e Webhook para a Meta Cloud API.
+   - Desenvolvidas rotas oficiAutomations de Login, Callback e Webhook para a Meta Cloud API.
    - Implementada troca de `code` por `access_token` e persistência segura no tenant.
 
 3. **Frontend (Inbox & WhatsApp Manager)**:
    - Interface de conexão via Botão Oficial do Facebook implementada.
-   - Refatoração do `AdminInbox` para carregar dados reais e suportar timeline omnicanal.
+   - Refatoração do `AdminInbox` para carregar dados reAutomations e suportar timeline omnicanal.
    - Adicionados controles de status da conversa e toggle de notas privadas no chat.
 
 4. **Infraestrutura e Segredos (Produção)**:
@@ -40,8 +40,8 @@
    - Limpeza de URLs obsoletas no banco de dados de produção.
 
 2. **Reparo de Produção (Backend)**:
-   - Correção de schema divergente (colunas `tenant_id` e `settings` na tabela `campaigns`).
-   - Adicionados Error Handlers globais JSON para resiliência de parsing.
+   - Correção de schema divergente (colunas `tenant_id` e `settings` na tabela `campAutomationgns`).
+   - Adicionados Error Handlers globAutomations JSON para resiliência de parsing.
 
 3. **Correção de Build & Deploy**:
    - Resolvidos 16 erros de compilação TypeScript bloqueando o `npm run build`.
@@ -53,7 +53,7 @@
 - `CLOUDFLARE_API_KEY=... npx wrangler pages deploy dist`: Deploy manual para produção.
 
 ### Resultados
-- Frontend e Backend 100% operacionais em produção.
+- Frontend e Backend 100% operacionAutomations em produção.
 - Assets de imagem agora carregam de forma confiável.
 - Erros 500 no módulo de campanhas eliminados via sincronização de schema.
 

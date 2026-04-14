@@ -100,7 +100,7 @@ places.post('/search', async (c) => {
       let coords = location;
 
       if (!coordPattern.test(location)) {
-        // Ã‰ um nome de lugar, fazer geocoding
+        // Ã um nome de lugar, fazer geocoding
         const geocodeUrl = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(location)}&key=${apiKey}`;
         const geocodeRes = await fetch(geocodeUrl);
         const geocodeData = (await geocodeRes.json()) as {

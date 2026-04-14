@@ -104,7 +104,7 @@ const FinancialCalculator: React.FC = () => {
       // Juros Mensais Efetivos (Juros Compostos)
       const monthlyRate = Math.pow(1 + bank.baseRate / 100, 1 / 12) - 1;
 
-      // CÁLCULO SAC (Sistema de Amortização Constante)
+      // C�LCULO SAC (Sistema de Amortização Constante)
       const amortization = loanAmount / months;
 
       // Primeira Parcela
@@ -116,7 +116,7 @@ const FinancialCalculator: React.FC = () => {
       // Original line: const firstInsurance = loanAmount * (bank.insuranceRate / 100); // Est. Seguro
       const firstInstallment = amortization + firstInterest + bank.adminFee; // Adjusted as firstInsurance was removed
 
-      // Última Parcela
+      // �ltima Parcela
       const lastInterest = amortization * monthlyRate; // Saldo devedor é apenas 1 amortização
       const lastInsurance = amortization * (bank.insuranceRate / 100);
       const lastInstallment = amortization + lastInterest + lastInsurance + bank.adminFee;
@@ -356,7 +356,7 @@ const FinancialCalculator: React.FC = () => {
                         </p>
                       </div>
                       <div className="flex justify-between items-center px-2">
-                        <span className="text-sm text-gray-500">Última parcela (estimada)</span>
+                        <span className="text-sm text-gray-500">�ltima parcela (estimada)</span>
                         <span className="font-bold text-slate-700">
                           R${' '}
                           {result.lastInstallment.toLocaleString('pt-BR', {

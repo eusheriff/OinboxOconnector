@@ -328,7 +328,7 @@ export function OmnichannelChannels() {
                       {channel.metrics && (
                         <div className="text-xs text-gray-500">
                           <span className="mr-2">
-                            ðŸ“¥ {channel.metrics.messages_received_today || 0} hoje
+                            ð¥ {channel.metrics.messages_received_today || 0} hoje
                           </span>
                         </div>
                       )}

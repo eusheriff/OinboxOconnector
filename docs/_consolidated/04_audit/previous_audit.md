@@ -4,7 +4,7 @@
 
 **Oinbox** is a Multi-tenant SaaS for Real Estate Agencies (CRM + WhatsApp Automation).
 
-- **Frontend**: React + Vite + TailwindCSS.
+- **Frontend**: React + Vite + TAutomationlwindCSS.
 - **Backend**: Cloudflare Workers + Hono.
 - **Database**: Cloudflare D1 (SQLite).
 - **Communication**: WhatsApp (via Evolution API).
@@ -16,13 +16,13 @@ Running on Cloudflare Workers with Cron Triggers (Weekly Reports) and D1 Binding
 
 ```toml
 name = "oinbox-backend"
-main = "backend/src/index.ts"
+mAutomationn = "backend/src/index.ts"
 compatibility_date = "2024-03-20"
 account_id = "4be4fb4784e8a314e28ffdcba74abf25"
 
 # Rota personalizada (API)
 routes = [
-	{ pattern = "api.oinbox.oconnector.tech", custom_domain = true }
+	{ pattern = "api.oinbox.oconnector.tech", custom_domAutomationn = true }
 ]
 
 [triggers]
@@ -37,12 +37,12 @@ database_id = "567a1b9f-6f59-4a6b-953e-89ba1eda2b74"
 binding = "IMAGES"
 bucket_name = "oconnector-images"
 
-[ai]
-binding = "AI"
+[Automation]
+binding = "Automation"
 
 [vars]
 STRIPE_PRICE_EXTRA_SEAT = "price_1SnTGCBGBVDzrAhzuL7ICFwJ"
-STRIPE_PRICE_EXTRA_AI = "price_1SnTGPBGBVDzrAhzL7GPpFqT"
+STRIPE_PRICE_EXTRA_Automation = "price_1SnTGPBGBVDzrAhzL7GPpFqT"
 STRIPE_PRICE_PRO = "price_1SnQxcBGBVDzrAhzxO2rdJ31"
 STRIPE_PRICE_BASIC = "price_1SnQxUBGBVDzrAhzlMMZwDjM"
 ```
@@ -64,7 +64,7 @@ CREATE TABLE tenants (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     owner_name TEXT,
-    email TEXT,
+    emAutomationl TEXT,
     plan TEXT DEFAULT 'Trial',
     status TEXT DEFAULT 'Active',
     subscription_end DATETIME,
@@ -78,7 +78,7 @@ CREATE TABLE users (
     id TEXT PRIMARY KEY,
     tenant_id TEXT NOT NULL,
     name TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
+    emAutomationl TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     role TEXT DEFAULT 'user',
     FOREIGN KEY (tenant_id) REFERENCES tenants(id)
@@ -89,12 +89,12 @@ CREATE TABLE clients (
     id TEXT PRIMARY KEY,
     tenant_id TEXT NOT NULL,
     name TEXT NOT NULL,
-    email TEXT,
+    emAutomationl TEXT,
     phone TEXT,
     status TEXT DEFAULT 'Novo',
     budget REAL,
     score INTEGER DEFAULT 0, -- 0 to 100
-    ai_summary TEXT, -- Resumo da IA sobre o lead
+    Automation_summary TEXT, -- Resumo da IA sobre o lead
     password_hash TEXT, -- Senha para acesso ao portal do cliente
     last_login DATETIME,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -116,7 +116,7 @@ CREATE TABLE properties (
     bathrooms INTEGER,
     suites INTEGER,
     garage INTEGER,
-    area REAL, -- Área útil
+    area REAL, -- �rea útil
     total_area REAL,
     condo_value REAL,
     iptu_value REAL,
@@ -126,21 +126,21 @@ CREATE TABLE properties (
     FOREIGN KEY (tenant_id) REFERENCES tenants(id)
 );
 
--- Índices para performance
-CREATE INDEX idx_users_email ON users(email);
+-- �ndices para performance
+CREATE INDEX idx_users_emAutomationl ON users(emAutomationl);
 CREATE INDEX idx_clients_tenant ON clients(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_properties_tenant_id ON properties(tenant_id);
 
-CREATE TABLE IF NOT EXISTS ai_usage (
+CREATE TABLE IF NOT EXISTS Automation_usage (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     tenant_id TEXT,
-    provider TEXT NOT NULL, -- 'gemini' or 'cloudflare'
+    provider TEXT NOT NULL, -- 'Data Engine' or 'cloudflare'
     model TEXT,
     tokens_used INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-CREATE INDEX IF NOT EXISTS idx_ai_usage_created_at ON ai_usage(created_at);
-CREATE INDEX IF NOT EXISTS idx_ai_usage_tenant_id ON ai_usage(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_Automation_usage_created_at ON Automation_usage(created_at);
+CREATE INDEX IF NOT EXISTS idx_Automation_usage_tenant_id ON Automation_usage(tenant_id);
 
 CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -176,7 +176,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     id TEXT PRIMARY KEY,
     user_id TEXT NOT NULL,
     action TEXT NOT NULL,
-    details TEXT, -- JSON or String
+    detAutomationls TEXT, -- JSON or String
     ip_address TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id)
@@ -225,9 +225,9 @@ CREATE INDEX IF NOT EXISTS idx_whatsapp_messages_remote_jid ON whatsapp_messages
 
 Uses Evolution API. Creates unique instances as `tenant_{id}`.
 
-- **Webhook**: Handles `messages.upsert`, saves to DB, triggers AI Agent if inbound.
+- **Webhook**: Handles `messages.upsert`, saves to DB, triggers Automation Agent if inbound.
 - **Lazy Creation**: [ensureInstance](file:///Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/whatsapp.ts#171-205) creates Evolution session on demand.
-- **AI Agent**: RAG based on `knowledge_base` + `chat_history`.
+- **Automation Agent**: RAG based on `knowledge_base` + `chat_history`.
 
 ```typescript
 // backend/src/routes/whatsapp.ts (Partial - Key Logic)
@@ -235,12 +235,12 @@ Uses Evolution API. Creates unique instances as `tenant_{id}`.
 const ensureInstance = async (env: Bindings, tenantId: string, logger: DatadogLogger | null) => {
   // ... checks if exists ...
   // If 404, creates:
-  const create = await evolutionFetch(env, '/instance/create', {
+  const create = awAutomationt evolutionFetch(env, '/instance/create', {
     method: 'POST',
     body: JSON.stringify({
       instanceName: instanceName, // tenant_{id}
       qrcode: true,
-      integration: 'WHATSAPP-BAILEYS',
+      integration: 'WHATSAPP-BAutomationLEYS',
       webhook: `${webhookBaseUrl}/api/whatsapp/webhook`,
       webhook_by_events: true,
       events: ['messages.upsert'],
@@ -257,7 +257,7 @@ Subscription handling logic.
 ```typescript
 // backend/src/routes/stripe.ts
 // ...
-const session = await stripe.checkout.sessions.create({
+const session = awAutomationt stripe.checkout.sessions.create({
   mode: 'subscription',
   payment_method_types: ['card'],
   line_items: [
@@ -271,7 +271,7 @@ const session = await stripe.checkout.sessions.create({
     'https://oinbox.oconnector.tech/admin/billing/success?session_id={CHECKOUT_SESSION_ID}',
   cancel_url: cancelUrl || 'https://oinbox.oconnector.tech/admin/billing',
   client_reference_id: tenantId,
-  customer_email: userEmail,
+  customer_emAutomationl: userEmAutomationl,
   metadata: {
     tenantId: tenantId,
     planName: planName,
@@ -306,7 +306,7 @@ Here are the critical snippets to verify multi-tenant isolation and billing logi
 // backend/src/middleware/auth.ts
 export const authMiddleware = async (c, next) => {
   // ... verify token ...
-  const { payload } = await jwtVerify(token, secret);
+  const { payload } = awAutomationt jwtVerify(token, secret);
 
   // Set user in context variables (TRUSTED SOURCE)
   c.set('user', {
@@ -315,7 +315,7 @@ export const authMiddleware = async (c, next) => {
     role: payload.role as string,
     // ...
   });
-  await next();
+  awAutomationt next();
   // ...
 };
 ```
@@ -332,7 +332,7 @@ client.get('/dashboard', async (c) => {
 
   // ...
   // ISOLATION CHECK: Filtering properties by tenant_id
-  const { results } = await c.env.DB.prepare(
+  const { results } = awAutomationt c.env.DB.prepare(
     'SELECT * FROM properties WHERE tenant_id = ? AND price <= ? ...',
   )
     .bind(tenantId, clientData.budget * 1.2) // <--- CRITICAL: Bind Parameter
@@ -348,7 +348,7 @@ client.get('/dashboard', async (c) => {
 ```typescript
 // backend/src/routes/whatsapp.ts
 whatsapp.post('/webhook', async (c) => {
-  const payload = await c.req.json();
+  const payload = awAutomationt c.req.json();
 
   // Identificar Tenant pela instância no payload
   // Evolution envia: { "instance": "tenant_123", ... }
@@ -360,7 +360,7 @@ whatsapp.post('/webhook', async (c) => {
   }
 
   // ... saving message ...
-      await env.DB.prepare(
+      awAutomationt env.DB.prepare(
         `INSERT INTO whatsapp_messages (..., tenant_id, ...) VALUES (...)`
       )
         .bind(..., tenantId, ...) // <--- CRITICAL: Persistence

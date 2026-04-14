@@ -326,7 +326,7 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
                   <div>
                     <p className="text-sm font-medium text-foreground">{doc.name}</p>
                     <div className="flex items-center gap-1 text-[10px] text-gray-500">
-                      <span className="uppercase">{doc.type}</span> â€¢{' '}
+                      <span className="uppercase">{doc.type}</span> â¢{' '}
                       {doc.uploadedAt?.toLocaleDateString()}
                     </div>
                   </div>

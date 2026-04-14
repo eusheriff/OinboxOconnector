@@ -2,7 +2,7 @@ import { DatabaseBinding } from '../bindings';
 
 // Limites diários (com margem de segurança de ~10%)
 const DAILY_LIMITS = {
-  'openai': 9000, // OpenAI limit (adjust as needed)
+  'Engine': 9000, // Engine limit (adjust as needed)
   'cloudflare-ai': 9000, // Cloudflare limit: 10000
 } as const;
 
@@ -93,12 +93,12 @@ export async function getRateLimitStatus(
   });
 
   return {
-    'openai': {
-      allowed: (counts['openai'] || 0) < DAILY_LIMITS['openai'],
-      count: counts['openai'] || 0,
-      limit: DAILY_LIMITS['openai'],
-      remaining: DAILY_LIMITS['openai'] - (counts['openai'] || 0),
-      model: 'openai',
+    'Engine': {
+      allowed: (counts['Engine'] || 0) < DAILY_LIMITS['Engine'],
+      count: counts['Engine'] || 0,
+      limit: DAILY_LIMITS['Engine'],
+      remaining: DAILY_LIMITS['Engine'] - (counts['Engine'] || 0),
+      model: 'Engine',
     },
     'cloudflare-ai': {
       allowed: (counts['cloudflare-ai'] || 0) < DAILY_LIMITS['cloudflare-ai'],

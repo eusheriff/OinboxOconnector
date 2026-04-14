@@ -20,7 +20,7 @@ import {
   Smartphone,
 } from 'lucide-react';
 
-// Helper to render platform icons — agora com TODOS os canais
+// Helper to render platform icons � agora com TODOS os canais
 export const getPlatformIcon = (platform: Platform | string) => {
   switch (platform) {
     case Platform.WHATSAPP:
@@ -78,7 +78,7 @@ export const getPlatformLabel = (platform: Platform | string): string => {
   return platform;
 };
 
-export const OLLAMA_MODELS = [
+export const Engine_MODELS = [
   { id: 'llama3.1:8b', name: 'Llama 3.1 (8B)', type: 'chat' },
   { id: 'phi4:latest', name: 'Phi-4 (Microsoft)', type: 'chat' },
   { id: 'deepseek-r1:7b', name: 'DeepSeek R1 (Raciocínio)', type: 'chat' },

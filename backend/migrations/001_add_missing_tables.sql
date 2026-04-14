@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS notifications (
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
 );
 
--- √çndices
+-- √ndices
 CREATE INDEX IF NOT EXISTS idx_trial_fingerprints_email ON trial_fingerprints(email);
 CREATE INDEX IF NOT EXISTS idx_trial_fingerprints_device ON trial_fingerprints(device_id);
 CREATE INDEX IF NOT EXISTS idx_rate_limits_window ON rate_limits(window_start);

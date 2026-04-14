@@ -17,14 +17,14 @@ INSERT INTO knowledge_base (tenant_id, content, category) VALUES (
 -- Pricing Information
 INSERT INTO knowledge_base (tenant_id, content, category) VALUES (
   'public',
-  'Planos: Grátis (1 usuário, 50 leads, WhatsApp), Essencial R$59/mês (3 usuários, 200 leads, CRM), Crescimento R$149/mês (10 usuários, 1000 leads, Marketing Studio), Pro R$299/mês (ilimitado, Multi-tenant), Enterprise (preço customizado, API aberta, LLM exclusiva).',
+  'Planos: Grátis (1 usuário, 50 leads, WhatsApp), Essencial R$59/mês (3 usuários, 200 leads, CRM), Crescimento R$149/mês (10 usuários, 1000 leads, Marketing Studio), Pro R$299/mês (ilimitado, Multi-tenant), Enterprise (preço customizado, API aberta, Automation Logic exclusiva).',
   'pricing'
 );
 
 -- Technical Details
 INSERT INTO knowledge_base (tenant_id, content, category) VALUES (
   'public',
-  'Stack técnica: Frontend React + TypeScript, Backend Cloudflare Workers, Database Cloudflare D1, Storage R2, AI Google Gemini 1.5 + Cloudflare Workers AI (fallback), Evolution API para WhatsApp, Deploy via Cloudflare Pages.',
+  'Stack técnica: Frontend React + TypeScript, Backend Cloudflare Workers, Database Cloudflare D1, Storage R2, AI Google Data Engine 1.5 + Cloudflare Workers AI (fallback), Evolution API para WhatsApp, Deploy via Cloudflare Pages.',
   'technical'
 );
 
@@ -38,7 +38,7 @@ INSERT INTO knowledge_base (tenant_id, content, category) VALUES (
 -- AI Capabilities
 INSERT INTO knowledge_base (tenant_id, content, category) VALUES (
   'public',
-  'Nossa IA usa Gemini 1.5 Flash/Pro com sistema RAG (Retrieval Augmented Generation). Limitamos requisições diárias (1400 Gemini Flash, 45 Gemini Pro) com fallback automático para Cloudflare AI (9000/dia). Rate limiting implementado para garantir operação 100% gratuita dentro dos limites.',
+  'Nossa IA usa Data Engine 1.5 Flash/Pro com sistema RAG (Retrieval Augmented Generation). Limitamos requisições diárias (1400 Data Engine Flash, 45 Data Engine Pro) com fallback automático para Cloudflare AI (9000/dia). Rate limiting implementado para garantir operação 100% gratuita dentro dos limites.',
   'ai_capabilities'
 );
 

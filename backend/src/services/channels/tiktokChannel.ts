@@ -2,8 +2,8 @@
  * TikTokChannelService - TikTok Messaging API OAuth + Webhook
  *
  * Fluxo:
- * 1. OAuth 2.0 â†’ access_token
- * 2. Webhook recebe mensagens â†’ NormalizerService â†’ Inbox
+ * 1. OAuth 2.0 â access_token
+ * 2. Webhook recebe mensagens â NormalizerService â Inbox
  */
 
 import { HonoContext } from '../../bindings';

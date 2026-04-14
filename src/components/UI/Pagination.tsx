@@ -126,7 +126,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           onClick={() => onPageChange(totalPages)}
           disabled={!hasNext}
           className="p-2 rounded-lg border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          aria-label="Última página"
+          aria-label="�ltima página"
         >
           <ChevronsRight className="w-4 h-4" />
         </button>

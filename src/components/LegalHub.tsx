@@ -61,7 +61,7 @@ export const LegalHub: React.FC = () => {
     <div className="p-6 bg-gray-50 min-h-screen">
       <header className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
-          <span className="text-indigo-600">⚖️</span> Hub Jurídico (Lex)
+          <span className="text-indigo-600">��</span> Hub Jurídico (Lex)
         </h1>
         <p className="text-gray-600 mt-2">
           Auditoria de contratos imobiliários com inteligência artificial (Lei do Inquilinato).
@@ -91,7 +91,7 @@ export const LegalHub: React.FC = () => {
             `}
           >
             {analyzing ? (
-              <>Analyzing via Gemini 2.5...</>
+              <>Analyzing via Automation 2.5...</>
             ) : (
               <>
                 <CheckCircle className="w-5 h-5" />
@@ -126,7 +126,7 @@ export const LegalHub: React.FC = () => {
             <div className="space-y-6 animate-fade-in">
               {/* Score Card */}
               <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <span className="font-medium text-gray-700">Índice de Segurança</span>
+                <span className="font-medium text-gray-700">�ndice de Segurança</span>
                 <div
                   className={`text-2xl font-bold ${
                     result.risk_score > 80

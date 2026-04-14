@@ -44,7 +44,7 @@ CREATE TABLE clients (
     status TEXT DEFAULT 'Novo',
     budget REAL,
     score INTEGER DEFAULT 0, -- 0 to 100
-    ai_summary TEXT, -- Resumo da IA sobre o lead
+    automation_summary TEXT, -- Resumo automatizado sobre o lead
     password_hash TEXT, -- Senha para acesso ao portal do cliente
     last_login DATETIME,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -66,7 +66,7 @@ CREATE TABLE properties (
     bathrooms INTEGER,
     suites INTEGER,
     garage INTEGER,
-    area REAL, -- Área útil
+    area REAL, -- �rea útil
     total_area REAL,
     condo_value REAL,
     iptu_value REAL,
@@ -76,7 +76,7 @@ CREATE TABLE properties (
     FOREIGN KEY (tenant_id) REFERENCES tenants(id)
 );
 
--- Índices para performance
+-- �ndices para performance
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_tenant_id ON users(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_clients_tenant ON clients(tenant_id);
@@ -86,16 +86,16 @@ CREATE INDEX IF NOT EXISTS idx_properties_tenant_id ON properties(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_properties_listing_type ON properties(listing_type);
 CREATE INDEX IF NOT EXISTS idx_properties_created_at ON properties(created_at DESC);
 
-CREATE TABLE IF NOT EXISTS ai_usage (
+CREATE TABLE IF NOT EXISTS processing_usage (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     tenant_id TEXT,
-    provider TEXT NOT NULL, -- 'gemini' or 'cloudflare'
+    provider TEXT NOT NULL, -- 'Data Engine' or 'cloudflare'
     model TEXT,
     tokens_used INTEGER DEFAULT 0,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
-CREATE INDEX IF NOT EXISTS idx_ai_usage_created_at ON ai_usage(created_at);
-CREATE INDEX IF NOT EXISTS idx_ai_usage_tenant_id ON ai_usage(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_processing_usage_created_at ON processing_usage(created_at);
+CREATE INDEX IF NOT EXISTS idx_processing_usage_tenant_id ON processing_usage(tenant_id);
 
 -- (Omnichannel)
 CREATE TABLE IF NOT EXISTS channels (
@@ -383,13 +383,13 @@ CREATE INDEX IF NOT EXISTS idx_notifications_tenant ON notifications(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
 CREATE INDEX IF NOT EXISTS idx_notifications_unread ON notifications(tenant_id, is_read) WHERE is_read = FALSE;
 
--- Índices de tabelas intermediárias (definidos aqui após CREATE TABLE)
+-- �ndices de tabelas intermediárias (definidos aqui após CREATE TABLE)
 CREATE INDEX IF NOT EXISTS idx_omni_messages_tenant_id ON omnichannel_messages(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_omni_messages_created_at ON omnichannel_messages(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_leads_tenant_id ON leads(tenant_id);
-CREATE INDEX IF NOT EXISTS idx_ai_usage_tenant_date ON ai_usage(tenant_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_processing_usage_tenant_date ON processing_usage(tenant_id, created_at DESC);
 
--- Índices finais
+-- �ndices finais
 CREATE INDEX IF NOT EXISTS idx_portal_configs_tenant ON portal_configs(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_portal_configs_portal ON portal_configs(portal_id);
 CREATE INDEX IF NOT EXISTS idx_property_publications_property ON property_publications(property_id);

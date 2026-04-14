@@ -1,4 +1,4 @@
-# Human Handover — Fluxo de Silenciamento da IA
+# Human Handover � Fluxo de Silenciamento da IA
 
 ## Visão Geral
 
@@ -8,26 +8,26 @@ Quando uma mensagem WhatsApp inbound chega e o lead já possui um corretor atrib
 
 ```
 Mensagem inbound recebida
-  │
-  ├─ 1. Salva mensagem no D1 (whatsapp_messages)
-  │
-  ├─ 2. Busca lead pelo telefone (WhatsAppRepository.findLeadByPhone)
-  │
-  ├─ 3. Lead encontrado e tem assigned_to?
-  │     │
-  │     ├─ SIM → HUMAN HANDOVER
-  │     │   ├─ Atualiza lead status para 'responded'
-  │     │   ├─ Para automação de campanha (campaign_leads → 'stopped')
-  │     │   ├─ IA NÃO envia resposta automática
-  │     │   ├─ Cria notificação para o corretor (type: 'handover')
-  │     │   └─ Retorna ao webhook: { received: true, action: 'human_handover' }
-  │     │
-  │     └─ NÃO → IA RESPONDE
-  │         ├─ SalesTools.analyzeIntention() → detecta intenção
-  │         ├─ Move lead no pipeline baseado na intenção
-  │         └─ Envia resposta via Evolution API
-  │
-  └─ 4. Se Agent Hub indisponível → fallback com mensagem padrão
+  �
+  �� 1. Salva mensagem no D1 (whatsapp_messages)
+  �
+  �� 2. Busca lead pelo telefone (WhatsAppRepository.findLeadByPhone)
+  �
+  �� 3. Lead encontrado e tem assigned_to?
+  �     �
+  �     �� SIM � HUMAN HANDOVER
+  �     �   �� Atualiza lead status para 'responded'
+  �     �   �� Para automação de campanha (campaign_leads � 'stopped')
+  �     �   �� IA N�O envia resposta automática
+  �     �   �� Cria notificação para o corretor (type: 'handover')
+  �     �   �� Retorna ao webhook: { received: true, action: 'human_handover' }
+  �     �
+  �     �� N�O � IA RESPONDE
+  �         �� SalesTools.analyzeIntention() � detecta intenção
+  �         �� Move lead no pipeline baseado na intenção
+  �         �� Envia resposta via Evolution API
+  �
+  �� 4. Se Agent Hub indisponível � fallback com mensagem padrão
 ```
 
 ## Regras de Silenciamento
@@ -84,7 +84,7 @@ O handler do webhook retorna `{ received: true, action: 'human_handover', notifi
 |---------|-----------------|
 | `backend/src/routes/whatsapp.ts` | Handler do webhook, lógica de handover (linha ~80-120) |
 | `backend/src/services/whatsappRepository.ts` | Busca lead por telefone |
-| `backend/src/services/salesTools.ts` | Análise de intenção (só chamada se NÃO há handover) |
+| `backend/src/services/salesTools.ts` | Análise de intenção (só chamada se N�O há handover) |
 | `backend/src/services/whatsappService.ts` | Envio de mensagens via Evolution API |
 
 ## Tabela `notifications`
@@ -98,7 +98,7 @@ WHERE type = 'handover' AND is_read = FALSE AND tenant_id = ?
 
 ## Limitações Conhecidas
 
-1. **Sem reativação explícita** — não há flag `ai_enabled` no schema; o silenciamento depende exclusivamente de `assigned_to`
-2. **Sem copilot mode** — o README menciona "exceto se for configurada como copiloto" mas esta funcionalidade não está implementada
-3. **Sem histórico de handover** — não há tabela de auditoria específica para registrar quando a IA foi silenciada/reativada
-4. **Notificação só para o corretor** — se `user_id` for NULL na notificação, ela não é entregue a ninguém (bug potencial)
+1. **Sem reativação explícita** � não há flag `ai_enabled` no schema; o silenciamento depende exclusivamente de `assigned_to`
+2. **Sem copilot mode** � o README menciona "exceto se for configurada como copiloto" mas esta funcionalidade não está implementada
+3. **Sem histórico de handover** � não há tabela de auditoria específica para registrar quando a IA foi silenciada/reativada
+4. **Notificação só para o corretor** � se `user_id` for NULL na notificação, ela não é entregue a ninguém (bug potencial)

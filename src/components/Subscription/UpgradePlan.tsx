@@ -165,7 +165,7 @@ export const UpgradePlan = () => {
         <div className="flex items-center gap-1">
           <ShieldCheck className="w-4 h-4" /> Pagamento Seguro via Stripe
         </div>
-        <span>â€¢</span>
+        <span>â¢</span>
         <div>Cancele quando quiser</div>
       </div>
     </div>

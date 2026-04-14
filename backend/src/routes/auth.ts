@@ -174,7 +174,7 @@ auth.post('/register', rateLimiter(3), async (c) => {
   await sendEmail(
     env,
     data.email,
-    'Bem-vindo ao Oinbox! 🚀',
+    'Bem-vindo ao Oinbox! �',
     '<h1>Olá, ' +
       data.name +
       '!</h1>' +

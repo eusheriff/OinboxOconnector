@@ -1,6 +1,6 @@
 import { Bindings } from '../bindings';
 
-export interface OllamaOptions {
+export interface EngineOptions {
   model?: string;
   temperature?: number;
   maxTokens?: number;
@@ -8,25 +8,25 @@ export interface OllamaOptions {
   jsonMode?: boolean;
 }
 
-export interface OllamaResponse {
+export interface EngineResponse {
   message?: {
     content: string;
   };
   error?: string;
 }
 
-// Modelo default: Gemma 4 via Ollama
+// Modelo default: Gemma 4 via Engine
 const DEFAULT_MODEL = 'gemma4:e2b';
-const DEFAULT_OLLAMA_URL = 'http://localhost:11434';
+const DEFAULT_LOCAL_ENGINE_URL = 'http://localhost:11434';
 
 /**
- * Chamada genérica ao Ollama API com tratamento de erro.
+ * Chamada genérica ao Engine API com tratamento de erro.
  */
-export async function callOllama(
-  ollamaUrl: string,
+export async function callEngine(
+  EngineUrl: string,
   prompt: string,
   systemPrompt?: string,
-  options: OllamaOptions = {},
+  options: EngineOptions = {},
 ): Promise<string> {
   const model = options.model || DEFAULT_MODEL;
   const messages: Array<{ role: string; content: string; images?: string[] }> = [];
@@ -57,7 +57,7 @@ export async function callOllama(
     },
   };
 
-  const response = await fetch(`${ollamaUrl}/api/chat`, {
+  const response = await fetch(`${EngineUrl}/api/chat`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -65,13 +65,13 @@ export async function callOllama(
 
   if (!response.ok) {
     const errorText = await response.text();
-    throw new Error(`Ollama API error (${response.status}): ${errorText}`);
+    throw new Error(`Engine API error (${response.status}): ${errorText}`);
   }
 
-  const data: OllamaResponse = await response.json();
+  const data: EngineResponse = await response.json();
 
   if (data.error) {
-    throw new Error(`Ollama returned an error: ${data.error}`);
+    throw new Error(`Engine returned an error: ${data.error}`);
   }
 
   return data.message?.content || '';
@@ -81,22 +81,22 @@ export async function callOllama(
  * Chamada rápida ao modelo default (gemma4:e2b).
  */
 export async function callGemma(
-  ollamaUrl: string,
+  EngineUrl: string,
   prompt: string,
   systemPrompt?: string,
 ): Promise<string> {
-  return callOllama(ollamaUrl, prompt, systemPrompt);
+  return callEngine(EngineUrl, prompt, systemPrompt);
 }
 
 /**
  * Analisa dados de um cliente (CRM) e retorna score + resumo.
  */
 export async function analyzeClientData(
-  env: Pick<Bindings, 'OLLAMA_URL' | 'OLLAMA_MODEL'>,
+  env: Pick<Bindings, 'LOCAL_ENGINE_URL' | 'LOCAL_ENGINE_MODEL'>,
   conversation: string,
 ): Promise<{ score: number; summary: string }> {
-  const ollamaUrl = env.OLLAMA_URL || DEFAULT_OLLAMA_URL;
-  const model = env.OLLAMA_MODEL || DEFAULT_MODEL;
+  const EngineUrl = env.LOCAL_ENGINE_URL || DEFAULT_LOCAL_ENGINE_URL;
+  const model = env.LOCAL_ENGINE_MODEL || DEFAULT_MODEL;
 
   const prompt =
     'Analise a seguinte conversa entre um corretor (ou IA) e um cliente imobiliário.\n\n' +
@@ -106,10 +106,10 @@ export async function analyzeClientData(
     'TAREFA:\n' +
     '1. Atribua uma nota de 0 a 100 para a probabilidade de compra deste cliente (Lead Score).\n' +
     '2. Escreva um resumo curto (max 2 frases) sobre o perfil e urgência dele.\n\n' +
-    'SAÍDA JSON (apenas JSON, sem markdown):\n' +
+    'SA�DA JSON (apenas JSON, sem markdown):\n' +
     '{ "score": 85, "summary": "Cliente busca 3 quartos urgente, tem crédito aprovado." }';
 
-  const text = await callOllama(ollamaUrl, prompt, undefined, { model, jsonMode: true });
+  const text = await callEngine(EngineUrl, prompt, undefined, { model, jsonMode: true });
   const jsonStr = text
     .replace(/```json/g, '')
     .replace(/```/g, '')
@@ -122,15 +122,15 @@ export async function analyzeClientData(
  * Gera descrição vendedora para um imóvel.
  */
 export async function generatePropertyDescription(
-  env: Pick<Bindings, 'OLLAMA_URL' | 'OLLAMA_MODEL'>,
+  env: Pick<Bindings, 'LOCAL_ENGINE_URL' | 'LOCAL_ENGINE_MODEL'>,
   property: { features?: unknown; type?: string; location?: string },
 ): Promise<string> {
-  const ollamaUrl = env.OLLAMA_URL || DEFAULT_OLLAMA_URL;
-  const model = env.OLLAMA_MODEL || DEFAULT_MODEL;
+  const EngineUrl = env.LOCAL_ENGINE_URL || DEFAULT_LOCAL_ENGINE_URL;
+  const model = env.LOCAL_ENGINE_MODEL || DEFAULT_MODEL;
 
   const prompt =
     'Crie uma descrição vendedora e atraente para um anúncio de imóvel (Zap Imóveis / OLX).\n\n' +
-    'DADOS DO IMÓVEL:\n' +
+    'DADOS DO IM�VEL:\n' +
     '- Tipo: ' +
     (property.type || '') +
     '\n' +
@@ -143,11 +143,11 @@ export async function generatePropertyDescription(
     'REGRAS:\n' +
     '- Use emojis.\n' +
     '- Destaque os pontos fortes.\n' +
-    '- Use gatilhos de escassez ("Últimas unidades", "Oportunidade").\n' +
+    '- Use gatilhos de escassez ("�ltimas unidades", "Oportunidade").\n' +
     '- Chamada para ação no final (Agendar visita).\n' +
     '- Formato: Título chamativo + Corpo do texto.';
 
-  return callOllama(ollamaUrl, prompt, undefined, { model });
+  return callEngine(EngineUrl, prompt, undefined, { model });
 }
 
 /**
@@ -155,12 +155,12 @@ export async function generatePropertyDescription(
  * Retorna array de IDs dos leads com alta probabilidade de interesse.
  */
 export async function matchProperties(
-  env: Pick<Bindings, 'OLLAMA_URL' | 'OLLAMA_MODEL'>,
+  env: Pick<Bindings, 'LOCAL_ENGINE_URL' | 'LOCAL_ENGINE_MODEL'>,
   property: Record<string, unknown>,
   candidates: Array<{ id: string; name: string; summary: string }>,
 ): Promise<string[]> {
-  const ollamaUrl = env.OLLAMA_URL || DEFAULT_OLLAMA_URL;
-  const model = env.OLLAMA_MODEL || DEFAULT_MODEL;
+  const EngineUrl = env.LOCAL_ENGINE_URL || DEFAULT_LOCAL_ENGINE_URL;
+  const model = env.LOCAL_ENGINE_MODEL || DEFAULT_MODEL;
 
   const prompt = `
     You are a Real Estate Matchmaker.
@@ -185,7 +185,7 @@ export async function matchProperties(
     If no matches, return [].
   `;
 
-  const text = await callOllama(ollamaUrl, prompt, undefined, { model, jsonMode: true });
+  const text = await callEngine(EngineUrl, prompt, undefined, { model, jsonMode: true });
   const jsonStr = text
     .replace(/```json/g, '')
     .replace(/```/g, '')

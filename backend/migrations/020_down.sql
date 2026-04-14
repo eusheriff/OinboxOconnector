@@ -1,7 +1,7 @@
 -- Down Migration: Reverter migração 020 (multi-platform publishing)
 -- Data: 2026-04-10
 -- Descrição: Remover tabelas de publicação multi-plataforma
--- ATENÇÃO: Isso remove TODAS as configurações de portais e publicações.
+-- ATEN��O: Isso remove TODAS as configurações de portais e publicações.
 -- Backup recomendado antes de executar.
 
 DROP INDEX IF EXISTS idx_property_publications_status;

@@ -21,7 +21,7 @@ const PropertyMap: React.FC = () => {
     if (!selectedProperty) return;
 
     setIsAnalyzing(true);
-    // Uses Gemini + Google Maps Tool
+    // Uses Automation + Google Maps Tool
     const result = await askLocationAssistant(
       selectedProperty.location,
       'Escolas, Restaurantes e Segurança',

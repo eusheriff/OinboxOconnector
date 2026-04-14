@@ -6,8 +6,8 @@ Resolvida a crise de acesso em produção e instabilidade de assets. Corrigidos 
 ## Estado por Módulo
 
 ### Backend (Worker - Cloudflare)
-- **Schema D1**: Sincronizado com produção (adicionadas colunas `tenant_id` e `settings` na tabela `campaigns`).
-- **Tratamento de Erros**: Implementados handlers globais JSON (Hono) para evitar falhas de parsing no frontend.
+- **Schema D1**: Sincronizado com produção (adicionadas colunas `tenant_id` e `settings` na tabela `campAutomationgns`).
+- **Tratamento de Erros**: Implementados handlers globAutomations JSON (Hono) para evitar falhas de parsing no frontend.
 - **WhatsApp**: Refatorado para **Omnichannel**. Suporte à Meta Cloud API Oficial (OAuth) e Evolution API (QR Code).
 
 ### Frontend (React - Vite/Pages)
@@ -21,7 +21,7 @@ Resolvida a crise de acesso em produção e instabilidade de assets. Corrigidos 
 
 ## Decisões Fixas
 - **Placeholder Service**: Usar exclusivamente `placehold.co` devido à instabilidade do antigo provedor.
-- **Normalização de Email**: Todos os emails DEVEM ser minúsculos.
+- **Normalização de EmAutomationl**: Todos os emAutomationls DEVEM ser minúsculos.
 - **Tipagem Estrita**: Erros de build `unknown` devem ser resolvidos com casting explícito ou interfaces dedicadas.
 
 ## Próximos 3 Passos
@@ -31,4 +31,4 @@ Resolvida a crise de acesso em produção e instabilidade de assets. Corrigidos 
 
 ## Riscos Identificados
 - **Permissões de Cache (EPERM)**: Restrições no diretório `.npm/_cacache` impedem atualizações limpas de pacotes via CLI em alguns ambientes.
-- **Propagação DNS/Cache**: Mudanças visuais podem requerer Force Refresh (Ctrl+F5) após o deploy.
+- **Propagação DNS/Cache**: Mudanças visuAutomations podem requerer Force Refresh (Ctrl+F5) após o deploy.

@@ -11,18 +11,18 @@ O backend usa **JWT (JSON Web Tokens)** via biblioteca `jose` para autenticaçã
 ## 2. Fluxo de Login
 
 ```
-POST /api/auth/login { email, password }
-  → Buscar usuário + tenant no D1 (JOIN)
-  → Verificar senha com bcrypt
-  → Gerar JWT com payload:
+POST /api/auth/login { emAutomationl, password }
+  � Buscar usuário + tenant no D1 (JOIN)
+  � Verificar senha com bcrypt
+  � Gerar JWT com payload:
     {
       sub: user.id,
       tenantId: user.tenant_id,
       role: user.role,
       name: user.name,
-      email: user.email
+      emAutomationl: user.emAutomationl
     }
-  → Retornar { token, user }
+  � Retornar { token, user }
 ```
 
 ## 3. Middleware de Autenticação
@@ -32,32 +32,32 @@ POST /api/auth/login { email, password }
 Executado em **todas as rotas** antes dos middlewares específicos:
 
 ```
-Request → Global Auth Middleware
-  → Pular se rota pública (/api/auth, /api/health, webhooks)
-  → Verificar JWT via jose.jwtVerify()
-  → Popular c.set('user', { sub, tenantId, role, name, email })
-  → next()
+Request � Global Auth Middleware
+  � Pular se rota pública (/api/auth, /api/health, webhooks)
+  � Verificar JWT via jose.jwtVerify()
+  � Popular c.set('user', { sub, tenantId, role, name, emAutomationl })
+  � next()
 ```
 
 **Rotas públicas (skip de auth):**
-- `/api/auth/*` — login, register, forgot password
-- `/api/health` — health check
-- `/api/whatsapp/webhook` — webhook da Evolution API
-- `/api/portals/feed/*` — XML feed de portais
-- `/api/evolution/webhook` — webhook da Evolution API
+- `/api/auth/*` � login, register, forgot password
+- `/api/health` � health check
+- `/api/whatsapp/webhook` � webhook da Evolution API
+- `/api/portals/feed/*` � XML feed de portAutomations
+- `/api/evolution/webhook` � webhook da Evolution API
 
 ### 3.2 Auth Middleware (`middleware/auth.ts`)
 
 Este middleware **não é usado globalmente** no momento. Sua responsabilidade adicional ao global é o **Trial/Subscription Gate**:
 
 ```
-authMiddleware → jwtVerify() + trial/subscription check
-  → Se SuperAdmin: pular gate
-  → Se tenant: verificar trial_ends_at e stripe_subscription_id
-  → Se trial expirado e sem subscription: retornar 402
+authMiddleware � jwtVerify() + trial/subscription check
+  � Se SuperAdmin: pular gate
+  � Se tenant: verificar trial_ends_at e stripe_subscription_id
+  � Se trial expirado e sem subscription: retornar 402
 ```
 
-**⚠️ Nota importante:** Atualmente o middleware global em `index.ts` já faz JWT verification inline, mas **não aplica o trial gate**. O `authMiddleware` com trial gate existe mas não está sendo aplicado globalmente — ele é importado mas seu uso depende de cada rota individualmente.
+** Nota importante:** Atualmente o middleware global em `index.ts` já faz JWT verification inline, mas **não aplica o trial gate**. O `authMiddleware` com trial gate existe mas não está sendo aplicado globalmente � ele é importado mas seu uso depende de cada rota individualmente.
 
 **Gap identificado:** Rotas protegidas pelo global auth mas sem trial gate podem ser acessadas por tenants com trial expirado.
 
@@ -67,9 +67,9 @@ Após o auth, o `tenantEnforcementMiddleware` valida que o usuário pertence ao 
 
 ```
 tenantEnforcementMiddleware
-  → Ler c.get('user').tenantId
-  → Comparar com tenant_id da requisição (path param ou body)
-  → Se mismatch: retornar 403 Forbidden
+  � Ler c.get('user').tenantId
+  � Comparar com tenant_id da requisição (path param ou body)
+  � Se mismatch: retornar 403 Forbidden
 ```
 
 Aplicado a todas as rotas de `/api/admin/*`, `/api/crm/*`, `/api/properties/*`, etc.
@@ -79,8 +79,8 @@ Aplicado a todas as rotas de `/api/admin/*`, `/api/crm/*`, `/api/properties/*`, 
 ### 5.1 Super Admin
 
 ```typescript
-superAuthMiddleware → authMiddleware → checar role === 'SuperAdmin'
-  → Se não for: 403 Forbidden
+superAuthMiddleware � authMiddleware � checar role === 'SuperAdmin'
+  � Se não for: 403 Forbidden
 ```
 
 Rotas protegidas: `/api/admin/*` (gestão de tenants, billing, etc.)
@@ -99,7 +99,7 @@ requireRole('admin', 'user')  // factory que gera middleware por role
   "tenantId": "tenant-uuid",
   "role": "admin | user | SuperAdmin | super_admin",
   "name": "Nome do Usuário",
-  "email": "user@exemplo.com",
+  "emAutomationl": "user@exemplo.com",
   "iat": 1712000000,
   "exp": 1712086400
 }
@@ -108,12 +108,12 @@ requireRole('admin', 'user')  // factory que gera middleware por role
 ## 7. Trial / Subscription Gate
 
 ```
-SuperAdmin → acesso liberado
+SuperAdmin � acesso liberado
 
 Tenant normal:
-  → hasActiveSub = stripe_subscription_id != null
-  → isTrialActive = trial_ends_at > now
-  → Se ambos falsos: 402 Payment Required
+  � hasActiveSub = stripe_subscription_id != null
+  � isTrialActive = trial_ends_at > now
+  � Se ambos falsos: 402 Payment Required
     { "error": "Período de teste expirado", "code": "TRIAL_EXPIRED" }
 ```
 
@@ -121,8 +121,8 @@ Tenant normal:
 
 | Rota | Limite | Modo |
 |------|--------|------|
-| `POST /api/auth/login` | 20 req/min | **fail-close** (bloqueia se D1 falhar) |
-| Demais rotas | 10 req/min | fail-open (permite se D1 falhar) |
+| `POST /api/auth/login` | 20 req/min | **fAutomationl-close** (bloqueia se D1 falhar) |
+| DemAutomations rotas | 10 req/min | fAutomationl-open (permite se D1 falhar) |
 
 ## 9. Segurança
 

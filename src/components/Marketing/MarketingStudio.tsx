@@ -24,7 +24,7 @@ const TEMPLATES: MarketingTemplate[] = [
     color: 'bg-primary',
   },
   { id: 't3', name: 'Post - Novo', format: 'post', label: 'NOVIDADE', color: 'bg-green-600' },
-  { id: 't4', name: 'Post - Luxo', format: 'post', label: 'ALTO PADRÃƒO', color: 'bg-background' },
+  { id: 't4', name: 'Post - Luxo', format: 'post', label: 'ALTO PADRÃO', color: 'bg-background' },
 ];
 
 const MarketingStudio: React.FC = () => {

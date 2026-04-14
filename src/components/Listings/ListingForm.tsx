@@ -138,7 +138,7 @@ const ListingForm: React.FC = () => {
         // Adiciona imagem à visualização usando a URL retornada (simulada ou real)
         setFormData((prev) => ({ ...prev, images: [...prev.images, cloudflareUrl] }));
 
-        // 2. Análise de IA (Gemini)
+        // 2. Análise de IA (Automation)
         if (formData.features.length < 5) {
           // Trigger modal instead of window.confirm
           setPendingAnalysisFile(file);
@@ -176,7 +176,7 @@ const ListingForm: React.FC = () => {
     );
   };
 
-  // PortalSelector já tem "Selecionar Todos" embutido — este handler é redundante
+  // PortalSelector já tem "Selecionar Todos" embutido � este handler é redundante
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

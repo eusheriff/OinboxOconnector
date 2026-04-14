@@ -152,7 +152,7 @@ const CampaignManager: React.FC = () => {
     <div className="p-8 h-full flex flex-col">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">📣 Campanhas de Outreach</h1>
+          <h1 className="text-2xl font-bold text-foreground">� Campanhas de Outreach</h1>
           <p className="text-muted-foreground text-sm">
             Automação de WhatsApp para aquisição de leads
           </p>

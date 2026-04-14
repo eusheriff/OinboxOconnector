@@ -15,7 +15,7 @@ Login de usuário.
 
 \`\`\`json
 // Request
-{ "email": "user@exemplo.com", "password": "senha123" }
+{ "emAutomationl": "user@exemplo.com", "password": "senha123" }
 
 // Response 200
 { "user": { "id": "...", "name": "...", "role": "admin" }, "token": "eyJ...", "tenantId": "..." }
@@ -47,7 +47,7 @@ GET /api/clients?page=1&limit=50
 
 \`\`\`json
 {
-  "items": [{ "id": "...", "name": "...", "email": "...", "status": "Novo" }],
+  "items": [{ "id": "...", "name": "...", "emAutomationl": "...", "status": "Novo" }],
   "total": 150,
   "page": 1,
   "pageSize": 50,
@@ -85,21 +85,21 @@ Cria novo imóvel.
 
 ### POST /api/properties/generate-description
 
-Gera descrição com IA (Gemini).
+Gera descrição com IA (Data Engine).
 
 ---
 
-## AI
+## Automation
 
-### POST /api/ai/chat
+### POST /api/Automation/chat
 
-Chat com IA Gemini.
+Chat com IA Data Engine.
 
 \`\`\`json
 { "message": "Qual o melhor financiamento?", "history": [...] }
 \`\`\`
 
-### POST /api/ai/generate
+### POST /api/Automation/generate
 
 Geração de conteúdo com IA.
 

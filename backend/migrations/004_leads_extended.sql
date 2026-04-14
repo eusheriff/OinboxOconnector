@@ -39,7 +39,7 @@ CREATE TABLE IF NOT EXISTS leads (
   assigned_to TEXT -- ID do usuário responsável
 );
 
--- Índices para performance
+-- �ndices para performance
 CREATE INDEX IF NOT EXISTS idx_leads_status ON leads(status);
 CREATE INDEX IF NOT EXISTS idx_leads_score ON leads(score DESC);
 CREATE INDEX IF NOT EXISTS idx_leads_google_place_id ON leads(google_place_id);

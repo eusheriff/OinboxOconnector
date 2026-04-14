@@ -173,7 +173,7 @@ export default function ProspectingMap() {
               <div className="flex justify-between items-start">
                 <h4 className="font-bold text-gray-800">{place.name}</h4>
                 <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded font-bold flex items-center gap-1">
-                  â˜… {place.rating || 'N/A'}
+                  â {place.rating || 'N/A'}
                 </span>
               </div>
               <p className="text-sm text-gray-500 mt-1 line-clamp-2">{place.address}</p>

@@ -84,7 +84,7 @@ const SystemHealth: React.FC = () => {
             Sistema {health.status === 'healthy' ? 'Operacional' : 'Instável'}
           </h3>
           <p className="text-gray-400 text-sm">
-            Última atualização: {new Date(health.timestamp).toLocaleTimeString()}
+            �ltima atualização: {new Date(health.timestamp).toLocaleTimeString()}
           </p>
         </div>
 

@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS search_history (
   executed_by TEXT -- ID do usuário que executou
 );
 
--- Índices
+-- �ndices
 CREATE INDEX IF NOT EXISTS idx_qualification_rules_active ON qualification_rules(is_active);
 CREATE INDEX IF NOT EXISTS idx_search_history_executed_at ON search_history(executed_at DESC);
 

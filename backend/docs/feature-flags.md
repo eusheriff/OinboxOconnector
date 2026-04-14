@@ -63,7 +63,7 @@ A interface permite:
 
 **Lacuna:** Não foi encontrado o endpoint backend `/api/admin/feature-flags` nos arquivos de rotas analisados. O componente frontend trata erros silenciosamente (`console.warn('Feature flags endpoint not available')`).
 
-**Inferência:** A feature flag é um **esqueleto funcional** — a tabela e a UI existem, mas o backend não implementa as rotas CRUD.
+**Inferência:** A feature flag é um **esqueleto funcional** � a tabela e a UI existem, mas o backend não implementa as rotas CRUD.
 
 ## Flags Conhecidas
 

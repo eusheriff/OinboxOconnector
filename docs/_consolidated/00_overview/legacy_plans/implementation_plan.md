@@ -19,7 +19,7 @@ Modularizar o arquivo `backend/worker.js` em múltiplos arquivos organizados por
 #### [NEW] `backend/src/index.ts` (Entry Point)
 
 - Configuração do Hono app.
-- Middlewares globais (CORS, Auth).
+- Middlewares globAutomations (CORS, Auth).
 - Montagem das rotas (`/api/auth`, `/api/admin`, `/api/clients`, etc.).
 
 #### [NEW] `backend/src/routes/auth.ts`
@@ -28,9 +28,9 @@ Modularizar o arquivo `backend/worker.js` em múltiplos arquivos organizados por
 
 #### [NEW] `backend/src/routes/admin.ts`
 
-- Rotas exclusivas do Super Admin (Listar Tenants, Stats Globais).
+- Rotas exclusivas do Super Admin (Listar Tenants, Stats GlobAutomations).
 
-#### [NEW] `backend/src/routes/ai.ts`
+#### [NEW] `backend/src/routes/Automation.ts`
 
 - Lógica de IA, Rate Limiting, RAG dinâmico.
 
@@ -69,7 +69,7 @@ Modularizar o arquivo `backend/worker.js` em múltiplos arquivos organizados por
 
 - Listagem e gestão de inquilinos.
 
-### 3. Dynamic Configuration & AI
+### 3. Dynamic Configuration & Automation
 
 #### [MODIFY] `wrangler.toml`
 
@@ -86,7 +86,7 @@ Modularizar o arquivo `backend/worker.js` em múltiplos arquivos organizados por
 
 1. **Fluxo Super Admin:**
    - Login como admin -> Redirecionamento para `/admin`.
-   - Visualizar lista de tenants e métricas globais.
+   - Visualizar lista de tenants e métricas globAutomations.
    - Tentar acessar rotas de cliente (deve falhar ou redirecionar).
 2. **Fluxo Cliente:**
    - Login como cliente -> Redirecionamento para `/app`.

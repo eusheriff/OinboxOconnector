@@ -40,7 +40,7 @@ const SettingsView: React.FC = () => {
 
   return (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-foreground mb-6">⚙️ Configurações & Integrações</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6"> Configurações & Integrações</h1>
 
       <div className="bg-card p-6 rounded-xl border border-border shadow-sm max-w-2xl">
         <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
@@ -56,8 +56,8 @@ const SettingsView: React.FC = () => {
               <div className="text-sm text-muted-foreground">
                 Key:{' '}
                 {geminiStatus === 'success'
-                  ? 'Conectado (Backend) ✅'
-                  : 'Gerenciado pelo Servidor 🔒'}
+                  ? 'Conectado (Backend) '
+                  : 'Gerenciado pelo Servidor '}
               </div>
               {geminiResponse && (
                 <div
@@ -84,7 +84,7 @@ const SettingsView: React.FC = () => {
                 Key:{' '}
                 {import.meta.env.VITE_GOOGLE_PLACES_API_KEY
                   ? 'Configurada •••••'
-                  : 'Não Configurada ❌'}
+                  : 'Não Configurada '}
               </div>
             </div>
             <div className="text-sm text-muted-foreground flex items-center gap-1">

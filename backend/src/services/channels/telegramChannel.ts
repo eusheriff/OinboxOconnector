@@ -3,10 +3,10 @@
  *
  * Telegram usa Bot Token (nÃ£o OAuth).
  * Fluxo:
- * 1. User cria bot via @BotFather â†’ recebe token
+ * 1. User cria bot via @BotFather â recebe token
  * 2. Token salvo no D1
  * 3. setWebhook API registra URL de webhook
- * 4. Webhook recebe mensagens â†’ NormalizerService â†’ Inbox
+ * 4. Webhook recebe mensagens â NormalizerService â Inbox
  */
 
 import { HonoContext } from '../../bindings';
@@ -404,7 +404,7 @@ export class TelegramChannelService {
     let finalMediaUrl = msg.media_url;
     const token = await this.channelRepo.getOAuthToken(channelId, 'telegram');
     if (token?.bot_username && finalMediaUrl && !finalMediaUrl.startsWith('http')) {
-      // Ã‰ um file_id do Telegram, precisa converter
+      // Ã um file_id do Telegram, precisa converter
       // Isso seria feito async em background
     }
 

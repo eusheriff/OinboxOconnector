@@ -22,37 +22,37 @@ const sections = [
     title: 'Getting Started',
     description: 'Instalação, configuração e primeiros passos',
     href: '/getting-started/overview',
-    icon: '🚀',
+    icon: null,
   },
   {
     title: 'Arquitetura',
     description: 'Estrutura do sistema, banco de dados e segurança',
     href: '/architecture/overview',
-    icon: '🏗️',
+    icon: null,
   },
   {
     title: 'Backend API',
     description: 'Referência completa de todas as rotas da API',
     href: '/backend/api-reference',
-    icon: '⚙️',
+    icon: null,
   },
   {
     title: 'Frontend',
     description: 'Componentes, hooks, services e estrutura do React',
     href: '/frontend/structure',
-    icon: '🎨',
+    icon: null,
   },
   {
-    title: 'Features',
-    description: 'AI, CRM, Inbox Unificado e Marketing Studio',
-    href: '/features/ai-features',
-    icon: '✨',
+    title: 'Fluxos de Dados',
+    description: 'Automação, CRM, Inbox Unificado e Marketing Studio',
+    href: '/features/overview',
+    icon: null,
   },
   {
     title: 'Deployment',
     description: 'Deploy na Cloudflare e troubleshooting',
     href: '/deployment/cloudflare',
-    icon: '🌐',
+    icon: null,
   },
 ];
 
@@ -68,8 +68,8 @@ export function IndexPage() {
           Documentação Oinbox
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Sistema Operacional Imobiliário completo com CRM, Inbox Unificado, 
-          AI e Marketing. Tudo em uma única plataforma.
+          Sistema Operacional Imobiliário com CRM, Inbox Unificado, 
+          Automação e Marketing. Tudo em uma única plataforma.
         </p>
       </div>
 
@@ -81,7 +81,7 @@ export function IndexPage() {
             href={section.href}
             className="group block p-6 rounded-xl border bg-card hover:bg-accent/50 hover:border-primary/50 transition-all"
           >
-            <div className="text-2xl mb-3">{section.icon}</div>
+            {section.icon && <div className="text-2xl mb-3">{section.icon}</div>}
             <h3 className="font-semibold text-lg mb-1 group-hover:text-primary transition-colors">
               {section.title}
             </h3>
@@ -93,7 +93,7 @@ export function IndexPage() {
       {/* Footer */}
       <div className="mt-16 text-center text-sm text-muted-foreground">
         <p>
-          Oinbox — Real Estate Operating System
+          Oinbox � Real Estate Operating System
         </p>
         <p className="mt-1">
           Todos os direitos reservados a Euimob Tecnologia

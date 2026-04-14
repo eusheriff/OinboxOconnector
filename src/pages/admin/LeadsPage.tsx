@@ -102,7 +102,7 @@ export function LeadsPage() {
                   <td className="p-4 text-gray-600">
                     {lead.assigned_to ? (
                       <span className="flex items-center gap-1">
-                        👤 {lead.assigned_to.split('@')[0]}
+                        � {lead.assigned_to.split('@')[0]}
                       </span>
                     ) : (
                       <span className="text-gray-400 italic">Não atribuído</span>

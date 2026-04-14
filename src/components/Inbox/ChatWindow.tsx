@@ -136,7 +136,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage, on
   const toggleRecording = () => {
     if (isRecording) {
       setIsRecording(false);
-      onSendMessage('üé§ [√Åudio - 0:15]');
+      onSendMessage('§ [√udio - 0:15]');
     } else {
       setIsRecording(true);
     }
@@ -212,7 +212,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onSendMessage, on
               <span>{conversation.platform}</span>
               {propertyContext && (
                 <span className="text-primary font-medium ml-1">
-                  ‚Ä¢ Interessado em: {propertyContext.title.substring(0, 20)}...
+                  ‚¢ Interessado em: {propertyContext.title.substring(0, 20)}...
                 </span>
               )}
             </div>

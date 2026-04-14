@@ -1,4 +1,4 @@
-# Trial Gate — Duplicação de Middleware
+# Trial Gate � Duplicação de Middleware
 
 ## Problema Identificado
 
@@ -62,7 +62,7 @@ export const authMiddleware = async (c, next) => {
 
 ### Qual é efetivamente executado?
 
-O middleware global em `index.ts` **NÃO** usa `authMiddleware` — ele implementa a verificação inline. O middleware `auth.ts` **NÃO** é aplicado globalmente em `index.ts` (o trial gate global é inline).
+O middleware global em `index.ts` **N�O** usa `authMiddleware` � ele implementa a verificação inline. O middleware `auth.ts` **N�O** é aplicado globalmente em `index.ts` (o trial gate global é inline).
 
 Porém, se alguma rota individual usar `authMiddleware` como middleware de rota (ex: `route.post('/x', authMiddleware, handler)`), o trial gate será executado **duas vezes** para essa rota:
 1. Pelo middleware global
@@ -70,7 +70,7 @@ Porém, se alguma rota individual usar `authMiddleware` como middleware de rota 
 
 ### Verificação
 
-No código analisado, **nenhuma rota usa `authMiddleware` individualmente** — todas as rotas são registradas sem middleware adicional (ex: `app.route('/api/auth', authRoutes)`). O trial gate de `auth.ts` pode ser executado apenas nas rotas internas de auth que o importam.
+No código analisado, **nenhuma rota usa `authMiddleware` individualmente** � todas as rotas são registradas sem middleware adicional (ex: `app.route('/api/auth', authRoutes)`). O trial gate de `auth.ts` pode ser executado apenas nas rotas internas de auth que o importam.
 
 **Porém**, `authRoutes` (`/api/auth/login`, `/api/auth/register`, etc.) estão na lista de paths **públicos** do middleware global (skip para `/api/auth`). Portanto:
 - Rotas de auth: **apenas** `authMiddleware` (se usado internamente)

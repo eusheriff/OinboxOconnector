@@ -33,13 +33,13 @@ export async function generateSocialKit(
       'Tom formal e elegante. Use linguagem de corretor experiente. Destaque exclusividade.',
     fun: 'Tom leve e descontraído. Use emojis com moderação. Crie conexão emocional.',
     urgent:
-      'Tom de urgência. Use gatilhos de escassez ("Últimas unidades!", "Oportunidade única!"). FOMO.',
+      'Tom de urgência. Use gatilhos de escassez ("�ltimas unidades!", "Oportunidade única!"). FOMO.',
   };
 
   const prompt = `
 Você é um copywriter especialista em Marketing Imobiliário para Instagram Brasil.
 
-IMÓVEL:
+IM�VEL:
 - Título: ${property.title}
 - Tipo: ${property.listing_type}
 - Preço: R$ ${property.price?.toLocaleString('pt-BR') || 'Sob consulta'}
@@ -57,7 +57,7 @@ Gere um Kit de Marketing Social com:
    - Use a estrutura AIDA (Atenção, Interesse, Desejo, Ação).
    - Máximo 2200 caracteres.
    - Quebre em parágrafos curtos (1-2 linhas).
-   - Use emojis estratégicos (🏠🔑✨💰📍).
+   - Use emojis estratégicos (�����).
    - Termine com CTA claro ("Chame no Direct!", "Link na bio").
 
 2. HASHTAGS:
@@ -80,10 +80,10 @@ FORMATO DE RESPOSTA (JSON estrito):
 Responda APENAS o JSON, sem markdown ou explicações.
 `;
 
-  const apiKey = env.GROQ_API_KEY;
-  const groqUrl = 'https://api.groq.com/openai/v1/chat/completions';
+  const apiKey = env.PRIMARY_ENGINE_API_KEY;
+  const EngineUrl = 'https://api.Engine.com/Engine/v1/chat/completions';
 
-  const response = await fetch(groqUrl, {
+  const response = await fetch(EngineUrl, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

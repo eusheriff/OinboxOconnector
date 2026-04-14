@@ -46,7 +46,7 @@ const getHeaders = (isMultipart = false) => {
   };
 
   if (!token) {
-    console.warn('[API] WARNING: No auth token found â€” requests will be unauthenticated');
+    console.warn('[API] WARNING: No auth token found â requests will be unauthenticated');
   }
 
   if (!isMultipart) {
@@ -272,7 +272,7 @@ export const apiService = {
     return response.json();
   },
 
-  getHeaders: getHeaders, // Exposing for external use (like geminiService)
+  getHeaders: getHeaders, // Exposing for external use (like AutomationService)
 
   // Stripe Checkout
   createCheckoutSession: async (data: {

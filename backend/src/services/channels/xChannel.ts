@@ -3,9 +3,9 @@
  *
  * X usa OAuth 1.0a para autorizaÃ§Ã£o e Account Activity API para webhooks.
  * Fluxo:
- * 1. OAuth 1.0a (3-legged) â†’ access_token + access_token_secret
+ * 1. OAuth 1.0a (3-legged) â access_token + access_token_secret
  * 2. Registrar webhook via Account Activity API
- * 3. Webhook recebe DMs â†’ NormalizerService â†’ Inbox
+ * 3. Webhook recebe DMs â NormalizerService â Inbox
  */
 
 import { HonoContext } from '../../bindings';

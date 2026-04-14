@@ -107,7 +107,7 @@ const SuperAdminLeadCapture: React.FC<SuperAdminLeadCaptureProps> = ({ onLogout 
     {
       view: AppView.SUPER_ADMIN_BUYER_LEADS,
       icon: Home,
-      label: '🏠 Leads Compradores',
+      label: '� Leads Compradores',
       badge: null,
     },
   ];
@@ -178,7 +178,7 @@ const SuperAdminLeadCapture: React.FC<SuperAdminLeadCaptureProps> = ({ onLogout 
 
   const renderFunnelDashboard = () => (
     <div className="p-8">
-      <h1 className="text-2xl font-bold text-foreground mb-6">🎯 Funil de Captação</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">� Funil de Captação</h1>
 
       {/* Funil Visual */}
       <div className="bg-card p-6 rounded-xl border border-border shadow-sm mb-8">
@@ -388,7 +388,7 @@ const SuperAdminLeadCapture: React.FC<SuperAdminLeadCaptureProps> = ({ onLogout 
         );
       }
 
-      setProcessingStatus('Auto-processing complete! 🚀');
+      setProcessingStatus('Auto-processing complete! �');
       setTimeout(() => setProcessingStatus(''), 5000);
     } catch (error) {
       console.error('Processing error:', error);
@@ -412,7 +412,7 @@ const SuperAdminLeadCapture: React.FC<SuperAdminLeadCaptureProps> = ({ onLogout 
         'Content-Type': 'application/json',
         ...apiService.getHeaders(),
       };
-      console.log('🔑 [DEBUG] Search request headers:', headers);
+      console.log('� [DEBUG] Search request headers:', headers);
 
       const response = await fetch(`${API_BASE}/api/places/search`, {
         method: 'POST',
@@ -477,7 +477,7 @@ const SuperAdminLeadCapture: React.FC<SuperAdminLeadCaptureProps> = ({ onLogout 
 
   const renderGooglePlaces = () => (
     <div className="p-8 h-full flex flex-col">
-      <h1 className="text-2xl font-bold text-foreground mb-6">📍 Busca Google Places - Maps</h1>
+      <h1 className="text-2xl font-bold text-foreground mb-6">� Busca Google Places - Maps</h1>
 
       <div className="bg-card p-6 rounded-xl border border-border shadow-sm mb-6 flex-shrink-0">
         <div className="flex gap-4 mb-4">
@@ -566,7 +566,7 @@ const SuperAdminLeadCapture: React.FC<SuperAdminLeadCaptureProps> = ({ onLogout 
 
       {!import.meta.env.VITE_GOOGLE_PLACES_API_KEY && (
         <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 text-destructive text-sm mb-6">
-          <strong>⚠️ Erro:</strong> `VITE_GOOGLE_PLACES_API_KEY` não configurada no .env
+          <strong>�� Erro:</strong> `VITE_GOOGLE_PLACES_API_KEY` não configurada no .env
         </div>
       )}
 
@@ -600,7 +600,7 @@ const SuperAdminLeadCapture: React.FC<SuperAdminLeadCaptureProps> = ({ onLogout 
                       <p className="text-sm text-muted-foreground">{place.formatted_address}</p>
                       <div className="flex items-center gap-2 mt-1">
                         <span className="text-xs bg-muted px-2 py-0.5 rounded text-muted-foreground font-medium flex items-center gap-1">
-                          ⭐ {place.rating} ({place.user_ratings_total})
+                          � {place.rating} ({place.user_ratings_total})
                         </span>
                         {place.business_status && (
                           <span className="text-xs border border-border px-2 py-0.5 rounded text-muted-foreground">
@@ -702,17 +702,17 @@ const SuperAdminLeadCapture: React.FC<SuperAdminLeadCaptureProps> = ({ onLogout 
       case AppView.SUPER_ADMIN_INBOX:
         return renderPlaceholder(
           'Inbox Omnichannel',
-          '📥',
+          '�',
           'Gerencie todas as conversas em um só lugar',
         );
       case AppView.SUPER_ADMIN_ANALYTICS:
-        return renderPlaceholder('Analytics', '📈', 'Visualize KPIs e métricas de ROI');
+        return renderPlaceholder('Analytics', '�', 'Visualize KPIs e métricas de ROI');
       case AppView.SUPER_ADMIN_SETTINGS:
         return <SettingsView />;
       case AppView.SUPER_ADMIN_FINANCE:
-        return renderPlaceholder('Faturamento', '💳', 'Visualize assinaturas e receita');
+        return renderPlaceholder('Faturamento', '�', 'Visualize assinaturas e receita');
       case AppView.SUPER_ADMIN_USERS:
-        return renderPlaceholder('Gestão de Usuários', '👤', 'Gerencie acessos e permissões');
+        return renderPlaceholder('Gestão de Usuários', '�', 'Gerencie acessos e permissões');
       case AppView.SUPER_ADMIN_BUYER_LEADS:
         return <BuyerLeadsAdmin />;
       default:
@@ -902,7 +902,7 @@ const LeadsManager = () => {
       <div className="flex justify-between items-center mb-6 shrink-0">
         <div>
           <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            👥 Gerenciar Leads
+            � Gerenciar Leads
             <span className="text-xs font-normal bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full border border-purple-200">
               Autônomo
             </span>
@@ -999,7 +999,7 @@ const LeadsManager = () => {
                       </div>
                     </td>
                     <td className="p-4">
-                      <span className="flex items-center gap-1 text-sm">⭐ {lead.rating}</span>
+                      <span className="flex items-center gap-1 text-sm">� {lead.rating}</span>
                     </td>
                     <td className="p-4">
                       <span
@@ -1089,7 +1089,7 @@ const BuyerLeadsAdmin = () => {
     <div className="p-8">
       <div className="flex justify-between items-center mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">🏠 Leads de Compradores</h1>
+          <h1 className="text-2xl font-bold text-foreground">� Leads de Compradores</h1>
         </div>
         <button
           onClick={() => setShowForm(!showForm)}

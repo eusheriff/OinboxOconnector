@@ -34,7 +34,7 @@ whatsappOauth.get('/login', authMiddleware, async (c) => {
 });
 
 // Rota 2: O Callback da Meta (Redirect apÃ³s login)
-// Esta rota NÃƒO DEVE ter authMiddleware pois Ã© o navegador retornando do Facebook
+// Esta rota NÃO DEVE ter authMiddleware pois Ã© o navegador retornando do Facebook
 whatsappOauth.get('/callback', async (c) => {
   const env = c.env;
   const logger = c.get('logger') || createDatadogLogger(env);
@@ -160,7 +160,7 @@ whatsappOauth.get('/phones', authMiddleware, async (c) => {
 });
 
 // ==========================================
-// ROTA 4: WEBHOOK DA CLOUD API (VERIFICAÃ‡ÃƒO)
+// ROTA 4: WEBHOOK DA CLOUD API (VERIFICAÃÃO)
 // ==========================================
 // O Facebook enviarÃ¡ um GET para validar a url de webhook do app.
 whatsappOauth.get('/webhook', async (c) => {
@@ -199,7 +199,7 @@ whatsappOauth.post('/webhook', async (c) => {
     for (const entry of body.entry) {
       for (const change of entry.changes) {
         if (change.value && change.value.messages) {
-          // Ã‰ UMA MENSAGEM RECEBIDA
+          // Ã UMA MENSAGEM RECEBIDA
           const msgMeta = change.value.messages[0];
           const contactMeta = change.value.contacts?.[0];
           const metadataPhoneId = change.value.metadata?.phone_number_id;
@@ -227,13 +227,13 @@ whatsappOauth.post('/webhook', async (c) => {
             content = msgMeta.text?.body || '';
           } else if (msgMeta.type === 'image') {
             // Fazer donwload da midia pelo id futuramente
-            content = 'ðŸ“· Imagem recebida';
+            content = 'ð· Imagem recebida';
             mediaUrl = msgMeta.image?.id; 
           }
 
           const messageId = msgMeta.id;
 
-          // Salvar na Caixa Ãšnica!
+          // Salvar na Caixa Ãnica!
           const repo = new WhatsAppRepository(env.DB as unknown as import('@cloudflare/workers-types').D1Database);
           
           // O hook antigo jÃ¡ gerencia Lead Assign, IA Handoff, Intents.

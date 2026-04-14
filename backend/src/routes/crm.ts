@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import bcrypt from 'bcryptjs';
 import { Bindings, Variables } from '../bindings';
 import { authMiddleware } from '../middleware/auth';
-import { analyzeClientData } from '../services/aiService';
+import { analyzeClientData } from '../services/automationService';
 
 const crm = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
@@ -87,12 +87,12 @@ crm.post('/clients/:id/analyze', async (c) => {
   // 2. Construct conversation text
   const conversation = history.results.map((m) => m.role + ': ' + m.content).join('\n');
 
-  // 3. Call Gemini via aiService
+  // 3. Call Automation via automationService
   try {
     const result = await analyzeClientData(c.env, conversation);
 
     // 4. Update Database
-    await c.env.DB.prepare('UPDATE clients SET score = ?, ai_summary = ? WHERE id = ?')
+    await c.env.DB.prepare('UPDATE clients SET score = ?, automation_summary = ? WHERE id = ?')
       .bind(result.score, result.summary, clientId)
       .run();
 

@@ -88,7 +88,7 @@ export const ManuWidget: React.FC = () => {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Olá! Sou a Manú, Especialista em Omnichannel do oInbox. 📥\nComo posso ajudar a centralizar seu atendimento hoje?',
+        'Olá! Sou a Manú, Especialista em Omnichannel do oInbox. �\nComo posso ajudar a centralizar seu atendimento hoje?',
     },
   ]);
   const [inputValue, setInputValue] = useState('');
@@ -151,7 +151,7 @@ export const ManuWidget: React.FC = () => {
         {
           id: Date.now().toString(),
           role: 'system',
-          content: '⚠️ Erro de conexão. Verifique sua internet.',
+          content: '�� Erro de conexão. Verifique sua internet.',
         },
       ]);
     } finally {

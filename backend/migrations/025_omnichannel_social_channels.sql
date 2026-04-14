@@ -72,7 +72,7 @@ CREATE TABLE IF NOT EXISTS token_refresh_queue (
     FOREIGN KEY (channel_id) REFERENCES channels(id) ON DELETE CASCADE
 );
 
--- 5. √çndices
+-- 5. √ndices
 CREATE INDEX IF NOT EXISTS idx_channel_oauth_tokens_channel ON channel_oauth_tokens(channel_id);
 CREATE INDEX IF NOT EXISTS idx_channel_oauth_tokens_provider ON channel_oauth_tokens(provider);
 CREATE INDEX IF NOT EXISTS idx_channel_oauth_tokens_expires ON channel_oauth_tokens(expires_at);

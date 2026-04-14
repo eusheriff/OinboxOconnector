@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS property_publications (
     FOREIGN KEY (tenant_id) REFERENCES tenants(id) ON DELETE CASCADE
 );
 
--- √çndices para performance
+-- √ndices para performance
 CREATE INDEX IF NOT EXISTS idx_portal_configs_tenant ON portal_configs(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_portal_configs_portal ON portal_configs(portal_id);
 CREATE INDEX IF NOT EXISTS idx_property_publications_property ON property_publications(property_id);

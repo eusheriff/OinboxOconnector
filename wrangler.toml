@@ -25,14 +25,14 @@ binding = "IMAGES"
 bucket_name = "oconnector-images"
 
 [ai]
-binding = "AI"
+binding = "PROCESSOR"
 
 [vars]
 # IA — Ollama com Gemma 4 (disponível via servidor local)
-# Para dev local: configure OLLAMA_URL no .dev.vars
-# Para produção: use wrangler secret put OLLAMA_URL http://seu-servidor:11434
+# Para dev local: configure LOCAL_ENGINE_URL no .dev.vars
+# Para produção: use wrangler secret put LOCAL_ENGINE_URL http://seu-servidor:11434
 STRIPE_PRICE_EXTRA_SEAT = "price_1SnTGCBGBVDzrAhzuL7ICFwJ"
-STRIPE_PRICE_EXTRA_AI = "price_1SnTGPBGBVDzrAhzL7GPpFqT"
+STRIPE_PRICE_EXTRA_AUTOMATION = "price_1SnTGPBGBVDzrAhzL7GPpFqT"
 STRIPE_PRICE_PRO = "price_1SnQxcBGBVDzrAhzxO2rdJ31"
 STRIPE_PRICE_BASIC = "price_1SnQxUBGBVDzrAhzlMMZwDjM"
 # Segredos configurados via wrangler secret put:

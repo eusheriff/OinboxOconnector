@@ -1,12 +1,12 @@
 import { Bindings } from '../bindings';
 import { createDatadogLogger } from '../utils/datadog';
-import { matchProperties } from './aiService';
+import { matchProperties } from './automationService';
 import { formatWhatsAppJid } from '../utils/whatsapp';
 
 interface MatchCandidate {
   id: string;
   name: string;
-  ai_summary: string;
+  automation_summary: string;
   phone: string;
 }
 
@@ -29,7 +29,7 @@ export async function findMatches(
     // Limit to 20 most recent active leads
     const candidates = await env.DB.prepare(
       `
-        SELECT id, name, ai_summary, phone 
+        SELECT id, name, automation_summary, phone 
         FROM clients 
         WHERE tenant_id = ? 
           AND status IN ('Novo', 'Em Atendimento')
@@ -45,11 +45,11 @@ export async function findMatches(
       return;
     }
 
-    // 2. AI Semantic Match via aiService
+    // 2. AI Semantic Match via automationService
     const candidateData = candidates.results.map((c) => ({
       id: c.id,
       name: c.name,
-      summary: c.ai_summary,
+      summary: c.automation_summary,
     }));
 
     const matchIds = await matchProperties(env, property, candidateData);
@@ -62,12 +62,12 @@ export async function findMatches(
     // 4. Notify Agent via WhatsApp
     const matchNames = matches.map((m) => m.name).join(', ');
     const message =
-      `ğŸ”¥ *Match Reverso Encontrado!* ğŸ”¥\n\n` +
-      `ğŸ  ImÃ³vel: *${property.title}*\n` +
-      `ğŸ’° PreÃ§o: R$ ${property.price}\n\n` +
+      `ğ¥ *Match Reverso Encontrado!* ğ¥\n\n` +
+      `ğ  ImÃ³vel: *${property.title}*\n` +
+      `ğ° PreÃ§o: R$ ${property.price}\n\n` +
       `Encontramos ${matches.length} leads interessados na sua base:\n` +
-      `ğŸ‘¥ *${matchNames}*\n\n` +
-      `ğŸ‘‰ Abra o CRM e aborde-os agora!`;
+      `ğ¥ *${matchNames}*\n\n` +
+      `ğ Abra o CRM e aborde-os agora!`;
 
     const instanceName = `tenant_${tenantId}`;
     const evolutionUrl = `${env.EVOLUTION_API_URL}/message/sendText/${instanceName}`;

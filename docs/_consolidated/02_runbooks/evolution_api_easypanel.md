@@ -10,17 +10,17 @@
 ## Passo 1: Criar novo App no EasyPanel
 
 1. Acesse seu EasyPanel
-2. Clique em **"Create"** → **"App"**
+2. Clique em **"Create"** � **"App"**
 3. Nome: `evolution-api`
 
 ---
 
 ## Passo 2: Configurar via Docker
 
-No EasyPanel, vá em **"App" → "Source"** e selecione **Docker Image**:
+No EasyPanel, vá em **"App" � "Source"** e selecione **Docker Image**:
 
 ```
-Image: atendai/evolution-api:latest
+Image: atendAutomation/evolution-api:latest
 ```
 
 ---
@@ -69,7 +69,7 @@ QRCODE_COLOR=#F97316
 
 No EasyPanel:
 
-1. **Create** → **Database** → **PostgreSQL**
+1. **Create** � **Database** � **PostgreSQL**
 2. Nome: `evolution-db`
 3. Copie a connection string e use na variável `DATABASE_CONNECTION_URI`
 
@@ -77,7 +77,7 @@ No EasyPanel:
 
 ## Passo 5: Configurar Domínio
 
-1. Em **"Domains"**, adicione: `evolution.seudominio.com`
+1. Em **"DomAutomationns"**, adicione: `evolution.seudominio.com`
 2. Habilite **HTTPS** (Let's Encrypt automático)
 3. Porta interna: `8080`
 
@@ -122,7 +122,7 @@ docker restart evolution-api
 
 ## Segurança
 
-⚠️ **IMPORTANTE:**
+ **IMPORTANTE:**
 
 - Troque `SUA_CHAVE_SECRETA_AQUI` por uma chave forte (ex: `openssl rand -hex 32`)
 - Nunca exponha a API sem HTTPS

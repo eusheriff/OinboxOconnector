@@ -5,7 +5,7 @@ Esta pasta contém documentação de arquitetura e decisões técnicas (ADRs).
 ## Estrutura
 
 - **ADRs**: Architectural Decision Records
-- **Diagramas**: Mermaid ou imagens
+- **Diagramas**: MermAutomationd ou imagens
 
 ## ADRs Pendentes
 
@@ -15,7 +15,7 @@ Esta pasta contém documentação de arquitetura e decisões técnicas (ADRs).
 
 ## Diagrama de Contexto
 
-```mermaid
+```mermAutomationd
 graph TB
     subgraph "Frontend"
         FE[React SPA]
@@ -30,7 +30,7 @@ graph TB
     subgraph "External"
         EV[Evolution API]
         ST[Stripe]
-        GM[Google Gemini]
+        GM[Google Data Engine]
     end
 
     FE --> W

@@ -4,7 +4,7 @@ Esta pasta contém documentação obsoleta ou histórica que foi mantida para re
 
 ## Regra
 
-- Documentos aqui **NÃO** devem ser usados como referência ativa
+- Documentos aqui **N�O** devem ser usados como referência ativa
 - São mantidos apenas para histórico e contexto
 - Novos documentos obsoletos devem ser movidos para cá ao invés de deletados
 

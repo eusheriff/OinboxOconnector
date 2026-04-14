@@ -18,7 +18,7 @@ export function getTemplate(type: 'sale' | 'rent'): string {
             <p><strong>{{client_name}}</strong>, CPF {{client_cpf}}.</p>
             <h3>OBJETO:</h3>
             <p>O im√≥vel situado em: {{property_address}}.</p>
-            <h3>PRE√áO:</h3>
+            <h3>PRE√O:</h3>
             <p>O valor acordado √© de <strong>R$ {{property_price}}</strong>.</p>
             <br>
             <p>Data: {{date}}</p>
@@ -29,11 +29,11 @@ export function getTemplate(type: 'sale' | 'rent'): string {
   }
   // Rent
   return `
-        <h1>CONTRATO DE LOCA√á√ÉO</h1>
+        <h1>CONTRATO DE LOCA√√O</h1>
         <p>Pelo presente instrumento particular, as partes assinam:</p>
         <h3>LOCADOR (Administrado por):</h3>
         <p><strong>{{tenant_name}}</strong>.</p>
-        <h3>LOCAT√ÅRIO:</h3>
+        <h3>LOCAT√RIO:</h3>
         <p><strong>{{client_name}}</strong>.</p>
         <h3>OBJETO:</h3>
         <p>O im√≥vel situado em: {{property_address}}.</p>

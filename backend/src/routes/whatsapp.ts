@@ -83,7 +83,7 @@ whatsapp.post('/webhook', async (c) => {
         const phoneClean = remoteJid!.replace('@s.whatsapp.net', '');
         const lead = await repo.findLeadByPhone(tenantId, phoneClean);
 
-        // OBT√âM OU CRIA A CONVERSA (Status inicial √© 'bot')
+        // OBT√M OU CRIA A CONVERSA (Status inicial √© 'bot')
         const conversation = await repo.getOrCreateOmniConversation(tenantId, remoteJid!, lead?.id);
 
         if (lead) {
@@ -105,7 +105,7 @@ whatsapp.post('/webhook', async (c) => {
 
         await logger?.info('[WhatsApp] Acionando Agente de Vendas (Captain/IA)...');
 
-        // 1. AN√ÅLISE DE INTEN√á√ÉO (Autopilot CRM)
+        // 1. AN√LISE DE INTEN√√O (Autopilot CRM)
         let agentResponseText = '';
         let intent = 'OTHER';
         const salesTools = new SalesTools(env); // Instantiate SalesTools
@@ -117,11 +117,11 @@ whatsapp.post('/webhook', async (c) => {
 
           await logger?.info(`[Sales Specialist] Intent Detected: ${intent}`, { analysis });
 
-          // 2. MOVIMENTA√á√ÉO AUT√îNOMA CRM & HANDOFF
+          // 2. MOVIMENTA√√O AUT√NOMA CRM & HANDOFF
           if (intent === 'INTERESTED' || intent === 'SUPPORT') {
             // Transbordo Expresso
             await env.DB.prepare("UPDATE conversations SET status = 'open' WHERE id = ?").bind(conversation.id).run();
-            await logger?.info(`[WhatsApp] ‚û°Ô∏è HANDOFF! Intent ${intent}. Bot silenciado.`, { convId: conversation.id });
+            await logger?.info(`[WhatsApp] ‚°Ô∏ HANDOFF! Intent ${intent}. Bot silenciado.`, { convId: conversation.id });
 
             // Notification
             if (lead) {
@@ -141,7 +141,7 @@ whatsapp.post('/webhook', async (c) => {
 
             if (lead && intent === 'INTERESTED') {
               await env.DB.prepare("UPDATE leads SET status = 'hot_lead', unread_count = unread_count + 1 WHERE id = ?").bind(lead.id).run();
-              if (!agentResponseText) agentResponseText = '√ìtimo! Vou te transferir para um especialista agora mesmo.';
+              if (!agentResponseText) agentResponseText = '√timo! Vou te transferir para um especialista agora mesmo.';
             } else if (lead && intent === 'SUPPORT') {
               await env.DB.prepare("UPDATE leads SET status = 'needs_support' WHERE id = ?").bind(lead.id).run();
               if (!agentResponseText) agentResponseText = 'Certo, estou te transferindo para o nosso atendimento humano!';
@@ -230,7 +230,7 @@ whatsapp.post('/webhook', async (c) => {
 // Auth agora √© aplicado globalmente em index.ts (antes do tenant enforcement)
 // whatsapp.use('/*', authMiddleware);
 
-// Middleware para garantir inst√¢ncia existente por USU√ÅRIO
+// Middleware para garantir inst√¢ncia existente por USU√RIO
 const ensureInstance = async (
   env: Bindings,
   userId: string,
@@ -368,7 +368,7 @@ whatsapp.post('/send', async (c) => {
        return c.json({ error: 'Nenhum canal ativo de WhatsApp encontrado' }, 400);
     }
 
-    // Se N√ÉO for nota privada, envia para o Mundo Externo (WhatsApp real)
+    // Se N√O for nota privada, envia para o Mundo Externo (WhatsApp real)
     if (!isPrivate && channel) {
       if (channel.provider === 'whatsapp_cloud') {
          // ENVIO OFICIAL META GRAPH API

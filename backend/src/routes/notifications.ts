@@ -7,7 +7,7 @@ const notifications = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 // Aplicar auth em todas as rotas
 // notifications.use('/*', authMiddleware); // Auth global em index.ts
 
-// GET /api/notifications — Listar notificações não lidas do tenant
+// GET /api/notifications � Listar notificações não lidas do tenant
 notifications.get('/', async (c) => {
   const user = c.get('user');
   const tenantId = user.tenantId;
@@ -29,7 +29,7 @@ notifications.get('/', async (c) => {
   return c.json({ notifications: results.results });
 });
 
-// GET /api/notifications/:id — Detalhe de uma notificação
+// GET /api/notifications/:id � Detalhe de uma notificação
 notifications.get('/:id', async (c) => {
   const user = c.get('user');
   const id = c.req.param('id');
@@ -47,7 +47,7 @@ notifications.get('/:id', async (c) => {
   return c.json({ notification });
 });
 
-// PATCH /api/notifications/:id/read — Marcar como lida
+// PATCH /api/notifications/:id/read � Marcar como lida
 notifications.patch('/:id/read', async (c) => {
   const user = c.get('user');
   const id = c.req.param('id');
@@ -59,7 +59,7 @@ notifications.patch('/:id/read', async (c) => {
   return c.json({ success: true });
 });
 
-// PATCH /api/notifications/read-all — Marcar todas como lidas
+// PATCH /api/notifications/read-all � Marcar todas como lidas
 notifications.patch('/read-all', async (c) => {
   const user = c.get('user');
 
@@ -72,7 +72,7 @@ notifications.patch('/read-all', async (c) => {
   return c.json({ success: true });
 });
 
-// DELETE /api/notifications/:id — Remover notificação
+// DELETE /api/notifications/:id � Remover notificação
 notifications.delete('/:id', async (c) => {
   const user = c.get('user');
   const id = c.req.param('id');

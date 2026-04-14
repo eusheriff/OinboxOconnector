@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { Bindings, Variables } from '../bindings';
 import { authMiddleware } from '../middleware/auth';
 import { getPlan } from '../config/plans';
-import { generatePropertyDescription } from '../services/aiService';
+import { generatePropertyDescription } from '../services/automationService';
 
 const properties = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 

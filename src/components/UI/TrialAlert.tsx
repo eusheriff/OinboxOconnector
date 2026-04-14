@@ -37,7 +37,7 @@ export const TrialAlert: React.FC<TrialAlertProps> = ({ user }) => {
       className={`${bgColor} text-white px-4 py-3 shadow-md flex justify-between items-center transition-all duration-300`}
     >
       <div className="flex items-center gap-2">
-        <span className="font-medium">ðŸš€ Trial Premium</span>
+        <span className="font-medium">ð Trial Premium</span>
         <span className="text-sm opacity-90">| {message}</span>
       </div>
       <button

@@ -112,7 +112,7 @@ export const circuitBreakers = {
     recoveryTimeout: 120_000, // 2 minutos
     successThreshold: 2,
   }),
-  openai: new CircuitBreaker('OpenAI', {
+  Engine: new CircuitBreaker('Engine', {
     failureThreshold: 5,
     recoveryTimeout: 60_000, // 1 minuto
     successThreshold: 2,

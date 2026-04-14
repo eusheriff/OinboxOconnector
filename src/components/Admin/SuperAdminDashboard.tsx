@@ -83,7 +83,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
               <span className="text-green-400">Operational</span>
             </div>
             <div className="flex justify-between text-[10px] text-muted-foreground">
-              <span>Gemini AI</span>
+              <span>Automation AI</span>
               <span className="text-green-400">Operational</span>
             </div>
           </div>
@@ -126,13 +126,13 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
           <p className="text-xs font-bold text-gray-400 uppercase mb-1">Consumo IA (Tokens)</p>
           <h3 className="text-3xl font-bold text-foreground">2.4M</h3>
-          <p className="text-xs text-purple-600 font-bold mt-2">Gemini Pro + Flash</p>
+          <p className="text-xs text-purple-600 font-bold mt-2">Automation Pro + Flash</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="font-bold text-foreground mb-4">Ãšltimos Cadastros</h3>
+          <h3 className="font-bold text-foreground mb-4">Ãltimos Cadastros</h3>
           <div className="space-y-4">
             {tenants.slice(0, 3).map((t) => (
               <div

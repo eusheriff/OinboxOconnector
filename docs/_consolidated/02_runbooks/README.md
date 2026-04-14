@@ -1,8 +1,8 @@
 # Runbooks - OInbox
 
-Manuais operacionais para desenvolvimento, deploy e troubleshooting.
+ManuAutomations operacionAutomations para desenvolvimento, deploy e troubleshooting.
 
-## √çndice
+## √ndice
 
 1. [Evolution API - EasyPanel](./evolution_api_easypanel.md)
 2. [Desenvolvimento Local](#desenvolvimento-local) _(pendente)_
@@ -31,7 +31,7 @@ npm run dev:backend
 # Terminal 2: npm run dev:backend
 ```
 
-### URLs Locais
+### URLs LocAutomations
 
 - Frontend: http://localhost:5173
 - Backend: http://localhost:8787
@@ -59,5 +59,5 @@ npm run deploy:worker
 wrangler secret put JWT_SECRET
 wrangler secret put STRIPE_SECRET_KEY
 wrangler secret put GOOGLE_PLACES_API_KEY
-wrangler secret put GOOGLE_GEMINI_API_KEY
+wrangler secret put GOOGLE_Data Engine_API_KEY
 ```

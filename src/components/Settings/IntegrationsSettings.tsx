@@ -16,7 +16,7 @@ import {
   Settings2,
   RefreshCw,
 } from 'lucide-react';
-import { OLLAMA_MODELS } from '@/constants';
+import { Engine_MODELS } from '@/constants';
 import { AIConfig } from '@shared/types';
 
 type AuthMethod = 'qr' | 'credentials' | 'oauth';
@@ -123,14 +123,14 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
     return saved
       ? JSON.parse(saved)
       : {
-          provider: 'openai',
-          ollamaBaseUrl: 'http://localhost:11434',
+          provider: 'Engine',
+          EngineBaseUrl: 'http://localhost:11434',
           selectedModel: 'llama3.1:8b',
           visionModel: 'qwen3-vl:8b',
         };
   });
-  const [testingOllama, setTestingOllama] = useState(false);
-  const [ollamaStatus, setOllamaStatus] = useState<'unknown' | 'online' | 'offline'>('unknown');
+  const [testingEngine, setTestingEngine] = useState(false);
+  const [EngineStatus, setEngineStatus] = useState<'unknown' | 'online' | 'offline'>('unknown');
 
   // Modals & Auth States (Existing code)
   const [activeIntegration, setActiveIntegration] = useState<IntegrationItem | null>(null);
@@ -145,20 +145,20 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
     localStorage.setItem('oconnector_ai_config', JSON.stringify(newConfig));
   };
 
-  const testOllamaConnection = async () => {
-    setTestingOllama(true);
+  const testEngineConnection = async () => {
+    setTestingEngine(true);
     try {
       // Tenta listar tags para ver se responde
-      const res = await fetch(`${aiConfig.ollamaBaseUrl}/api/tags`);
+      const res = await fetch(`${aiConfig.EngineBaseUrl}/api/tags`);
       if (res.ok) {
-        setOllamaStatus('online');
+        setEngineStatus('online');
       } else {
-        setOllamaStatus('offline');
+        setEngineStatus('offline');
       }
     } catch {
-      setOllamaStatus('offline');
+      setEngineStatus('offline');
     } finally {
-      setTestingOllama(false);
+      setTestingEngine(false);
     }
   };
 
@@ -168,18 +168,18 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
       {/* Provider Selection */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div
-          onClick={() => saveAiConfig({ ...aiConfig, provider: 'openai' })}
-          className={`p-6 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-4 ${aiConfig.provider === 'openai' ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-gray-200 hover:bg-gray-50'}`}
+          onClick={() => saveAiConfig({ ...aiConfig, provider: 'Engine' })}
+          className={`p-6 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-4 ${aiConfig.provider === 'Engine' ? 'border-blue-600 bg-blue-50 ring-1 ring-blue-600' : 'border-gray-200 hover:bg-gray-50'}`}
         >
           <div className="bg-white p-3 rounded-full shadow-sm">
             <SparklesIcon className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h3 className="font-bold text-foreground text-lg">Google Gemini</h3>
+            <h3 className="font-bold text-foreground text-lg">Google Automation</h3>
             <p className="text-sm text-muted-foreground mt-1">
               Nuvem (Cloud). Mais rápido, requer chave de API. Ideal para uso em produção web.
             </p>
-            {aiConfig.provider === 'openai' && (
+            {aiConfig.provider === 'Engine' && (
               <div className="mt-3 flex items-center gap-1 text-xs font-bold text-blue-700">
                 <CheckCircle2 className="w-4 h-4" /> Selecionado
               </div>
@@ -188,18 +188,18 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
         </div>
 
         <div
-          onClick={() => saveAiConfig({ ...aiConfig, provider: 'ollama' })}
-          className={`p-6 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-4 ${aiConfig.provider === 'ollama' ? 'border-orange-500 bg-orange-50 ring-1 ring-orange-500' : 'border-gray-200 hover:bg-gray-50'}`}
+          onClick={() => saveAiConfig({ ...aiConfig, provider: 'Engine' })}
+          className={`p-6 rounded-xl border-2 cursor-pointer transition-all flex items-start gap-4 ${aiConfig.provider === 'Engine' ? 'border-orange-500 bg-orange-50 ring-1 ring-orange-500' : 'border-gray-200 hover:bg-gray-50'}`}
         >
           <div className="bg-white p-3 rounded-full shadow-sm">
             <Cpu className="w-6 h-6 text-orange-600" />
           </div>
           <div>
-            <h3 className="font-bold text-foreground text-lg">Ollama (Local)</h3>
+            <h3 className="font-bold text-foreground text-lg">Engine (Local)</h3>
             <p className="text-sm text-muted-foreground mt-1">
               Privacidade total. Roda no seu computador. Requer hardware compatível.
             </p>
-            {aiConfig.provider === 'ollama' && (
+            {aiConfig.provider === 'Engine' && (
               <div className="mt-3 flex items-center gap-1 text-xs font-bold text-orange-700">
                 <CheckCircle2 className="w-4 h-4" /> Selecionado
               </div>
@@ -208,8 +208,8 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
         </div>
       </div>
 
-      {/* Ollama Configuration */}
-      {aiConfig.provider === 'ollama' && (
+      {/* Engine Configuration */}
+      {aiConfig.provider === 'Engine' && (
         <div className="bg-white p-6 rounded-2xl border border-gray-200 shadow-sm">
           <h3 className="font-bold text-foreground mb-6 flex items-center gap-2">
             <Settings2 className="w-5 h-5 text-gray-500" /> Configuração Local
@@ -219,21 +219,21 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
             {/* URL */}
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-2">
-                URL do Servidor Ollama
+                URL do Servidor Engine
               </label>
               <div className="flex gap-3">
                 <input
                   type="text"
-                  value={aiConfig.ollamaBaseUrl}
-                  onChange={(e) => saveAiConfig({ ...aiConfig, ollamaBaseUrl: e.target.value })}
+                  value={aiConfig.EngineBaseUrl}
+                  onChange={(e) => saveAiConfig({ ...aiConfig, EngineBaseUrl: e.target.value })}
                   className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none"
                 />
                 <button
-                  onClick={testOllamaConnection}
-                  disabled={testingOllama}
+                  onClick={testEngineConnection}
+                  disabled={testingEngine}
                   className="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 transition-colors"
                 >
-                  {testingOllama ? (
+                  {testingEngine ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
                     <RefreshCw className="w-4 h-4" />
@@ -241,15 +241,15 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
                   Testar
                 </button>
               </div>
-              {ollamaStatus === 'online' && (
+              {EngineStatus === 'online' && (
                 <p className="text-xs text-green-600 font-bold mt-2 flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3" /> Conectado com sucesso!
                 </p>
               )}
-              {ollamaStatus === 'offline' && (
+              {EngineStatus === 'offline' && (
                 <p className="text-xs text-red-500 font-bold mt-2 flex items-center gap-1">
-                  <X className="w-3 h-3" /> Não foi possível conectar. Verifique se o Ollama está
-                  rodando (ollama serve).
+                  <X className="w-3 h-3" /> Não foi possível conectar. Verifique se o Engine está
+                  rodando (Engine serve).
                 </p>
               )}
             </div>
@@ -265,7 +265,7 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
                   onChange={(e) => saveAiConfig({ ...aiConfig, selectedModel: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none bg-white"
                 >
-                  {OLLAMA_MODELS.filter((m) => m.type === 'chat').map((m) => (
+                  {Engine_MODELS.filter((m) => m.type === 'chat').map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.name}
                     </option>
@@ -283,7 +283,7 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
                   onChange={(e) => saveAiConfig({ ...aiConfig, visionModel: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none bg-white"
                 >
-                  {OLLAMA_MODELS.filter((m) => m.type === 'vision').map((m) => (
+                  {Engine_MODELS.filter((m) => m.type === 'vision').map((m) => (
                     <option key={m.id} value={m.id}>
                       {m.name}
                     </option>
@@ -297,10 +297,10 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
           </div>
 
           <div className="mt-6 p-4 bg-yellow-50 border border-yellow-100 rounded-lg text-sm text-yellow-800">
-            <strong>Nota Importante:</strong> Para o navegador acessar o Ollama localmente, você
+            <strong>Nota Importante:</strong> Para o navegador acessar o Engine localmente, você
             pode precisar configurar o CORS no seu terminal:
             <br />
-            <code className="bg-yellow-100 px-1 rounded">OLLAMA_ORIGINS="*" ollama serve</code>
+            <code className="bg-yellow-100 px-1 rounded">Engine_ORIGINS="*" Engine serve</code>
           </div>
         </div>
       )}
@@ -355,7 +355,7 @@ const IntegrationsSettings: React.FC<IntegrationsSettingsProps> = ({ status, onS
               {/* Display Specific Manú Info when connected */}
               {item.id === 'whatsapp' && status[item.id] === 'connected' ? (
                 <p className="text-sm text-muted-foreground mb-6 bg-gray-50 p-2 rounded border border-gray-100">
-                  <span className="font-bold block">Agente: Manú 🤖</span>
+                  <span className="font-bold block">Agente: Manú �</span>
                   +55 (22) 99236-3462
                 </p>
               ) : (

@@ -274,11 +274,11 @@ export interface OutreachCampaign {
 
 // === AI & CONFIG ===
 
-export type AIProvider = 'openai' | 'ollama';
+export type AIProvider = 'Engine' | 'Engine';
 
 export interface AIConfig {
   provider: AIProvider;
-  ollamaBaseUrl: string;
+  EngineBaseUrl: string;
   selectedModel: string;
   visionModel: string;
 }

@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS lead_access (
   FOREIGN KEY (buyer_lead_id) REFERENCES buyer_leads(id)
 );
 
--- √çndices para performance
+-- √ndices para performance
 CREATE INDEX IF NOT EXISTS idx_buyer_leads_city ON buyer_leads(city);
 CREATE INDEX IF NOT EXISTS idx_buyer_leads_type ON buyer_leads(interest_type);
 CREATE INDEX IF NOT EXISTS idx_buyer_leads_status ON buyer_leads(status);

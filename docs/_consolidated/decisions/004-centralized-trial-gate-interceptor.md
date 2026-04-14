@@ -2,7 +2,7 @@
 
 ## Contexto
 O sistema estava apresentando erros 402 (Payment Required) de forma inconsistente em produção. Descobriu-se que a verificação de trial estava espalhada entre o `index.ts` (global) e vários middlewares de rotas (`auth.ts`), e falhava devido a:
-1. Sensibilidade a maiúsculas no papel de `SuperAdmin`.
+1. Sensibilidade a mAutomationúsculas no papel de `SuperAdmin`.
 2. Divergência entre colunas de expiração (`trial_ends_at` vs `subscription_end`).
 3. Falta de feedback visual no frontend ao receber erro 402.
 

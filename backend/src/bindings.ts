@@ -24,12 +24,12 @@ export type Bindings = {
   DB: DatabaseBinding;
   IMAGES: StorageBinding | null;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  AI: any; // Cloudflare AI binding or null in Node.js
+  PROCESSOR: any; // Cloudflare AI binding or null in Node.js
   JWT_SECRET: string;
-  OLLAMA_URL?: string; // URL do servidor Ollama (ex: http://localhost:11434)
-  OLLAMA_MODEL?: string; // Modelo padrão (ex: gemma4:e2b)
-  OPENAI_API_KEY?: string; // OpenAI API Key (fallback)
-  GROQ_API_KEY?: string; // Groq API Key
+  LOCAL_ENGINE_URL?: string; // URL do servidor Local Engine (ex: http://localhost:11434)
+  LOCAL_ENGINE_MODEL?: string; // Modelo padrão (ex: gemma4:e2b)
+  PRIMARY_ENGINE_API_KEY?: string; // Provider API Key (fallback)
+  SECONDARY_ENGINE_API_KEY?: string; // Provider API Key
   DATADOG_API_KEY?: string;
   STRIPE_SECRET_KEY?: string;
   STRIPE_WEBHOOK_SECRET?: string;
@@ -47,7 +47,7 @@ export type Bindings = {
   PUBLIC_WORKER_URL?: string;
   // Stripe Add-on Prices
   STRIPE_PRICE_EXTRA_SEAT?: string;
-  STRIPE_PRICE_EXTRA_AI?: string;
+  STRIPE_PRICE_EXTRA_AUTOMATION?: string;
   // Google APIs
   GOOGLE_PLACES_API_KEY?: string;
   // Neon (Postgres) & Upstash (Redis)

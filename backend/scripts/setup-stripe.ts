@@ -7,7 +7,7 @@ import Stripe from 'stripe';
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
 
 if (!STRIPE_SECRET_KEY) {
-  console.error('❌ ERRO: STRIPE_SECRET_KEY não definida.');
+  console.error('� ERRO: STRIPE_SECRET_KEY não definida.');
   process.exit(1);
 }
 
@@ -74,10 +74,10 @@ const PRODUCTS = [
 ];
 
 async function main() {
-  console.log('🚀 Iniciando Setup do Stripe...');
+  console.log('� Iniciando Setup do Stripe...');
 
   for (const p of PRODUCTS) {
-    console.log(`\n📦 Verificando/Criando Produto: ${p.name}...`);
+    console.log(`\n� Verificando/Criando Produto: ${p.name}...`);
 
     // Check if exists
     const search = await stripe.products.search({ query: `name:'${p.name}'` });
@@ -88,14 +88,14 @@ async function main() {
         name: p.name,
         description: p.description,
       });
-      console.log(`   ✅ Criado Produto: ${product.id}`);
+      console.log(`   � Criado Produto: ${product.id}`);
     } else {
-      console.log(`   ℹ️ Produto já existe: ${product.id}`);
+      console.log(`   �� Produto já existe: ${product.id}`);
     }
 
     // Create Prices
     for (const pr of p.prices) {
-      console.log(`   💲 Processando Preço: ${pr.lookup_key} (${pr.unit_amount / 100} BRL)...`);
+      console.log(`   � Processando Preço: ${pr.lookup_key} (${pr.unit_amount / 100} BRL)...`);
 
       const priceSearch = await stripe.prices.list({
         product: product.id,
@@ -112,14 +112,14 @@ async function main() {
           recurring: pr.recurring as any,
           lookup_key: pr.lookup_key as string,
         });
-        console.log(`      ✅ Criado Preço: ${price.id}`);
+        console.log(`      � Criado Preço: ${price.id}`);
       } else {
-        console.log(`      ℹ️ Preço já existe: ${price.id}`);
+        console.log(`      �� Preço já existe: ${price.id}`);
       }
     }
   }
 
-  console.log('\n✅ Setup Concluído!');
+  console.log('\n� Setup Concluído!');
 }
 
 main().catch(console.error);

@@ -101,7 +101,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin, onNavigateRe
         'Leads Qualificados',
         'API Aberta & Webhooks',
         'Gestor Dedicado',
-        'LLM Exclusiva',
+        'llm Exclusiva',
       ],
       notIncluded: [],
       highlight: false,

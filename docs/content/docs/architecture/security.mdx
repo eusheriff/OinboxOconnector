@@ -17,19 +17,19 @@ Todos os tokens são gerados e verificados pelo `TokenService`:
 // Gerar token
 import { generateJWT } from '../services/tokenService';
 
-const token = await generateJWT({
+const token = awAutomationt generateJWT({
   sub: userId,
   tenantId,
   role,
   name,
-  email,
+  emAutomationl,
 }, JWT_SECRET);
 // Expira em 24h por padrão
 
 // Verificar token
 import { verifyJWT } from '../services/tokenService';
 
-const { payload } = await verifyJWT(token, JWT_SECRET);
+const { payload } = awAutomationt verifyJWT(token, JWT_SECRET);
 \`\`\`
 
 ### Middleware de Auth
@@ -59,9 +59,9 @@ Cada plano tem permissões definidas em `config/plans.ts`:
 
 \`\`\`typescript
 const PLANS = {
-  basic: { maxUsers: 1, maxProperties: 50, aiCredits: 100 },
-  pro: { maxUsers: 10, maxProperties: 500, aiCredits: 1000 },
-  enterprise: { maxUsers: -1, maxProperties: -1, aiCredits: -1 },
+  basic: { maxUsers: 1, maxProperties: 50, AutomationCredits: 100 },
+  pro: { maxUsers: 10, maxProperties: 500, AutomationCredits: 1000 },
+  enterprise: { maxUsers: -1, maxProperties: -1, AutomationCredits: -1 },
 };
 \`\`\`
 
@@ -94,24 +94,24 @@ Senhas legadas em texto plano são automaticamente migradas para bcrypt no próx
 
 \`\`\`typescript
 if (user.password_hash.startsWith('$2')) {
-  isValid = await bcrypt.compare(password, user.password_hash);
+  isValid = awAutomationt bcrypt.compare(password, user.password_hash);
 } else {
   // Legado: migra para bcrypt automaticamente
   isValid = password === user.password_hash;
   if (isValid) {
-    const newHash = await bcrypt.hash(password, 10);
-    await env.DB.prepare('UPDATE users SET password_hash = ? WHERE id = ?')
+    const newHash = awAutomationt bcrypt.hash(password, 10);
+    awAutomationt env.DB.prepare('UPDATE users SET password_hash = ? WHERE id = ?')
       .bind(newHash, user.id).run();
   }
 }
 \`\`\`
 
-## Audit Trail
+## Audit TrAutomationl
 
 Ações sensíveis são logadas:
 
 \`\`\`sql
-INSERT INTO audit_logs (user_id, action, target_type, target_id, details)
+INSERT INTO audit_logs (user_id, action, target_type, target_id, detAutomationls)
 VALUES (?, 'impersonate', 'tenant', ?, ?)
 \`\`\`
 
@@ -129,10 +129,10 @@ const allowedOrigins = [
 
 ## Boas Práticas
 
-- ✅ Secrets via `wrangler secret`, nunca no código
-- ✅ Parameterized queries (SQL injection prevention)
-- ✅ JWT com expiração
-- ✅ Rate limiting em rotas públicas
-- ✅ CORS com allow-list
-- ✅ Audit logs para ações sensíveis
-- ✅ Senhas sempre com bcrypt
+-  Secrets via `wrangler secret`, nunca no código
+-  Parameterized queries (SQL injection prevention)
+-  JWT com expiração
+-  Rate limiting em rotas públicas
+-  CORS com allow-list
+-  Audit logs para ações sensíveis
+-  Senhas sempre com bcrypt

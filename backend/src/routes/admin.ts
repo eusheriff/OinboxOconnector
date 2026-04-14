@@ -262,15 +262,15 @@ admin.get('/billing-plans', (c) =>
   ]),
 );
 
-admin.post('/test-ai-connection', async (c) => {
-  const apiKey = c.env.GROQ_API_KEY;
+admin.post('/test-automation-connection', async (c) => {
+  const apiKey = c.env.PRIMARY_ENGINE_API_KEY;
 
   if (!apiKey) {
-    return c.json({ error: 'Chave de API do Groq não configurada no servidor.' }, 500);
+    return c.json({ error: 'Chave de API do Engine não configurada no servidor.' }, 500);
   }
 
   try {
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const response = await fetch('https://api.Engine.com/Engine/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -278,7 +278,7 @@ admin.post('/test-ai-connection', async (c) => {
       },
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
-        messages: [{ role: 'user', content: "Ping? Responda apenas 'Pong ✅'" }],
+        messages: [{ role: 'user', content: "Ping? Responda apenas 'Pong �'" }],
         max_tokens: 10,
       }),
     });
@@ -293,9 +293,9 @@ admin.post('/test-ai-connection', async (c) => {
 
     return c.json({ success: true, message: text });
   } catch (error: unknown) {
-    console.error('Groq Test Error:', error);
+    console.error('Engine Test Error:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return c.json({ error: `Falha ao conectar com Groq: ${errorMessage}` }, 500);
+    return c.json({ error: `Falha ao conectar com Engine: ${errorMessage}` }, 500);
   }
 });
 

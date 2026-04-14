@@ -65,7 +65,7 @@ CREATE TABLE IF NOT EXISTS campaign_messages (
   FOREIGN KEY (lead_id) REFERENCES leads(id) ON DELETE CASCADE
 );
 
--- √çndices
+-- √ndices
 CREATE INDEX IF NOT EXISTS idx_campaigns_status ON campaigns(status);
 CREATE INDEX IF NOT EXISTS idx_campaign_messages_campaign ON campaign_messages(campaign_id);
 CREATE INDEX IF NOT EXISTS idx_campaign_messages_lead ON campaign_messages(lead_id);

@@ -64,7 +64,7 @@ billing.post('/webhook', async (c) => {
         await sendEmail(
           env,
           user.email,
-          'Pagamento Confirmado! âœ…',
+          'Pagamento Confirmado! â',
           '<h1>Plano ' +
             planName +
             ' Ativo!</h1>' +
@@ -196,7 +196,7 @@ billing.post('/addon', async (c) => {
   // Add-on prices (should be created in Stripe dashboard and stored in env)
   const addonPrices: Record<string, string> = {
     extra_seat: env.STRIPE_PRICE_EXTRA_SEAT || 'price_addon_seat',
-    extra_ai: env.STRIPE_PRICE_EXTRA_AI || 'price_addon_ai',
+    extra_ai: env.STRIPE_PRICE_EXTRA_AUTOMATION || 'price_addon_ai',
   };
 
   const priceId = addonPrices[addonType];
