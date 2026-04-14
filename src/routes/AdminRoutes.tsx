@@ -19,6 +19,7 @@ import AdminInbox from '../pages/admin/AdminInbox';
 import ProspectingMap from '../pages/admin/ProspectingMap';
 import { LeadsPage } from '../pages/admin/LeadsPage';
 import EnterpriseBuyerLeads from '../pages/admin/EnterpriseBuyerLeads';
+import AIConsultant from '../pages/client/AIConsultant';
 
 interface AdminRoutesProps {
   user: User;
@@ -66,6 +67,7 @@ export const AdminRoutes: React.FC<AdminRoutesProps> = ({ user, onLogout }) => {
       <Route path="inbox" element={<AdminInbox />} />
       <Route path="prospecting" element={<ProspectingMap />} />
       <Route path="leads" element={<LeadsPage />} />
+      <Route path="ai-consultant" element={<AIConsultant />} />
       <Route path="buyer-leads" element={<EnterpriseBuyerLeads />} />
       <Route path="*" element={<Navigate to="/admin" />} />
     </Routes>

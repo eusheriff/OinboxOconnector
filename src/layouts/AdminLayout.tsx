@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import { LayoutDashboard, Users, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Users, Settings, LogOut, Bot } from 'lucide-react';
 import { User } from '@shared/types';
 
 interface AdminLayoutProps {
@@ -48,6 +48,13 @@ export default function AdminLayout({ user, onLogout }: AdminLayoutProps) {
           >
             <Users size={20} />
             Leads Ops
+          </Link>
+          <Link
+            to="/admin/ai-consultant"
+            className="flex items-center gap-3 px-4 py-3 rounded-lg hover:bg-gray-800 transition-colors text-purple-300 shadow-lg shadow-purple-500/10"
+          >
+            <Bot size={20} />
+            Consultor IA
           </Link>
           <Link
             to="/admin/prospecting"
