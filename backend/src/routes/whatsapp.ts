@@ -177,10 +177,6 @@ whatsapp.post('/webhook', async (c) => {
 
         // 3. FALLBACK: Se não houve resposta definitiva do Especialista, chamar o Generalista (Orchestrator)
         if (!agentResponseText || intent === 'OTHER' || intent === 'SUPPORT') {
-          // Recuperar contexto para conversa fluida
-          const history = await repo.getMessagesHistory(tenantId, remoteJid!);
-          const knowledge = await repo.getKnowledgeBase(tenantId);
-
           const hubUrl = 'https://agent-hub.oconnector.tech/v1/hub/orchestrate';
 
           try {

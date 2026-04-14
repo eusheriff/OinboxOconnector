@@ -20,7 +20,11 @@ vi.mock('../src/services/whatsappService', () => ({
 // Mock global fetch to avoid real calls
 global.fetch = vi.fn().mockResolvedValue({
   ok: true,
-  json: async () => ({ result: { response: 'Recebemos sua mensagem! Um de nossos consultores irá responder em breve.' } }),
+  json: async () => ({
+    result: {
+      response: 'Recebemos sua mensagem! Um de nossos consultores irá responder em breve.',
+    },
+  }),
 });
 
 vi.mock('../src/utils/datadog', () => ({

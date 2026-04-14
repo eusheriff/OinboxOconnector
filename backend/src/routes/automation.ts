@@ -1,9 +1,6 @@
 import { Hono } from 'hono';
 import { Bindings, Variables } from '../bindings';
-import {
-  getRateLimitStatus,
-  cleanupOldRateLimits,
-} from '../utils/aiRateLimiter';
+import { getRateLimitStatus, cleanupOldRateLimits } from '../utils/aiRateLimiter';
 import { callGemma } from '../services/automationService';
 
 const automationRoutes = new Hono<{ Bindings: Bindings; Variables: Variables }>();

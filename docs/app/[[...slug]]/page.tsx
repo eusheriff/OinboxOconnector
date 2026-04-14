@@ -4,11 +4,7 @@ import { docs } from '@/.source';
 import { createMDXComponents } from 'fumadocs-mdx/ui';
 import { Docs } from '@/components/index-page';
 
-export default async function Page({
-  params,
-}: {
-  params: Promise<{ slug?: string[] }>;
-}) {
+export default async function Page({ params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug } = await params;
   const page = docs.getPage(slug);
 
@@ -20,11 +16,7 @@ export default async function Page({
 
   return (
     <Docs>
-      <DocsPage
-        toc={page.data.toc}
-        full={page.data.full}
-        tableOfContent={{ style: 'clerk' }}
-      >
+      <DocsPage toc={page.data.toc} full={page.data.full} tableOfContent={{ style: 'clerk' }}>
         <DocsBody>
           <h1>{page.data.title}</h1>
           {page.data.description && (
