@@ -370,7 +370,7 @@ export const fastAgentResponse = async (
     �LTIMA MENSAGEM DO CLIENTE: "${lastMessage}"
   `;
 
-  const systemPrompt = `Você é Manú, corretora da Euimob.`;
+  const systemPrompt = `Você é Manú, corretora da Oconnector.tech.`;
 
   if (config.provider === 'Engine') {
     return callEngineAPI(config.selectedModel, prompt);

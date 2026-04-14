@@ -39,7 +39,7 @@ const SuperAdminDashboard: React.FC<SuperAdminDashboardProps> = ({ onLogout }) =
           <Activity className="w-6 h-6 text-white" />
         </div>
         <div>
-          <span className="font-bold text-lg tracking-tight block">Euimob</span>
+          <span className="font-bold text-lg tracking-tight block">Oconnector.tech</span>
           <span className="text-[10px] text-purple-400 font-bold uppercase tracking-wider">
             Super Admin
           </span>

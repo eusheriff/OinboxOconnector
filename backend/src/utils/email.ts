@@ -17,7 +17,7 @@ export async function sendEmail(env: Bindings, to: string, subject: string, html
         Authorization: 'Bearer ' + env.RESEND_API_KEY,
       },
       body: JSON.stringify({
-        from: 'Euimob <onboarding@resend.dev>', // Use verified domain in prod
+        from: 'Oconnector.tech <onboarding@resend.dev>', // Use verified domain in prod
         to: to,
         subject: subject,
         html: html,

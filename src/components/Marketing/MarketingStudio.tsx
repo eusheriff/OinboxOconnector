@@ -254,7 +254,7 @@ const MarketingStudio: React.FC = () => {
 
               {/* Watermark */}
               <div className="absolute bottom-2 right-2 opacity-50 text-[8px] text-white font-mono">
-                Euimob
+                Oconnector.tech
               </div>
             </div>
           </div>

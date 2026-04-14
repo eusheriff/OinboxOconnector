@@ -30,7 +30,7 @@ if [ "$TARGET" = "latest" ]; then
   # Pegar a última migração aplicada
   LAST_MIGRATION=$(ls -1 "$MIGRATIONS_DIR"/*.sql 2>/dev/null | sort -V | tail -1)
   if [ -z "$LAST_MIGRATION" ]; then
-    echo "❌ Nenhuma migração encontrada em $MIGRATIONS_DIR"
+    echo " Nenhuma migração encontrada em $MIGRATIONS_DIR"
     exit 1
   fi
   MIGRATION_NUM=$(basename "$LAST_MIGRATION" | cut -d'_' -f1)
@@ -41,7 +41,7 @@ else
   # Expand glob
   LAST_MIGRATION=$(ls -1 $LAST_MIGRATION 2>/dev/null | head -1)
   if [ -z "$LAST_MIGRATION" ]; then
-    echo "❌ Migração $MIGRATION_NUM não encontrada"
+    echo " Migração $MIGRATION_NUM não encontrada"
     exit 1
   fi
 fi
@@ -49,7 +49,7 @@ fi
 # Verificar se existe down migration
 DOWN_FILE="$MIGRATIONS_DIR/${MIGRATION_NUM}_down.sql"
 if [ ! -f "$DOWN_FILE" ]; then
-  echo "❌ Down migration não encontrada: $DOWN_FILE"
+  echo " Down migration não encontrada: $DOWN_FILE"
   echo "💡 Crie o arquivo ${MIGRATION_NUM}_down.sql com o SQL reverso antes de reverter."
   exit 1
 fi
@@ -68,7 +68,7 @@ echo ""
 read -p "Digite 'REVERT' para confirmar: " CONFIRM
 
 if [ "$CONFIRM" != "REVERT" ]; then
-  echo "❌ Operação cancelada."
+  echo " Operação cancelada."
   exit 0
 fi
 
@@ -78,7 +78,7 @@ wrangler d1 execute oinbox-db $WRANGLER_FLAGS --file="$DOWN_FILE"
 
 if [ $? -eq 0 ]; then
   echo ""
-  echo "✅ Down migration executada com sucesso."
+  echo " Down migration executada com sucesso."
   echo ""
   echo "📋 Próximo passo:"
   echo "   - Verifique o estado do banco"
@@ -86,7 +86,7 @@ if [ $? -eq 0 ]; then
   echo "     wrangler d1 execute oinbox-db $WRANGLER_FLAGS --file=$LAST_MIGRATION"
 else
   echo ""
-  echo "❌ Falha na down migration!"
+  echo " Falha na down migration!"
   echo "   Verifique os logs e o estado do banco antes de tentar novamente."
   exit 1
 fi

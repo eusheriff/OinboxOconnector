@@ -68,7 +68,7 @@ billing.post('/webhook', async (c) => {
           '<h1>Plano ' +
             planName +
             ' Ativo!</h1>' +
-            '<p>Obrigado por assinar o Euimob. Todos os recursos do plano ' +
+            '<p>Obrigado por assinar o Oconnector.tech. Todos os recursos do plano ' +
             planName +
             ' já estão liberados.</p>',
         );

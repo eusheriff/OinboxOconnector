@@ -181,7 +181,7 @@ const ContractGenerator: React.FC = () => {
                     : 'LOCA√√O RESIDENCIAL'}
                 </p>
                 <p className="mb-2">
-                  <strong>VENDEDOR/LOCADOR:</strong> Euimob Im√≥veis Ltda, CNPJ 00.000.000/0001-00...
+                  <strong>VENDEDOR/LOCADOR:</strong> Oconnector.tech Im√≥veis Ltda, CNPJ 00.000.000/0001-00...
                 </p>
                 <p className="mb-2">
                   <strong>COMPRADOR/LOCAT√RIO:</strong> {selectedClient?.name.toUpperCase()},

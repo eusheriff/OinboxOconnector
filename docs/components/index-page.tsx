@@ -96,7 +96,7 @@ export function IndexPage() {
           Oinbox â Real Estate Operating System
         </p>
         <p className="mt-1">
-          Todos os direitos reservados a Euimob Tecnologia
+          Todos os direitos reservados a Oconnector.tech Tecnologia
         </p>
       </div>
     </div>
