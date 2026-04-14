@@ -47,10 +47,13 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ user, setUser }) => {
     if (data && typeof data === 'object') {
       const responseData = data as { user: User; token?: string; tenantId?: string };
       if (responseData.user) {
+        // First, persist credentials to localStorage synchronously
         if (responseData.token) authStorage.setToken(responseData.token);
         if (responseData.tenantId) authStorage.setTenantId(responseData.tenantId);
-        setUser(responseData.user);
         authStorage.setUser(responseData.user);
+
+        // Then, update state to trigger re-render of authenticated routes
+        setUser(responseData.user);
       }
     }
   };
@@ -60,11 +63,14 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ user, setUser }) => {
     if (data && typeof data === 'object') {
       const responseData = data as { user: User; token?: string; tenantId?: string };
       if (responseData.user) {
+        // First, persist credentials to localStorage synchronously
         if (responseData.token) authStorage.setToken(responseData.token);
         if (responseData.tenantId) authStorage.setTenantId(responseData.tenantId);
         const clientUser = { ...responseData.user, role: 'client' as const };
-        setUser(clientUser);
         authStorage.setUser(clientUser);
+
+        // Then, update state to trigger re-render of authenticated routes
+        setUser(clientUser);
       }
     }
   };

@@ -39,14 +39,15 @@ const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'https://api.Oconnector.
 const getHeaders = (isMultipart = false) => {
   const tenantId = authStorage.getTenantId();
   const token = authStorage.getToken();
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
   const headers: Record<string, string> = {
-    'x-tenant-id': tenantId,
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    'x-tenant-id': tenantId || 'tenant-demo',
   };
 
-  if (!token) {
-    console.warn('[API] WARNING: No auth token found � requests will be unauthenticated');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  } else {
+    console.warn('[API] No auth token found in storage');
   }
 
   if (!isMultipart) {
@@ -72,8 +73,16 @@ const handleResponse = async (response: Response) => {
   }
 
   if (!response.ok) {
-    const errorData = (await response.json().catch(() => ({}))) as { error?: string };
-    throw new Error(errorData.error || `Erro ${response.status}: ${response.statusText}`);
+    let errorMsg = `Erro ${response.status}: ${response.statusText}`;
+    try {
+      const data = await response.json();
+      errorMsg = data.error || data.message || errorMsg;
+    } catch (e) {
+      // Se não for JSON, tenta ler como texto
+      const text = await response.clone().text().catch(() => '');
+      if (text && text.length < 200) errorMsg = text;
+    }
+    throw new Error(errorMsg);
   }
 
   return response.json();
