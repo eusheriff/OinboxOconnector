@@ -75,7 +75,7 @@ const handleResponse = async (response: Response) => {
   if (!response.ok) {
     let errorMsg = `Erro ${response.status}: ${response.statusText}`;
     try {
-      const data = await response.json();
+      const data = (await response.json()) as any;
       errorMsg = data.error || data.message || errorMsg;
     } catch (e) {
       // Se não for JSON, tenta ler como texto
