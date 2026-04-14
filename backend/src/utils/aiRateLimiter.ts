@@ -2,7 +2,7 @@ import { DatabaseBinding } from '../bindings';
 
 // Limites diários (com margem de segurança de ~10%)
 const DAILY_LIMITS = {
-  'Engine': 9000, // Engine limit (adjust as needed)
+  Engine: 9000, // Engine limit (adjust as needed)
   'cloudflare-ai': 9000, // Cloudflare limit: 10000
 } as const;
 
@@ -93,7 +93,7 @@ export async function getRateLimitStatus(
   });
 
   return {
-    'Engine': {
+    Engine: {
       allowed: (counts['Engine'] || 0) < DAILY_LIMITS['Engine'],
       count: counts['Engine'] || 0,
       limit: DAILY_LIMITS['Engine'],

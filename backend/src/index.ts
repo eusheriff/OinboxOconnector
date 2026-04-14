@@ -45,11 +45,11 @@ app.use(
     origin: (origin) => {
       if (!origin) return 'https://Oconnector.oconnector.tech';
       const url = new URL(origin);
-      const isAllowed = 
+      const isAllowed =
         url.hostname === 'localhost' ||
         url.hostname.endsWith('.pages.dev') ||
         url.hostname.endsWith('.oconnector.tech');
-      
+
       return isAllowed ? origin : null;
     },
     allowHeaders: ['Content-Type', 'Authorization', 'x-tenant-id'],
@@ -109,7 +109,7 @@ app.use('/*', async (c, next) => {
     // === TRIAL / SUBSCRIPTION GATE ===
     const normalizedRole = user.role?.toLowerCase() || '';
     const isSuperAdmin = normalizedRole === 'superadmin' || normalizedRole === 'super_admin';
-    
+
     if (!isSuperAdmin) {
       const tenant = await c.env.DB.prepare(
         'SELECT trial_ends_at, subscription_end, stripe_subscription_id, plan FROM tenants WHERE id = ?',
@@ -130,7 +130,9 @@ app.use('/*', async (c, next) => {
         const isTrialActive = trialEnds && trialEnds > now;
 
         if (!hasActiveSub && !isTrialActive) {
-          console.warn(`[Trial Gate] ACCESS DENIED (402) for Tenant: ${user.tenantId}. Expiry: ${expiryStr}`);
+          console.warn(
+            `[Trial Gate] ACCESS DENIED (402) for Tenant: ${user.tenantId}. Expiry: ${expiryStr}`,
+          );
           return c.json(
             {
               error: 'Período de teste expirado. Assine para continuar.',
@@ -139,7 +141,7 @@ app.use('/*', async (c, next) => {
               debug: {
                 tenantId: user.tenantId,
                 expiry: expiryStr,
-              }
+              },
             },
             402,
           );

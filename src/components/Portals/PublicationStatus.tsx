@@ -1,12 +1,5 @@
 import React from 'react';
-import {
-  CheckCircle2,
-  XCircle,
-  Loader2,
-  Clock,
-  ExternalLink,
-  AlertTriangle,
-} from 'lucide-react';
+import { CheckCircle2, XCircle, Loader2, Clock, ExternalLink, AlertTriangle } from 'lucide-react';
 import { PropertyPublication, PublicationStatus } from '@/types';
 
 interface PublicationStatusProps {
@@ -69,10 +62,13 @@ const PublicationStatusDisplay: React.FC<PublicationStatusProps> = ({
   }
 
   // Contar status
-  const statusCount = publications.reduce((acc, pub) => {
-    acc[pub.status] = (acc[pub.status] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  const statusCount = publications.reduce(
+    (acc, pub) => {
+      acc[pub.status] = (acc[pub.status] || 0) + 1;
+      return acc;
+    },
+    {} as Record<string, number>,
+  );
 
   return (
     <div className="space-y-4">
@@ -87,7 +83,9 @@ const PublicationStatusDisplay: React.FC<PublicationStatusProps> = ({
               key={status}
               className={`flex items-center gap-2 px-3 py-2 rounded-lg ${config.bgColor} border ${config.borderColor}`}
             >
-              <Icon className={`w-4 h-4 ${config.color} ${status === PublicationStatus.PUBLISHING ? 'animate-spin' : ''}`} />
+              <Icon
+                className={`w-4 h-4 ${config.color} ${status === PublicationStatus.PUBLISHING ? 'animate-spin' : ''}`}
+              />
               <span className={`text-sm font-medium ${config.color}`}>
                 {count} {config.label}
               </span>
@@ -117,9 +115,7 @@ const PublicationStatusDisplay: React.FC<PublicationStatusProps> = ({
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-medium text-sm text-slate-700">
-                        {portalLabel}
-                      </span>
+                      <span className="font-medium text-sm text-slate-700">{portalLabel}</span>
                       <span
                         className={`text-xs px-2 py-0.5 rounded-full font-medium ${config.color} bg-white`}
                       >

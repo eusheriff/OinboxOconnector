@@ -24,7 +24,7 @@ export class CircuitBreaker {
       recoveryTimeout: 60_000, // 1 minuto
       successThreshold: 3,
     },
-  ) { }
+  ) {}
 
   getState(): CircuitState {
     if (this.state === 'OPEN' && this.lastFailureTime) {
@@ -77,7 +77,7 @@ export class CircuitBreaker {
       this.state = 'OPEN';
       console.warn(
         `[CircuitBreaker:${this.name}] Aberto após ${this.failureCount} falhas. ` +
-        `Recuperação em ${this.options.recoveryTimeout / 1000}s`,
+          `Recuperação em ${this.options.recoveryTimeout / 1000}s`,
       );
     }
   }

@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { Zap, CheckCircle2 } from 'lucide-react';
 
 const SettingsView: React.FC = () => {
-  const [automationStatus, setAutomationStatus] = useState<'idle' | 'loading' | 'success' | 'error'>(
-    'idle',
-  );
+  const [automationStatus, setAutomationStatus] = useState<
+    'idle' | 'loading' | 'success' | 'error'
+  >('idle');
   const [automationResponse, setAutomationResponse] = useState('');
 
   const testAutomationConnection = async () => {

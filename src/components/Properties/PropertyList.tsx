@@ -179,22 +179,24 @@ const PropertyList: React.FC<PropertyListProps> = ({
                 {/* Tags Overlay */}
                 <div className="absolute top-3 right-3 flex flex-col gap-1 items-end">
                   <span
-                    className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide shadow-sm ${property.status === 'Pending'
-                      ? 'bg-yellow-500 text-white'
-                      : property.status === 'Sold'
-                        ? 'bg-red-500 text-white'
-                        : 'bg-green-500 text-white'
-                      }`}
+                    className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide shadow-sm ${
+                      property.status === 'Pending'
+                        ? 'bg-yellow-500 text-white'
+                        : property.status === 'Sold'
+                          ? 'bg-red-500 text-white'
+                          : 'bg-green-500 text-white'
+                    }`}
                   >
                     {property.status || 'Active'}
                   </span>
 
                   {/* Listing Type Badge */}
                   <span
-                    className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide shadow-sm flex items-center gap-1 ${property.listingType === 'rent'
-                      ? 'bg-purple-600 text-white'
-                      : 'bg-primary text-white'
-                      }`}
+                    className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wide shadow-sm flex items-center gap-1 ${
+                      property.listingType === 'rent'
+                        ? 'bg-purple-600 text-white'
+                        : 'bg-primary text-white'
+                    }`}
                   >
                     {property.listingType === 'rent' ? (
                       <Key className="w-3 h-3" />

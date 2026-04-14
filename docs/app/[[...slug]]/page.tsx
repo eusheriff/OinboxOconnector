@@ -9,7 +9,7 @@ export default async function Page({
 }: {
   params: Promise<{ slug?: string[] }>;
 }) {
-  const { slug } = awAutomationt params;
+  const { slug } = await params;
   const page = docs.getPage(slug);
 
   if (!page) {

@@ -6,10 +6,14 @@ import { createMockDB, createMockEnv } from './utils/mockEnv';
 vi.mock('bcryptjs', () => ({
   default: {
     hash: vi.fn().mockResolvedValue('$2b$10$hashedpassword'),
-    compare: vi.fn().mockImplementation((pass) => Promise.resolve(pass === 'test-correct-pass-placeholder')),
+    compare: vi
+      .fn()
+      .mockImplementation((pass) => Promise.resolve(pass === 'test-correct-pass-placeholder')),
   },
   hash: vi.fn().mockResolvedValue('$2b$10$hashedpassword'),
-  compare: vi.fn().mockImplementation((pass) => Promise.resolve(pass === 'test-correct-pass-placeholder')),
+  compare: vi
+    .fn()
+    .mockImplementation((pass) => Promise.resolve(pass === 'test-correct-pass-placeholder')),
 }));
 
 // Mock jose (Sign + Verify)
@@ -74,7 +78,10 @@ describe('Auth Routes', () => {
       const req = new Request('http://localhost/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: 'test@example.com', password: 'test-correct-pass-placeholder' }),
+        body: JSON.stringify({
+          email: 'test@example.com',
+          password: 'test-correct-pass-placeholder',
+        }),
       });
 
       const res = await auth.request(req, undefined, mockEnv as any);

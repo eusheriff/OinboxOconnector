@@ -176,7 +176,7 @@ const ListingForm: React.FC = () => {
     );
   };
 
-  // PortalSelector já tem "Selecionar Todos" embutido � este handler é redundante
+  // PortalSelector já tem "Selecionar Todos" embutido � este handler é redundante
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -195,7 +195,10 @@ const ListingForm: React.FC = () => {
         listing_type: formData.listingType,
         type: formData.type,
         location: formData.location,
-        features: formData.features.split(',').map((f) => f.trim()).filter(Boolean),
+        features: formData.features
+          .split(',')
+          .map((f) => f.trim())
+          .filter(Boolean),
         price: parseFloat(formData.price.replace(/[^0-9.-]+/g, '') || '0'),
         description: formData.description,
         image_url: formData.images[0] || null,
@@ -212,7 +215,10 @@ const ListingForm: React.FC = () => {
       setPublishedPropertyId(propertyId);
 
       // 2. Publicar em lote nos portais selecionados
-      const publishResult: any = await apiService.bulkPublishProperty(propertyId, selectedPlatforms);
+      const publishResult: any = await apiService.bulkPublishProperty(
+        propertyId,
+        selectedPlatforms,
+      );
 
       if (publishResult.success) {
         addToast(

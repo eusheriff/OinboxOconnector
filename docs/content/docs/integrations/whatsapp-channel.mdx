@@ -3,7 +3,7 @@
 ## Arquitetura
 
 ```
-Cliente WhatsApp â Evolution API (BAutomationleYS) â Webhook â Oconnector Worker â D1 â IA â Resposta
+Cliente WhatsApp ï¿½ Evolution API (BAutomationleYS) ï¿½ Webhook ï¿½ Oconnector Worker ï¿½ D1 ï¿½ IA ï¿½ Resposta
 ```
 
 ## Componentes
@@ -22,13 +22,13 @@ Gateway WhatsApp baseado em BAutomationleYS. Cada tenant do Oconnector tem uma *
 
 Fluxo ao receber mensagem:
 
-1. **Parse do payload** â ExtrAutomation `instance`, `event`, `data` do webhook
-2. **Resolver tenant** â Nome da inst|ncia â `tenant_{tenantId}` â `tenantId`
-3. **Salvar mensagem** â INSERT em `whatsapp_messages` (D1)
-4. **Verificar handover** â Se lead tem `assigned_to`, IA silencia + cria notificaÃ§Ã£o
-5. **AnÃ¡lise de intenÃ§Ã£o** â `SalesTools.analyzeIntention()` via Agent Hub
-6. **Mover lead** â Atualiza status no pipeline baseado na intenÃ§Ã£o
-7. **Responder** â Envia resposta via Evolution API + salva em `whatsapp_messages`
+1. **Parse do payload** ï¿½ ExtrAutomation `instance`, `event`, `data` do webhook
+2. **Resolver tenant** ï¿½ Nome da inst|ncia ï¿½ `tenant_{tenantId}` ï¿½ `tenantId`
+3. **Salvar mensagem** ï¿½ INSERT em `whatsapp_messages` (D1)
+4. **Verificar handover** ï¿½ Se lead tem `assigned_to`, IA silencia + cria notificaÃ§Ã£o
+5. **AnÃ¡lise de intenÃ§Ã£o** ï¿½ `SalesTools.analyzeIntention()` via Agent Hub
+6. **Mover lead** ï¿½ Atualiza status no pipeline baseado na intenÃ§Ã£o
+7. **Responder** ï¿½ Envia resposta via Evolution API + salva em `whatsapp_messages`
 
 ### Human Handover
 
@@ -48,26 +48,26 @@ Quando um lead recebe um corretor atribuÃ­do (`assigned_to`):
 
 Se o lead **nÃ£o tem** corretor atribuÃ­do:
 
-1. **SalesTools.analyzeIntention()** â Agent Hub
-   - `INTERESTED` â move para `hot_lead`, gera resposta positiva
-   - `NOT_INTERESTED` â arquiva, gera resposta de encerramento
-   - `SUPPORT` â move para `needs_support`, sem resposta automÃ¡tica
-   - `OTHER` â fallback para Orchestrator
+1. **SalesTools.analyzeIntention()** ï¿½ Agent Hub
+   - `INTERESTED` ï¿½ move para `hot_lead`, gera resposta positiva
+   - `NOT_INTERESTED` ï¿½ arquiva, gera resposta de encerramento
+   - `SUPPORT` ï¿½ move para `needs_support`, sem resposta automÃ¡tica
+   - `OTHER` ï¿½ fallback para Orchestrator
 
-2. **Orchestrator fallback** â `agent-hub.oconnector.tech/v1/hub/orchestrate`
+2. **Orchestrator fallback** ï¿½ `agent-hub.oconnector.tech/v1/hub/orchestrate`
    - Envia contexto: histÃ³rico de mensagens + knowledge base do tenant
    - Recebe resposta generativa
 
-3. **Envio** â `sendWhatsAppMessage()` via Evolution API
+3. **Envio** ï¿½ `sendWhatsAppMessage()` via Evolution API
 
 ## Rate Limiting e ResiliÃªncia
 
-| Mecanismo | ConfiguraÃ§Ã£o |
-|-----------|-------------|
-| Circuit Breaker (WhatsApp) | 5 falhas â 45s recovery |
-| Circuit Breaker (Agent Hub) | 3 falhas â 90s recovery |
-| Rate Limit (login) | 5 req/min por IP |
-| Timeout (health check) | 3s por dependÃªncia |
+| Mecanismo                   | ConfiguraÃ§Ã£o            |
+| --------------------------- | ----------------------- |
+| Circuit Breaker (WhatsApp)  | 5 falhas ï¿½ 45s recovery |
+| Circuit Breaker (Agent Hub) | 3 falhas ï¿½ 90s recovery |
+| Rate Limit (login)          | 5 req/min por IP        |
+| Timeout (health check)      | 3s por dependÃªncia      |
 
 ## Troubleshooting
 
@@ -92,6 +92,6 @@ GET /api/whatsapp/qrcode
 
 ### IA nÃ£o respondendo
 
-1. Verificar health: `GET /api/health` â campo `agentHub`
+1. Verificar health: `GET /api/health` ï¿½ campo `agentHub`
 2. Se Agent Hub estÃ¡ `error`, verificar status em `agent-hub.oconnector.tech`
 3. Fallback: mensagem padrÃ£o Ã© enviada automaticamente

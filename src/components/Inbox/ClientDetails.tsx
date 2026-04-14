@@ -160,10 +160,11 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
             <button
               onClick={handleVoiceNoteClick}
               disabled={voiceProcessing}
-              className={`w-full py-3 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${isRecordingVoiceNote
-                ? 'bg-red-100 text-red-600 animate-pulse'
-                : 'bg-white border border-gray-200 text-slate-700 hover:border-blue-400 shadow-sm'
-                }`}
+              className={`w-full py-3 rounded-lg font-bold text-sm flex items-center justify-center gap-2 transition-all ${
+                isRecordingVoiceNote
+                  ? 'bg-red-100 text-red-600 animate-pulse'
+                  : 'bg-white border border-gray-200 text-slate-700 hover:border-blue-400 shadow-sm'
+              }`}
             >
               {voiceProcessing ? (
                 <>
@@ -326,7 +327,7 @@ const ClientDetails: React.FC<ClientDetailsProps> = ({ conversation }) => {
                   <div>
                     <p className="text-sm font-medium text-foreground">{doc.name}</p>
                     <div className="flex items-center gap-1 text-[10px] text-gray-500">
-                      <span className="uppercase">{doc.type}</span> â¢{' '}
+                      <span className="uppercase">{doc.type}</span> ï¿½{' '}
                       {doc.uploadedAt?.toLocaleDateString()}
                     </div>
                   </div>

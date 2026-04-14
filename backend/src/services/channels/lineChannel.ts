@@ -6,7 +6,7 @@
  * 1. User cria Channel no Line Developers Console
  * 2. Channel Secret + Access Token salvos no D1
  * 3. Webhook URL configurado no Line Console
- * 4. Webhook recebe mensagens â NormalizerService â Inbox
+ * 4. Webhook recebe mensagens ï¿½ NormalizerService ï¿½ Inbox
  */
 
 import { HonoContext } from '../../bindings';
@@ -98,7 +98,7 @@ export class LineChannelService {
         premiumId?: string;
         displayName?: string;
         pictureUrl?: string;
-    };
+      };
 
       if (data.userId) {
         return {
@@ -119,12 +119,7 @@ export class LineChannelService {
   /**
    * Processa webhook do Line
    */
-  async handleWebhook(
-    c: HonoContext,
-    tenantId: string,
-    channelId: string,
-    channelSecret: string,
-  ) {
+  async handleWebhook(c: HonoContext, tenantId: string, channelId: string, channelSecret: string) {
     const logger = createDatadogLogger(c.env);
 
     // Validar assinatura do webhook
@@ -179,10 +174,7 @@ export class LineChannelService {
   /**
    * Verifica assinatura do webhook Line
    */
-  private async verifyWebhookSignature(
-    c: HonoContext,
-    channelSecret: string,
-  ): Promise<boolean> {
+  private async verifyWebhookSignature(c: HonoContext, channelSecret: string): Promise<boolean> {
     const body = await c.req.text();
     const signature = c.req.header('X-Line-Signature');
 
@@ -214,18 +206,14 @@ export class LineChannelService {
   /**
    * Envia mensagem de texto via Line
    */
-  async sendMessage(
-    accessToken: string,
-    replyToken: string,
-    message: string,
-  ): Promise<boolean> {
+  async sendMessage(accessToken: string, replyToken: string, message: string): Promise<boolean> {
     try {
       const url = `${LINE_API_URL}/message/reply`;
       const response = await this.fetchWithCircuitBreaker(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           replyToken,
@@ -243,18 +231,14 @@ export class LineChannelService {
   /**
    * Envia push message via Line (sem reply token)
    */
-  async pushMessage(
-    accessToken: string,
-    userId: string,
-    message: string,
-  ): Promise<boolean> {
+  async pushMessage(accessToken: string, userId: string, message: string): Promise<boolean> {
     try {
       const url = `${LINE_API_URL}/message/push`;
       const response = await this.fetchWithCircuitBreaker(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           to: userId,
@@ -272,18 +256,14 @@ export class LineChannelService {
   /**
    * Envia imagem via Line
    */
-  async sendImage(
-    accessToken: string,
-    replyToken: string,
-    imageUrl: string,
-  ): Promise<boolean> {
+  async sendImage(accessToken: string, replyToken: string, imageUrl: string): Promise<boolean> {
     try {
       const url = `${LINE_API_URL}/message/reply`;
       const response = await this.fetchWithCircuitBreaker(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           replyToken,

@@ -11,7 +11,9 @@ export const authMiddleware = async (
   const authHeader = c.req.header('Authorization');
   const method = c.req.method;
   const path = c.req.path;
-  console.log(`[Auth] ${method} ${path} | Header: ${authHeader ? `"${authHeader.substring(0, 30)}..."` : 'MISSING'} | Secret: ${jwtSecret ? 'SET' : 'MISSING'}`);
+  console.log(
+    `[Auth] ${method} ${path} | Header: ${authHeader ? `"${authHeader.substring(0, 30)}..."` : 'MISSING'} | Secret: ${jwtSecret ? 'SET' : 'MISSING'}`,
+  );
 
   if (!jwtSecret) {
     console.error('[Auth] JWT_SECRET not set');
@@ -39,7 +41,7 @@ export const authMiddleware = async (
     // === TRIAL / SUBSCRIPTION GATE ===
     const normalizedRole = payload.role?.toString().toLowerCase() || '';
     const isSuperAdmin = normalizedRole === 'superadmin' || normalizedRole === 'super_admin';
-    
+
     if (!isSuperAdmin) {
       // Look up Tenant Status
       // Alterado para buscar tanto subscription_end quanto trial_ends_at para resiliência
@@ -59,13 +61,15 @@ export const authMiddleware = async (
         // Fallback entre subscription_end (schema base) e trial_ends_at (migração 015)
         const expiryStr = tenant.subscription_end || tenant.trial_ends_at;
         const expiryDate = expiryStr ? new Date(expiryStr) : null;
-        
-        const hasActiveSub = !!tenant.stripe_subscription_id; 
+
+        const hasActiveSub = !!tenant.stripe_subscription_id;
         const isTrialActive = expiryDate && expiryDate > now;
 
         if (!hasActiveSub && !isTrialActive) {
-          console.warn(`[Auth Gate] ACCESS DENIED (402): Subscription/Trial Expired. Tenant: ${payload.tenantId}`);
-            
+          console.warn(
+            `[Auth Gate] ACCESS DENIED (402): Subscription/Trial Expired. Tenant: ${payload.tenantId}`,
+          );
+
           return c.json(
             {
               error: 'Período de teste expirado. Assine para continuar.',
@@ -74,7 +78,7 @@ export const authMiddleware = async (
               debug: {
                 tenantId: payload.tenantId,
                 expiry: expiryStr,
-              }
+              },
             },
             402,
           ); // Payment Required

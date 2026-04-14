@@ -6,12 +6,7 @@ interface SkeletonProps {
 }
 
 function SkeletonBox({ className = '' }: SkeletonProps) {
-  return (
-    <div
-      className={`animate-pulse rounded-md bg-gray-200 ${className}`}
-      aria-hidden="true"
-    />
-  );
+  return <div className={`animate-pulse rounded-md bg-gray-200 ${className}`} aria-hidden="true" />;
 }
 
 export function SkeletonText({ className = '' }: SkeletonProps) {
@@ -69,7 +64,13 @@ export function SkeletonTable({ rows = 5, columns = 4 }: { rows?: number; column
   );
 }
 
-export function SkeletonList({ count = 3, type = 'card' }: { count?: number; type?: 'card' | 'text' | 'avatar' }) {
+export function SkeletonList({
+  count = 3,
+  type = 'card',
+}: {
+  count?: number;
+  type?: 'card' | 'text' | 'avatar';
+}) {
   const renderSkeleton = (index: number) => {
     switch (type) {
       case 'card':
@@ -104,7 +105,13 @@ export function SkeletonStats({ count = 4 }: { count?: number }) {
   );
 }
 
-export function SkeletonInlineList({ count = 3, className = '' }: { count?: number; className?: string }) {
+export function SkeletonInlineList({
+  count = 3,
+  className = '',
+}: {
+  count?: number;
+  className?: string;
+}) {
   return (
     <div className={`flex gap-4 ${className}`}>
       {Array.from({ length: count }).map((_, i) => (

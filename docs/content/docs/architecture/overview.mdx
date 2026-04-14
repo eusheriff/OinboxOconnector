@@ -10,47 +10,50 @@ O Oconnector utiliza uma arquitetura **serverless moderna** baseada em Cloudflar
 ## Diagrama de Alto NÃ­vel
 
 ```
-âââââââââââââââââââââââââââââââââââââââââââââââââââ
-â                   Frontend                       â
-â  React 19 + TypeScript + TAutomationlwind CSS + Vite    â
-â  âââââââââââ ââââââââââ ââââââââââââ âââââââââ â
-â  â  CRM    â â Inbox  â âMarketing â â  Automation   â â
-â  â Module  â â Module â â Studio   â â Core  â â
-â  ââââââ¬âââââ âââââ¬âââââ ââââââ¬ââââââ âââââ¬ââââ â
-â       ââââââââââââ´ââââââââââââ´ââââââââââââ     â
-â                          â                     â
-â                   REST API (/api/*)            â
-ââââââââââââââââââââââââââââ¼ââââââââââââââââââââââ
-                           â
-ââââââââââââââââââââââââââââ¼ââââââââââââââââââââââ
-â                   Backend                        â
-â  Cloudflare Workers + Hono Framework            â
-â  ââââââââ âââââââ ââââââââ ââââââ ââââââââââ  â
-â  â Auth â â CRM â â Automation   â âBillingââWhatsAppâ  â
-â  âRoutesâ âRoutesââRoutesâ âRoutesââ Routes â  â
-â  ââââ¬ââââ ââââ¬âââ ââââ¬ââââ ââââ¬ââ âââââ¬âââââ  â
-â     ââââââââââ´ââââââââ´âââââââââ´ââââââââ        â
-â         â                  â                    â
-â    ââââââ´âââââ      ââââââââ´âââââââ            â
-â    â  D1 DB  â      â  R2 Storage â            â
-â    â (SQLite)â      â  (Imagens)  â            â
-â    âââââââââââ      âââââââââââââââ            â
-âââââââââââââââââââââââââââââââââââââââââââââââââââ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½                   Frontend                       ï¿½
+ï¿½  React 19 + TypeScript + TAutomationlwind CSS + Vite    ï¿½
+ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½
+ï¿½  ï¿½  CRM    ï¿½ ï¿½ Inbox  ï¿½ ï¿½Marketing ï¿½ ï¿½  Automation   ï¿½ ï¿½
+ï¿½  ï¿½ Module  ï¿½ ï¿½ Module ï¿½ ï¿½ Studio   ï¿½ ï¿½ Core  ï¿½ ï¿½
+ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½
+ï¿½       ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½     ï¿½
+ï¿½                          ï¿½                     ï¿½
+ï¿½                   REST API (/api/*)            ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                           ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½                   Backend                        ï¿½
+ï¿½  Cloudflare Workers + Hono Framework            ï¿½
+ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½
+ï¿½  ï¿½ Auth ï¿½ ï¿½ CRM ï¿½ ï¿½ Automation   ï¿½ ï¿½Billingï¿½ï¿½WhatsAppï¿½  ï¿½
+ï¿½  ï¿½Routesï¿½ ï¿½Routesï¿½ï¿½Routesï¿½ ï¿½Routesï¿½ï¿½ Routes ï¿½  ï¿½
+ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½
+ï¿½     ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½        ï¿½
+ï¿½         ï¿½                  ï¿½                    ï¿½
+ï¿½    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½            ï¿½
+ï¿½    ï¿½  D1 DB  ï¿½      ï¿½  R2 Storage ï¿½            ï¿½
+ï¿½    ï¿½ (SQLite)ï¿½      ï¿½  (Imagens)  ï¿½            ï¿½
+ï¿½    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½      ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½            ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ```
 
 ## PrincÃ­pios de Design
 
 ### 1. SeparaÃ§Ã£o Frontend/Backend
+
 - **Frontend**: SPA React com Vite, deploy estÃ¡tico (Cloudflare Pages)
 - **Backend**: API RESTful serverless (Cloudflare Workers)
 - **ComunicaÃ§Ã£o**: HTTP JSON com autenticaÃ§Ã£o JWT
 
 ### 2. Serverless First
+
 - Zero servidores dedicados
 - Escala automÃ¡tica com a demanda
 - Cold start mÃ­nimo (~5ms no D1)
 
 ### 3. Edge Computing
+
 - **D1**: SQLite distribuÃ­do na edge da Cloudflare
 - **R2**: Storage distribuÃ­do globalmente
 - **Workers**: ExecuÃ§Ã£o na edge mAutomations prÃ³xima do usuÃ¡rio
@@ -59,28 +62,28 @@ O Oconnector utiliza uma arquitetura **serverless moderna** baseada em Cloudflar
 
 ```
 Oconnector/
-âââ src/                      # Frontend React
-â   âââ components/           # UI Components (17 mÃ³dulos)
-â   â   âââ CRM/             # Pipeline, Kanban, Lead Scoring
-â   â   âââ Inbox/           # Chat Window, Client DetAutomationls
-â   â   âââ Marketing/       # CampAutomationgn Manager, Editor
-â   â   âââ Automation/              # Chat components
-â   â   âââ Properties/      # PropertyList, ListingForm
-â   â   âââ Admin/           # Super Admin dashboards
-â   âââ pages/               # PÃ¡ginas (admin/, client/)
-â   âââ contexts/            # React Contexts (Toast, Auth)
-â   âââ services/            # API Service, Data Engine Service
-â   âââ hooks/               # Custom Hooks (useAuth, useApi)
-â   âââ lib/                 # Utilities (authStorage)
-â   âââ types/               # TypeScript types
-âââ backend/                  # Backend Cloudflare
-â   âââ src/
-â       âââ routes/          # 18 mÃ³dulos de rotas API
-â       âââ services/        # AutomationService, tokenService, etc
-â       âââ middleware/      # Auth, logging
-â       âââ utils/           # Helpers (whatsapp, datadog)
-â       âââ config/          # Plans, permissions
-âââ shared/types/            # Tipos compartilhados
+ï¿½ï¿½ï¿½ src/                      # Frontend React
+ï¿½   ï¿½ï¿½ï¿½ components/           # UI Components (17 mÃ³dulos)
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ CRM/             # Pipeline, Kanban, Lead Scoring
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ Inbox/           # Chat Window, Client DetAutomationls
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ Marketing/       # CampAutomationgn Manager, Editor
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ Automation/              # Chat components
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ Properties/      # PropertyList, ListingForm
+ï¿½   ï¿½   ï¿½ï¿½ï¿½ Admin/           # Super Admin dashboards
+ï¿½   ï¿½ï¿½ï¿½ pages/               # PÃ¡ginas (admin/, client/)
+ï¿½   ï¿½ï¿½ï¿½ contexts/            # React Contexts (Toast, Auth)
+ï¿½   ï¿½ï¿½ï¿½ services/            # API Service, Data Engine Service
+ï¿½   ï¿½ï¿½ï¿½ hooks/               # Custom Hooks (useAuth, useApi)
+ï¿½   ï¿½ï¿½ï¿½ lib/                 # Utilities (authStorage)
+ï¿½   ï¿½ï¿½ï¿½ types/               # TypeScript types
+ï¿½ï¿½ï¿½ backend/                  # Backend Cloudflare
+ï¿½   ï¿½ï¿½ï¿½ src/
+ï¿½       ï¿½ï¿½ï¿½ routes/          # 18 mÃ³dulos de rotas API
+ï¿½       ï¿½ï¿½ï¿½ services/        # AutomationService, tokenService, etc
+ï¿½       ï¿½ï¿½ï¿½ middleware/      # Auth, logging
+ï¿½       ï¿½ï¿½ï¿½ utils/           # Helpers (whatsapp, datadog)
+ï¿½       ï¿½ï¿½ï¿½ config/          # Plans, permissions
+ï¿½ï¿½ï¿½ shared/types/            # Tipos compartilhados
 ```
 
 ## Fluxo de AutenticaÃ§Ã£o
@@ -98,10 +101,10 @@ O sistema Ã© **multi-tenant**: cada imobiliÃ¡ria/corretor Ã© um tenant isolado.
 
 ```sql
 tenants (id, name, plan, status, mrr, ...)
-  âââ users (tenant_id, ...)
-  âââ clients (tenant_id, ...)
-  âââ properties (tenant_id, ...)
-  âââ conversations (tenant_id, ...)
+  ï¿½ï¿½ï¿½ users (tenant_id, ...)
+  ï¿½ï¿½ï¿½ clients (tenant_id, ...)
+  ï¿½ï¿½ï¿½ properties (tenant_id, ...)
+  ï¿½ï¿½ï¿½ conversations (tenant_id, ...)
 ```
 
 Todos os dados sÃ£o escopados por `tenant_id`.

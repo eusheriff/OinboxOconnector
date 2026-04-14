@@ -2,8 +2,8 @@
  * TikTokChannelService - TikTok Messaging API OAuth + Webhook
  *
  * Fluxo:
- * 1. OAuth 2.0 â access_token
- * 2. Webhook recebe mensagens â NormalizerService â Inbox
+ * 1. OAuth 2.0 ï¿½ access_token
+ * 2. Webhook recebe mensagens ï¿½ NormalizerService ï¿½ Inbox
  */
 
 import { HonoContext } from '../../bindings';
@@ -22,11 +22,7 @@ export class TikTokChannelService {
   /**
    * Gera URL de OAuth TikTok
    */
-  getOAuthUrl(
-    clientKey: string,
-    redirectUri: string,
-    state: string,
-  ): string {
+  getOAuthUrl(clientKey: string, redirectUri: string, state: string): string {
     const params = new URLSearchParams({
       client_key: clientKey,
       redirect_uri: redirectUri,
@@ -143,11 +139,7 @@ export class TikTokChannelService {
   /**
    * Processa webhook do TikTok
    */
-  async handleWebhook(
-    c: HonoContext,
-    tenantId: string,
-    channelId: string,
-  ) {
+  async handleWebhook(c: HonoContext, tenantId: string, channelId: string) {
     const logger = createDatadogLogger(c.env);
     const body = await c.req.json();
 
@@ -194,11 +186,7 @@ export class TikTokChannelService {
   /**
    * Envia mensagem via TikTok Messaging API
    */
-  async sendMessage(
-    accessToken: string,
-    openId: string,
-    message: string,
-  ): Promise<boolean> {
+  async sendMessage(accessToken: string, openId: string, message: string): Promise<boolean> {
     const url = `${TIKTOK_API_URL}/message/send/`;
 
     try {
@@ -206,7 +194,7 @@ export class TikTokChannelService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json; charset=UTF-8',
-          'Authorization': `Bearer ${accessToken}`,
+          Authorization: `Bearer ${accessToken}`,
         },
         body: JSON.stringify({
           content: message,

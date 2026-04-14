@@ -115,10 +115,11 @@ const RealEstateAgentChat: React.FC = () => {
               )}
 
               <div
-                className={`max-w-[80%] rounded-2xl p-5 shadow-sm text-sm leading-relaxed whitespace-pre-wrap ${msg.role === 'user'
+                className={`max-w-[80%] rounded-2xl p-5 shadow-sm text-sm leading-relaxed whitespace-pre-wrap ${
+                  msg.role === 'user'
                     ? 'bg-card text-white rounded-br-none'
                     : 'bg-white text-foreground border border-gray-100 rounded-bl-none'
-                  }`}
+                }`}
               >
                 {msg.text}
               </div>

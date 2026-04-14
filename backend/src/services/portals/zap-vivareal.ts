@@ -33,9 +33,7 @@ export class ZapVivaRealPortal extends BasePortal {
       // O feed é gerado automaticamente quando o imóvel é marcado com publish_to_portals = 1
 
       // Atualizar o imóvel para publicar no feed XML
-      await env.DB.prepare(
-        `UPDATE properties SET publish_to_portals = 1 WHERE id = ?`,
-      )
+      await env.DB.prepare(`UPDATE properties SET publish_to_portals = 1 WHERE id = ?`)
         .bind(property.id)
         .run();
 
@@ -78,9 +76,7 @@ export class ZapVivaRealPortal extends BasePortal {
   ): Promise<{ success: boolean; error?: string }> {
     try {
       // Para remover do Zap/VivaReal, marcamos o imóvel como não publicar
-      await env.DB.prepare(
-        `UPDATE properties SET publish_to_portals = 0 WHERE id = ?`,
-      )
+      await env.DB.prepare(`UPDATE properties SET publish_to_portals = 0 WHERE id = ?`)
         .bind(externalId)
         .run();
 
@@ -105,9 +101,7 @@ export class ZapVivaRealPortal extends BasePortal {
 
   async validateCredentials(config: PortalConfigData, env: Bindings): Promise<boolean> {
     // Zap/VivaReal não requer credenciais específicas, apenas o tenant precisa existir
-    const tenant = await env.DB.prepare(
-      `SELECT id FROM tenants WHERE id = ?`,
-    )
+    const tenant = await env.DB.prepare(`SELECT id FROM tenants WHERE id = ?`)
       .bind(config.tenant_id)
       .first();
 

@@ -3,10 +3,10 @@
  *
  * Telegram usa Bot Token (nÃ£o OAuth).
  * Fluxo:
- * 1. User cria bot via @BotFather â recebe token
+ * 1. User cria bot via @BotFather ï¿½ recebe token
  * 2. Token salvo no D1
  * 3. setWebhook API registra URL de webhook
- * 4. Webhook recebe mensagens â NormalizerService â Inbox
+ * 4. Webhook recebe mensagens ï¿½ NormalizerService ï¿½ Inbox
  */
 
 import { HonoContext } from '../../bindings';
@@ -40,7 +40,10 @@ export class TelegramChannelService {
     try {
       const url = `${TELEGRAM_API_URL}${botToken}/getMe`;
       const response = await this.fetchWithCircuitBreaker(url, {});
-      const data = response as { ok?: boolean; result?: { id: number; username: string; first_name: string; is_bot: boolean } };
+      const data = response as {
+        ok?: boolean;
+        result?: { id: number; username: string; first_name: string; is_bot: boolean };
+      };
 
       if (data.ok && data.result) {
         return data.result;
@@ -54,10 +57,7 @@ export class TelegramChannelService {
   /**
    * Registra webhook via setWebhook
    */
-  async registerWebhook(
-    botToken: string,
-    webhookUrl: string,
-  ): Promise<boolean> {
+  async registerWebhook(botToken: string, webhookUrl: string): Promise<boolean> {
     try {
       const url = `${TELEGRAM_API_URL}${botToken}/setWebhook`;
       const response = await this.fetchWithCircuitBreaker(url, {
@@ -126,11 +126,7 @@ export class TelegramChannelService {
   /**
    * Processa webhook do Telegram
    */
-  async handleWebhook(
-    c: HonoContext,
-    tenantId: string,
-    channelId: string,
-  ) {
+  async handleWebhook(c: HonoContext, tenantId: string, channelId: string) {
     const logger = createDatadogLogger(c.env);
     const body = await c.req.json();
 
@@ -290,10 +286,7 @@ export class TelegramChannelService {
   /**
    * Faz download de arquivo do Telegram
    */
-  async getFileUrl(
-    botToken: string,
-    fileId: string,
-  ): Promise<string | null> {
+  async getFileUrl(botToken: string, fileId: string): Promise<string | null> {
     try {
       const url = `${TELEGRAM_API_URL}${botToken}/getFile?file_id=${fileId}`;
       const response = await this.fetchWithCircuitBreaker(url, {});
@@ -401,10 +394,10 @@ export class TelegramChannelService {
     }
 
     // Para media do Telegram, converter file_id para URL real
-    let finalMediaUrl = msg.media_url;
+    const finalMediaUrl = msg.media_url;
     const token = await this.channelRepo.getOAuthToken(channelId, 'telegram');
     if (token?.bot_username && finalMediaUrl && !finalMediaUrl.startsWith('http')) {
-      // Ã um file_id do Telegram, precisa converter
+      // ï¿½ um file_id do Telegram, precisa converter
       // Isso seria feito async em background
     }
 

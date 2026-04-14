@@ -91,7 +91,7 @@ async function processAction(env: Bindings, item: any, logger: any) {
 
   // Configuração da campanha (Simples para MVP)
   let messageToSend = '';
-  let nextStep = item.current_step + 1;
+  const nextStep = item.current_step + 1;
   let nextActionDelay = 0; // horas
 
   if (item.current_step === 0) {

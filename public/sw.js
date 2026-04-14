@@ -1,5 +1,6 @@
-// Service Worker para Oinbox PWA
-const CACHE_NAME = 'oinbox-v4';
+/* eslint-env browser, serviceworker */
+// Service Worker para Oconnector PWA
+const CACHE_NAME = 'oconnector-v4';
 const STATIC_ASSETS = [
   '/',
   '/index.html',

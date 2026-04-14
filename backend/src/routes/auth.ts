@@ -18,7 +18,9 @@ auth.post('/login', rateLimiter(20, true), async (c) => {
   const cleanEmail = email?.trim().toLowerCase() || '';
   const cleanPassword = password?.trim() || '';
 
-  console.log(`[Login Attempt] Email: '${cleanEmail}' (normalized) | Password Length: ${cleanPassword.length}`);
+  console.log(
+    `[Login Attempt] Email: '${cleanEmail}' (normalized) | Password Length: ${cleanPassword.length}`,
+  );
 
   // Health check do DB antes da query principal
   try {
@@ -57,7 +59,9 @@ auth.post('/login', rateLimiter(20, true), async (c) => {
   }
 
   if (!user) {
-    console.warn(`[Login Failed] User not found for email: '${cleanEmail}'. Check if user exists in D1 database.`);
+    console.warn(
+      `[Login Failed] User not found for email: '${cleanEmail}'. Check if user exists in D1 database.`,
+    );
     return c.json({ error: `Usuário não encontrado: ${cleanEmail}` }, 401);
   }
 
@@ -174,7 +178,7 @@ auth.post('/register', rateLimiter(3), async (c) => {
   await sendEmail(
     env,
     data.email,
-    'Bem-vindo ao Oconnector! �',
+    'Bem-vindo ao Oconnector! �',
     '<h1>Olá, ' +
       data.name +
       '!</h1>' +
@@ -227,13 +231,15 @@ auth.post('/client/login', rateLimiter(5), async (c) => {
   const cleanEmail = email?.trim().toLowerCase() || '';
 
   // Busca cliente
-  const client = await env.DB.prepare('SELECT * FROM clients WHERE email = ?').bind(cleanEmail).first<{
-    id: string;
-    tenant_id: string;
-    name: string;
-    email: string;
-    password_hash: string | null;
-  }>();
+  const client = await env.DB.prepare('SELECT * FROM clients WHERE email = ?')
+    .bind(cleanEmail)
+    .first<{
+      id: string;
+      tenant_id: string;
+      name: string;
+      email: string;
+      password_hash: string | null;
+    }>();
 
   if (!client) {
     return c.json({ error: 'Cliente não encontrado' }, 401);

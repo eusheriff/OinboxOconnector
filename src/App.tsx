@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+} from 'react-router-dom';
 import { User } from '@shared/types';
 import { authStorage } from './lib/authStorage';
 import { ToastProvider, useToast } from './contexts/ToastContext';
@@ -36,53 +43,39 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ user, setUser }) => {
   };
 
   const handleAuthLogin = async (email: string, pass: string) => {
-    try {
-      const data = await apiService.login(email, pass);
-      if (data && typeof data === 'object') {
-        const responseData = data as { user: User; token?: string; tenantId?: string };
-        if (responseData.user) {
-          if (responseData.token) authStorage.setToken(responseData.token);
-          if (responseData.tenantId) authStorage.setTenantId(responseData.tenantId);
-          setUser(responseData.user);
-          authStorage.setUser(responseData.user);
-        }
+    const data = await apiService.login(email, pass);
+    if (data && typeof data === 'object') {
+      const responseData = data as { user: User; token?: string; tenantId?: string };
+      if (responseData.user) {
+        if (responseData.token) authStorage.setToken(responseData.token);
+        if (responseData.tenantId) authStorage.setTenantId(responseData.tenantId);
+        setUser(responseData.user);
+        authStorage.setUser(responseData.user);
       }
-    } catch (error) {
-      throw error;
     }
   };
 
   const handleClientLogin = async (email: string, pass: string) => {
-    try {
-      const data = await apiService.clientLogin(email, pass);
-      if (data && typeof data === 'object') {
-        const responseData = data as { user: User; token?: string; tenantId?: string };
-        if (responseData.user) {
-          if (responseData.token) authStorage.setToken(responseData.token);
-          if (responseData.tenantId) authStorage.setTenantId(responseData.tenantId);
-          const clientUser = { ...responseData.user, role: 'client' as const };
-          setUser(clientUser);
-          authStorage.setUser(clientUser);
-        }
+    const data = await apiService.clientLogin(email, pass);
+    if (data && typeof data === 'object') {
+      const responseData = data as { user: User; token?: string; tenantId?: string };
+      if (responseData.user) {
+        if (responseData.token) authStorage.setToken(responseData.token);
+        if (responseData.tenantId) authStorage.setTenantId(responseData.tenantId);
+        const clientUser = { ...responseData.user, role: 'client' as const };
+        setUser(clientUser);
+        authStorage.setUser(clientUser);
       }
-    } catch (error) {
-      throw error;
     }
   };
 
   return (
     <Routes>
-      {/* 1. �reas Autenticadas (Prioridade Máxima) */}
+      {/* 1. �reas Autenticadas (Prioridade Máxima) */}
       {user && (
         <>
-          <Route
-            path="/admin/*"
-            element={<AdminRoutes user={user} onLogout={handleLogout} />}
-          />
-          <Route
-            path="/app/*"
-            element={<ClientRoutes user={user} onLogout={handleLogout} />}
-          />
+          <Route path="/admin/*" element={<AdminRoutes user={user} onLogout={handleLogout} />} />
+          <Route path="/app/*" element={<ClientRoutes user={user} onLogout={handleLogout} />} />
         </>
       )}
 

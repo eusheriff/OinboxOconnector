@@ -4,12 +4,13 @@
 
 O projeto possui **dois sistemas de rate limiting** independentes:
 
-1. **Rate Limiter Genérico** (`middleware/rateLimiter.ts`) � middleware reutilizável baseado em D1
-2. **AI Rate Limiter** (`utils/aiRateLimiter.ts`) � rate limiter específico para rotas de IA
+1. **Rate Limiter Genérico** (`middleware/rateLimiter.ts`) � middleware reutilizável baseado em D1
+2. **AI Rate Limiter** (`utils/aiRateLimiter.ts`) � rate limiter específico para rotas de IA
 
 ## Rate Limiter Genérico
 
 ### Arquivo
+
 `backend/src/middleware/rateLimiter.ts`
 
 ### Como Funciona
@@ -24,29 +25,29 @@ O projeto possui **dois sistemas de rate limiting** independentes:
 rateLimiter(maxRequests: number = 10, failClose: boolean = false)
 ```
 
-| Par|metro | Default | Descrição |
-|-----------|---------|-----------|
-| `maxRequests` | 10 | Requests permitidos por janela de 1 minuto |
-| `failClose` | false | Se `true`, bloqueia quando D1 está indisponível. Se `false`, permite passar |
+| Par           | metro | Default                                                                     | Descrição |
+| ------------- | ----- | --------------------------------------------------------------------------- | --------- |
+| `maxRequests` | 10    | Requests permitidos por janela de 1 minuto                                  |
+| `failClose`   | false | Se `true`, bloqueia quando D1 está indisponível. Se `false`, permite passar |
 
 ### Modos de Falha
 
-| Modo | Comportamento | Quando usar |
-|------|--------------|-------------|
-| **Fail-open** (`failClose: false`) | Permite request se D1 falhar | Rotas normais � não bloquear tráfego legítimo |
-| **Fail-close** (`failClose: true`) | Retorna 503 se D1 falhar | Rotas de login � proteger contra força bruta |
+| Modo                               | Comportamento                | Quando usar                                   |
+| ---------------------------------- | ---------------------------- | --------------------------------------------- |
+| **Fail-open** (`failClose: false`) | Permite request se D1 falhar | Rotas normais � não bloquear tráfego legítimo |
+| **Fail-close** (`failClose: true`) | Retorna 503 se D1 falhar     | Rotas de login � proteger contra força bruta  |
 
 ### Onde é Aplicado (confirmado no código)
 
-| Rota | Limite | Modo | Arquivo |
-|------|--------|------|---------|
-| `POST /api/auth/login` | 20 req/min | fail-close | `routes/auth.ts` |
-| `POST /api/auth/register` | 3 req/min | fail-open | `routes/auth.ts` |
-| `POST /api/auth/client/login` | 5 req/min | fail-open | `routes/auth.ts` |
+| Rota                          | Limite     | Modo       | Arquivo          |
+| ----------------------------- | ---------- | ---------- | ---------------- |
+| `POST /api/auth/login`        | 20 req/min | fail-close | `routes/auth.ts` |
+| `POST /api/auth/register`     | 3 req/min  | fail-open  | `routes/auth.ts` |
+| `POST /api/auth/client/login` | 5 req/min  | fail-open  | `routes/auth.ts` |
 
-### Onde N�O é Aplicado
+### Onde N�O é Aplicado
 
-O README menciona "Rate limiting em rotas de login (5 req/min por IP)" � o valor real é **20 req/min** para login, não 5. O README está desatualizado.
+O README menciona "Rate limiting em rotas de login (5 req/min por IP)" � o valor real é **20 req/min** para login, não 5. O README está desatualizado.
 
 ### Tabela `rate_limits`
 
@@ -61,26 +62,27 @@ CREATE TABLE IF NOT EXISTS rate_limits (
 
 ### Limitações
 
-1. **Sem cleanup automático** � registros expirados não são removidos. A tabela cresce indefinidamente.
-2. **IP via headers** � usa `x-forwarded-for`, `x-real-ip`, ou `cf-connecting-ip`. Em dev local sem proxy, usa `'unknown'` (todos compartilham o mesmo limite).
-3. **Sem rate limiting em rotas de API protegidas** � apenas rotas de auth têm rate limiter. Rotas como `/api/properties`, `/api/leads`, etc. não têm proteção.
+1. **Sem cleanup automático** � registros expirados não são removidos. A tabela cresce indefinidamente.
+2. **IP via headers** � usa `x-forwarded-for`, `x-real-ip`, ou `cf-connecting-ip`. Em dev local sem proxy, usa `'unknown'` (todos compartilham o mesmo limite).
+3. **Sem rate limiting em rotas de API protegidas** � apenas rotas de auth têm rate limiter. Rotas como `/api/properties`, `/api/leads`, etc. não têm proteção.
 
 ## AI Rate Limiter
 
 ### Arquivo
+
 `backend/src/utils/aiRateLimiter.ts`
 
 ### Funções Exportadas
 
-| Função | Uso |
-|--------|-----|
+| Função                                                        | Uso                                              |
+| ------------------------------------------------------------- | ------------------------------------------------ |
 | `checkAndIncrementRateLimit(tenantId, provider, maxRequests)` | Verifica e incrementa. Retorna `true` se excedeu |
-| `getRateLimitStatus(tenantId, provider)` | Retorna status atual (count, limit, remaining) |
-| `cleanupOldRateLimits()` | Remove registros antigos |
+| `getRateLimitStatus(tenantId, provider)`                      | Retorna status atual (count, limit, remaining)   |
+| `cleanupOldRateLimits()`                                      | Remove registros antigos                         |
 
 ### Onde é Aplicado
 
-Confirmado em `routes/ai.ts` � rotas de IA têm rate limiting por tenant e por provider (Data Engine/Engine/cloudflare).
+Confirmado em `routes/ai.ts` � rotas de IA têm rate limiting por tenant e por provider (Data Engine/Engine/cloudflare).
 
 ### Configuração
 

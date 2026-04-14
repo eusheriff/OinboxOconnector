@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, RefreshCw, Smartphone, CheckCircle, XCircle, LogOut, Facebook, ShieldCheck } from 'lucide-react';
+import {
+  MessageCircle,
+  RefreshCw,
+  Smartphone,
+  CheckCircle,
+  XCircle,
+  LogOut,
+  Facebook,
+  ShieldCheck,
+} from 'lucide-react';
 import ConfirmationModal from '@/components/UI/ConfirmationModal';
 import { useToast } from '@/contexts/ToastContext';
 import { apiService } from '@/services/apiService';
@@ -63,17 +72,17 @@ const WhatsAppManager: React.FC = () => {
     try {
       setLoading(true);
       const { url } = (await apiService.getMetaAuthUrl()) as any;
-      
+
       // Abrir Popup Oficial
       const width = 600;
       const height = 700;
       const left = window.screenX + (window.outerWidth - width) / 2;
       const top = window.screenY + (window.outerHeight - height) / 2;
-      
+
       const popup = window.open(
         url,
         'MetaOAuth',
-        `width=${width},height=${height},left=${left},top=${top}`
+        `width=${width},height=${height},left=${left},top=${top}`,
       );
 
       // Listener para o fechamento
@@ -84,7 +93,6 @@ const WhatsAppManager: React.FC = () => {
           addToast('success', 'Conexão Meta finalizada. Verificando status...');
         }
       }, 1000);
-
     } catch (e) {
       addToast('error', 'Falha ao iniciar login Meta OAuth.');
     } finally {
@@ -208,10 +216,16 @@ const WhatsAppManager: React.FC = () => {
                   <CheckCircle size={48} className="text-green-500" />
                 </div>
                 <h4 className="text-2xl font-bold text-white">Conectado</h4>
-                <p className="text-gray-400">Inst|ncia: {status?.instanceName || 'Canal Oficial'}</p>
+                <p className="text-gray-400">
+                  Inst|ncia: {status?.instanceName || 'Canal Oficial'}
+                </p>
                 <div className="flex gap-2">
-                   <p className={`text-sm px-3 py-1 rounded-full ${connectionType === 'meta' ? 'bg-blue-400/10 text-blue-400' : 'bg-green-400/10 text-green-400'}`}>
-                    {connectionType === 'meta' ? 'WhatsApp Cloud API (Meta)' : 'Evolution API (QRCode)'}
+                  <p
+                    className={`text-sm px-3 py-1 rounded-full ${connectionType === 'meta' ? 'bg-blue-400/10 text-blue-400' : 'bg-green-400/10 text-green-400'}`}
+                  >
+                    {connectionType === 'meta'
+                      ? 'WhatsApp Cloud API (Meta)'
+                      : 'Evolution API (QRCode)'}
                   </p>
                 </div>
               </>
@@ -250,9 +264,10 @@ const WhatsAppManager: React.FC = () => {
                 WhatsApp Oficial (Recomendado)
               </div>
               <p className="text-sm text-gray-400">
-                Conecte-se diretamente à API oficial da Meta. Mais estável, sem quedas e aprovado pelo WhatsApp.
+                Conecte-se diretamente à API oficial da Meta. Mais estável, sem quedas e aprovado
+                pelo WhatsApp.
               </p>
-              <button 
+              <button
                 onClick={handleMetaLogin}
                 disabled={loading || connectionStatus === 'connected'}
                 className="w-full bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white py-3 rounded-lg font-bold flex items-center justify-center gap-2 transition-all shadow-lg"
@@ -263,8 +278,12 @@ const WhatsAppManager: React.FC = () => {
             </div>
 
             <div className="relative">
-              <div className="absolute inset-0 flex items-center"><span className="w-full border-t border-slate-700/50"></span></div>
-              <div className="relative flex justify-center text-xs uppercase"><span className="bg-card px-2 text-gray-500">Ou use o método clássico</span></div>
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-slate-700/50"></span>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-gray-500">Ou use o método clássico</span>
+              </div>
             </div>
 
             <p>Para conectar via QRCode (Evolution API):</p>

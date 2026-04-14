@@ -57,7 +57,12 @@ const PROVIDER_CONFIGS = [
     requiresOAuth: true,
     fields: [
       { key: 'app_id', label: 'App ID', type: 'text', placeholder: 'Sua Facebook App ID' },
-      { key: 'app_secret', label: 'App Secret', type: 'password', placeholder: 'Sua Facebook App Secret' },
+      {
+        key: 'app_secret',
+        label: 'App Secret',
+        type: 'password',
+        placeholder: 'Sua Facebook App Secret',
+      },
     ],
   },
   {
@@ -70,7 +75,12 @@ const PROVIDER_CONFIGS = [
     note: 'Usa a mesma Facebook App do Messenger',
     fields: [
       { key: 'app_id', label: 'App ID', type: 'text', placeholder: 'Sua Facebook App ID' },
-      { key: 'app_secret', label: 'App Secret', type: 'password', placeholder: 'Sua Facebook App Secret' },
+      {
+        key: 'app_secret',
+        label: 'App Secret',
+        type: 'password',
+        placeholder: 'Sua Facebook App Secret',
+      },
     ],
   },
   {
@@ -83,7 +93,12 @@ const PROVIDER_CONFIGS = [
     note: 'Requer OAuth 1.0a com Account Activity API',
     fields: [
       { key: 'consumer_key', label: 'Consumer Key', type: 'text', placeholder: 'API Key' },
-      { key: 'consumer_secret', label: 'Consumer Secret', type: 'password', placeholder: 'API Secret' },
+      {
+        key: 'consumer_secret',
+        label: 'Consumer Secret',
+        type: 'password',
+        placeholder: 'API Secret',
+      },
     ],
   },
   {
@@ -94,7 +109,12 @@ const PROVIDER_CONFIGS = [
     description: 'Conecte um bot do Telegram via BotFather token',
     requiresOAuth: false,
     fields: [
-      { key: 'bot_token', label: 'Bot Token', type: 'text', placeholder: '123456789:ABCdefGHIjklMNOpqrsTUVwxyz' },
+      {
+        key: 'bot_token',
+        label: 'Bot Token',
+        type: 'text',
+        placeholder: '123456789:ABCdefGHIjklMNOpqrsTUVwxyz',
+      },
     ],
   },
   {
@@ -105,8 +125,18 @@ const PROVIDER_CONFIGS = [
     description: 'Conecte sua conta TikTok para receber mensagens',
     requiresOAuth: true,
     fields: [
-      { key: 'client_key', label: 'Client Key', type: 'text', placeholder: 'TikTok App Client Key' },
-      { key: 'client_secret', label: 'Client Secret', type: 'password', placeholder: 'TikTok App Client Secret' },
+      {
+        key: 'client_key',
+        label: 'Client Key',
+        type: 'text',
+        placeholder: 'TikTok App Client Key',
+      },
+      {
+        key: 'client_secret',
+        label: 'Client Secret',
+        type: 'password',
+        placeholder: 'TikTok App Client Secret',
+      },
     ],
   },
   {
@@ -118,7 +148,12 @@ const PROVIDER_CONFIGS = [
     requiresOAuth: false,
     fields: [
       { key: 'channel_id', label: 'Channel ID', type: 'text', placeholder: 'Line Channel ID' },
-      { key: 'channel_secret', label: 'Channel Secret', type: 'password', placeholder: 'Line Channel Secret' },
+      {
+        key: 'channel_secret',
+        label: 'Channel Secret',
+        type: 'password',
+        placeholder: 'Line Channel Secret',
+      },
     ],
   },
 ];
@@ -138,8 +173,8 @@ export function OmnichannelChannels() {
   const loadChannels = async () => {
     try {
       setLoading(true);
-      const response = await apiService.fetch('/api/channels') as Response;
-      const data = await response.json() as { success: boolean; channels?: any[] };
+      const response = (await apiService.fetch('/api/channels')) as Response;
+      const data = (await response.json()) as { success: boolean; channels?: any[] };
       if (data.success) {
         setChannels(data.channels || []);
       }
@@ -152,7 +187,7 @@ export function OmnichannelChannels() {
   };
 
   const handleConnect = async (providerId: string) => {
-    const config = PROVIDER_CONFIGS.find(p => p.id === providerId);
+    const config = PROVIDER_CONFIGS.find((p) => p.id === providerId);
     if (!config) return;
 
     try {
@@ -160,12 +195,16 @@ export function OmnichannelChannels() {
       setError(null);
 
       // Criar channel
-      const createResponse = await apiService.fetch('/api/channels', {
+      const createResponse = (await apiService.fetch('/api/channels', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ provider: providerId, name: config.name, config: formData }),
-      }) as Response;
-      const createData = await createResponse.json() as { success: boolean; channel?: { id: string }; error?: string };
+      })) as Response;
+      const createData = (await createResponse.json()) as {
+        success: boolean;
+        channel?: { id: string };
+        error?: string;
+      };
 
       if (!createData.success) {
         setError(createData.error || 'Falha ao criar canal');
@@ -175,12 +214,16 @@ export function OmnichannelChannels() {
       const channelId = createData.channel!.id;
 
       // Conectar
-      const connectResponse = await apiService.fetch(`/api/channels/${channelId}/connect`, {
+      const connectResponse = (await apiService.fetch(`/api/channels/${channelId}/connect`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ ...formData, provider: providerId }),
-      }) as Response;
-      const connectData = await connectResponse.json() as { success: boolean; oauth_url?: string; error?: string };
+      })) as Response;
+      const connectData = (await connectResponse.json()) as {
+        success: boolean;
+        oauth_url?: string;
+        error?: string;
+      };
 
       if (!connectData.success) {
         setError(connectData.error || 'Falha ao conectar');
@@ -206,10 +249,10 @@ export function OmnichannelChannels() {
     if (!confirm('Tem certeza que deseja desconectar este canal?')) return;
 
     try {
-      const response = await apiService.fetch(`/api/channels/${channelId}/disconnect`, {
+      const response = (await apiService.fetch(`/api/channels/${channelId}/disconnect`, {
         method: 'POST',
-      }) as Response;
-      const data = await response.json() as { success: boolean; error?: string };
+      })) as Response;
+      const data = (await response.json()) as { success: boolean; error?: string };
       if (data.success) {
         await loadChannels();
       } else {
@@ -254,9 +297,9 @@ export function OmnichannelChannels() {
     }
   };
 
-  const getConnectedChannels = channels.filter(ch => ch.status === 'connected');
+  const getConnectedChannels = channels.filter((ch) => ch.status === 'connected');
   const availableProviders = PROVIDER_CONFIGS.filter(
-    p => !channels.some(ch => ch.provider === p.id),
+    (p) => !channels.some((ch) => ch.provider === p.id),
   );
 
   return (
@@ -287,21 +330,16 @@ export function OmnichannelChannels() {
           <div className="rounded-lg border-2 border-dashed border-gray-200 p-8 text-center">
             <MessageCircle className="mx-auto h-12 w-12 text-gray-400" />
             <h3 className="mt-2 text-sm font-medium text-gray-900">Nenhum canal conectado</h3>
-            <p className="mt-1 text-sm text-gray-500">
-              Comece conectando uma rede social abaixo
-            </p>
+            <p className="mt-1 text-sm text-gray-500">Comece conectando uma rede social abaixo</p>
           </div>
         ) : (
           <div className="space-y-3">
-            {channels.map(channel => {
-              const config = PROVIDER_CONFIGS.find(p => p.id === channel.provider);
+            {channels.map((channel) => {
+              const config = PROVIDER_CONFIGS.find((p) => p.id === channel.provider);
               const Icon = config?.icon || MessageCircle;
 
               return (
-                <div
-                  key={channel.id}
-                  className="rounded-lg border border-gray-200 bg-white p-4"
-                >
+                <div key={channel.id} className="rounded-lg border border-gray-200 bg-white p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <div
@@ -317,7 +355,9 @@ export function OmnichannelChannels() {
                           <p className="text-xs text-gray-400">Página: {channel.token.page_name}</p>
                         )}
                         {channel.token?.bot_username && (
-                          <p className="text-xs text-gray-400">Bot: @{channel.token.bot_username}</p>
+                          <p className="text-xs text-gray-400">
+                            Bot: @{channel.token.bot_username}
+                          </p>
                         )}
                       </div>
                     </div>
@@ -328,7 +368,7 @@ export function OmnichannelChannels() {
                       {channel.metrics && (
                         <div className="text-xs text-gray-500">
                           <span className="mr-2">
-                            � {channel.metrics.messages_received_today || 0} hoje
+                            � {channel.metrics.messages_received_today || 0} hoje
                           </span>
                         </div>
                       )}
@@ -354,7 +394,7 @@ export function OmnichannelChannels() {
         <div>
           <h3 className="text-sm font-medium text-gray-700 mb-3">Adicionar canal</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {availableProviders.map(provider => {
+            {availableProviders.map((provider) => {
               const Icon = provider.icon;
               return (
                 <button
@@ -385,7 +425,7 @@ export function OmnichannelChannels() {
       {/* Modal de conexão */}
       {showConnectModal && (
         <ConnectModal
-          provider={PROVIDER_CONFIGS.find(p => p.id === showConnectModal)!}
+          provider={PROVIDER_CONFIGS.find((p) => p.id === showConnectModal)!}
           formData={formData}
           onFormChange={setFormData}
           onConnect={() => handleConnect(showConnectModal)}
@@ -409,7 +449,7 @@ function ConnectModal({
   onClose,
   isConnecting,
 }: {
-  provider: typeof PROVIDER_CONFIGS[0];
+  provider: (typeof PROVIDER_CONFIGS)[0];
   formData: Record<string, string>;
   onFormChange: (data: Record<string, string>) => void;
   onConnect: () => void;
@@ -422,10 +462,7 @@ function ConnectModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       <div className="mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
         <div className="flex items-center gap-3 mb-4">
-          <div
-            className="rounded-lg p-2"
-            style={{ backgroundColor: `${provider.color}15` }}
-          >
+          <div className="rounded-lg p-2" style={{ backgroundColor: `${provider.color}15` }}>
             <Icon className="h-6 w-6" style={{ color: provider.color }} />
           </div>
           <div>
@@ -442,16 +479,14 @@ function ConnectModal({
         )}
 
         <div className="space-y-4">
-          {provider.fields.map(field => (
+          {provider.fields.map((field) => (
             <div key={field.key}>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                {field.label}
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">{field.label}</label>
               <input
                 type={field.type}
                 placeholder={field.placeholder}
                 value={formData[field.key] || ''}
-                onChange={e => onFormChange({ ...formData, [field.key]: e.target.value })}
+                onChange={(e) => onFormChange({ ...formData, [field.key]: e.target.value })}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
             </div>
@@ -467,7 +502,7 @@ function ConnectModal({
           </button>
           <button
             onClick={onConnect}
-            disabled={isConnecting || Object.values(formData).some(v => !v)}
+            disabled={isConnecting || Object.values(formData).some((v) => !v)}
             className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isConnecting ? (

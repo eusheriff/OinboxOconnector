@@ -160,34 +160,42 @@ export async function handleEmail(message: EmailMessage, env: Bindings, ctx: Exe
       // Get or Create channel for email
       const channelName = 'Email Inbox';
       let channelId = await env.DB.prepare(
-        "SELECT id FROM channels WHERE tenant_id = ? AND provider = 'email'"
-      ).bind(tenantId).first<{id: string}>();
+        "SELECT id FROM channels WHERE tenant_id = ? AND provider = 'email'",
+      )
+        .bind(tenantId)
+        .first<{ id: string }>();
 
       if (!channelId) {
         const newChannelId = crypto.randomUUID();
         await env.DB.prepare(
-          "INSERT INTO channels (id, tenant_id, provider, name) VALUES (?, ?, 'email', ?)"
-        ).bind(newChannelId, tenantId, channelName).run();
+          "INSERT INTO channels (id, tenant_id, provider, name) VALUES (?, ?, 'email', ?)",
+        )
+          .bind(newChannelId, tenantId, channelName)
+          .run();
         channelId = { id: newChannelId };
       }
 
       // Get or Create Conversation
       let conversation = await env.DB.prepare(
-        "SELECT id FROM conversations WHERE tenant_id = ? AND channel_id = ? AND contact_id = ? AND status != 'resolved'"
-      ).bind(tenantId, channelId.id, finalClientId).first<{id: string}>();
+        "SELECT id FROM conversations WHERE tenant_id = ? AND channel_id = ? AND contact_id = ? AND status != 'resolved'",
+      )
+        .bind(tenantId, channelId.id, finalClientId)
+        .first<{ id: string }>();
 
       if (!conversation) {
         const newConvId = crypto.randomUUID();
         await env.DB.prepare(
-          "INSERT INTO conversations (id, tenant_id, channel_id, contact_id, status) VALUES (?, ?, ?, ?, 'open')"
-        ).bind(newConvId, tenantId, channelId.id, finalClientId).run();
+          "INSERT INTO conversations (id, tenant_id, channel_id, contact_id, status) VALUES (?, ?, ?, ?, 'open')",
+        )
+          .bind(newConvId, tenantId, channelId.id, finalClientId)
+          .run();
         conversation = { id: newConvId };
       }
 
       // Salvar como Omnichannel Message
       await env.DB.prepare(
         `INSERT INTO omnichannel_messages (id, tenant_id, conversation_id, sender_type, sender_id, content, message_type, created_at)
-         VALUES (?, ?, ?, 'contact', ?, ?, 'text', ?)`
+         VALUES (?, ?, ?, 'contact', ?, ?, 'text', ?)`,
       )
         .bind(
           crypto.randomUUID(),

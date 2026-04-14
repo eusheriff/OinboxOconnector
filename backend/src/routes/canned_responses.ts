@@ -25,7 +25,7 @@ cannedResponses.get('/', async (c) => {
 
   try {
     const results = await env.DB.prepare(
-      'SELECT id, shortcut, content, created_at FROM canned_responses WHERE tenant_id = ? ORDER BY shortcut ASC'
+      'SELECT id, shortcut, content, created_at FROM canned_responses WHERE tenant_id = ? ORDER BY shortcut ASC',
     )
       .bind(tenantId)
       .all<CannedResponse>();
@@ -56,7 +56,7 @@ cannedResponses.post('/', async (c) => {
     const newId = crypto.randomUUID();
 
     await env.DB.prepare(
-      'INSERT INTO canned_responses (id, tenant_id, shortcut, content) VALUES (?, ?, ?, ?)'
+      'INSERT INTO canned_responses (id, tenant_id, shortcut, content) VALUES (?, ?, ?, ?)',
     )
       .bind(newId, tenantId, cleanShortcut, content)
       .run();
@@ -85,7 +85,7 @@ cannedResponses.delete('/:id', async (c) => {
 
   try {
     const result = await env.DB.prepare(
-      'DELETE FROM canned_responses WHERE id = ? AND tenant_id = ?'
+      'DELETE FROM canned_responses WHERE id = ? AND tenant_id = ?',
     )
       .bind(id, tenantId)
       .run();

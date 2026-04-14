@@ -33,13 +33,13 @@ export async function generateSocialKit(
       'Tom formal e elegante. Use linguagem de corretor experiente. Destaque exclusividade.',
     fun: 'Tom leve e descontraído. Use emojis com moderação. Crie conexão emocional.',
     urgent:
-      'Tom de urgência. Use gatilhos de escassez ("�ltimas unidades!", "Oportunidade única!"). FOMO.',
+      'Tom de urgência. Use gatilhos de escassez ("�ltimas unidades!", "Oportunidade única!"). FOMO.',
   };
 
   const prompt = `
 Você é um copywriter especialista em Marketing Imobiliário para Instagram Brasil.
 
-IM�VEL:
+IM�VEL:
 - Título: ${property.title}
 - Tipo: ${property.listing_type}
 - Preço: R$ ${property.price?.toLocaleString('pt-BR') || 'Sob consulta'}
@@ -57,7 +57,7 @@ Gere um Kit de Marketing Social com:
    - Use a estrutura AIDA (Atenção, Interesse, Desejo, Ação).
    - Máximo 2200 caracteres.
    - Quebre em parágrafos curtos (1-2 linhas).
-   - Use emojis estratégicos (�����).
+   - Use emojis estratégicos (�����).
    - Termine com CTA claro ("Chame no Direct!", "Link na bio").
 
 2. HASHTAGS:
@@ -91,9 +91,7 @@ Responda APENAS o JSON, sem markdown ou explicações.
     },
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
-      messages: [
-        { role: 'user', content: prompt },
-      ],
+      messages: [{ role: 'user', content: prompt }],
       temperature: 0.8,
       max_tokens: 2048,
       response_format: { type: 'json_object' },

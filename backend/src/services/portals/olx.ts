@@ -132,9 +132,7 @@ export class OlxPortal extends BasePortal {
       // Em produção: DELETE /api/ads/{externalId}
 
       // Se for via feed, apenas desmarcar
-      await env.DB.prepare(
-        `UPDATE properties SET publish_to_portals = 0 WHERE id = ?`,
-      )
+      await env.DB.prepare(`UPDATE properties SET publish_to_portals = 0 WHERE id = ?`)
         .bind(externalId)
         .run();
 

@@ -7,8 +7,6 @@ describe('LoginPage Component', () => {
   const mockOnClientLogin = vi.fn();
   const mockOnBack = vi.fn();
   const mockOnRegisterClick = vi.fn();
-  const mockRegister = vi.fn();
-  const mockApiService = { login: vi.fn() };
 
   beforeEach(() => {
     vi.clearAllMocks();

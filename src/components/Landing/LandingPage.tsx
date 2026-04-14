@@ -520,7 +520,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onNavigateLogin, onNavigateRe
           </div>
         </div>
       )}
-
     </div>
   );
 };

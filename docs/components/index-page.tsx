@@ -68,8 +68,8 @@ export function IndexPage() {
           Documentação Oconnector
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-          Sistema Operacional Imobiliário com CRM, Inbox Unificado, 
-          Automação e Marketing. Tudo em uma única plataforma.
+          Sistema Operacional Imobiliário com CRM, Inbox Unificado, Automação e Marketing. Tudo em
+          uma única plataforma.
         </p>
       </div>
 
@@ -92,12 +92,8 @@ export function IndexPage() {
 
       {/* Footer */}
       <div className="mt-16 text-center text-sm text-muted-foreground">
-        <p>
-          Oconnector � Real Estate Operating System
-        </p>
-        <p className="mt-1">
-          Todos os direitos reservados a Oconnector.tech Tecnologia
-        </p>
+        <p>Oconnector � Real Estate Operating System</p>
+        <p className="mt-1">Todos os direitos reservados a Oconnector.tech Tecnologia</p>
       </div>
     </div>
   );

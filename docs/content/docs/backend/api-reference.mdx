@@ -15,7 +15,7 @@ Login de usuário.
 
 \`\`\`json
 // Request
-{ "emAutomationl": "user@exemplo.com", "password": "senha123" }
+{ "email": "user@exemplo.com", "password": "senha123" }
 
 // Response 200
 { "user": { "id": "...", "name": "...", "role": "admin" }, "token": "eyJ...", "tenantId": "..." }
@@ -47,11 +47,11 @@ GET /api/clients?page=1&limit=50
 
 \`\`\`json
 {
-  "items": [{ "id": "...", "name": "...", "emAutomationl": "...", "status": "Novo" }],
-  "total": 150,
-  "page": 1,
-  "pageSize": 50,
-  "hasMore": true
+"items": [{ "id": "...", "name": "...", "email": "...", "status": "Novo" }],
+"total": 150,
+"page": 1,
+"pageSize": 50,
+"hasMore": true
 }
 \`\`\`
 

@@ -2,11 +2,11 @@
  * FacebookChannelService - Facebook Messenger OAuth + Webhook
  *
  * Fluxo:
- * 1. User clica "Conectar Facebook" ‚ gera OAuth URL
- * 2. Callback recebe code ‚ troca por page access token
+ * 1. User clica "Conectar Facebook" ÔøΩ gera OAuth URL
+ * 2. Callback recebe code ÔøΩ troca por page access token
  * 3. Salva token + page_id no D1
  * 4. Registra webhook na Graph API
- * 5. Webhook recebe mensagens ‚ NormalizerService ‚ Inbox
+ * 5. Webhook recebe mensagens ÔøΩ NormalizerService ÔøΩ Inbox
  */
 
 import { HonoContext } from '../../bindings';
@@ -29,9 +29,7 @@ const FACEBOOK_SCOPES = [
 ].join(',');
 
 export class FacebookChannelService {
-  constructor(
-    private channelRepo: ChannelRepository,
-  ) {}
+  constructor(private channelRepo: ChannelRepository) {}
 
   /**
    * Gera URL de OAuth Facebook
@@ -50,7 +48,7 @@ export class FacebookChannelService {
 
   /**
    * Troca authorization code por page access token
-   * Fluxo: code ‚ short-lived token ‚ long-lived token ‚ page token
+   * Fluxo: code ÔøΩ short-lived token ÔøΩ long-lived token ÔøΩ page token
    */
   async exchangeCodeForPageToken(
     code: string,
@@ -65,13 +63,14 @@ export class FacebookChannelService {
   }> {
     // Passo 1: Trocar code por short-lived token
     const shortLivedToken = await this.exchangeCodeForShortLivedToken(
-      code, appId, appSecret, redirectUri,
+      code,
+      appId,
+      appSecret,
+      redirectUri,
     );
 
     // Passo 2: Trocar por long-lived token
-    const longLivedToken = await this.exchangeForLongLivedToken(
-      shortLivedToken, appId, appSecret,
-    );
+    const longLivedToken = await this.exchangeForLongLivedToken(shortLivedToken, appId, appSecret);
 
     // Passo 3: Obter p√°ginas do usu√°rio e pegar token da p√°gina
     const pages = await this.getUserPages(longLivedToken);
@@ -118,7 +117,11 @@ export class FacebookChannelService {
     const url = `${FACEBOOK_TOKEN_URL}?grant_type=fb_exchange_token&client_id=${appId}&client_secret=${appSecret}&fb_exchange_token=${shortLivedToken}`;
 
     const response = await this.fetchWithCircuitBreaker(url, {});
-    const data = response as { access_token?: string; expires_in?: number; error?: { message: string } };
+    const data = response as {
+      access_token?: string;
+      expires_in?: number;
+      error?: { message: string };
+    };
 
     if (data.error) {
       throw new Error(`Facebook long-lived token error: ${data.error.message}`);
@@ -130,15 +133,20 @@ export class FacebookChannelService {
     return data.access_token;
   }
 
-  private async getUserPages(accessToken: string): Promise<Array<{
-    id: string;
-    name: string;
-    access_token: string;
-  }>> {
+  private async getUserPages(accessToken: string): Promise<
+    Array<{
+      id: string;
+      name: string;
+      access_token: string;
+    }>
+  > {
     const url = `${FACEBOOK_API_URL}/me/accounts?access_token=${accessToken}&fields=id,name,access_token`;
 
     const response = await this.fetchWithCircuitBreaker(url, {});
-    const data = response as { data?: Array<{ id: string; name: string; access_token: string }>; error?: { message: string } };
+    const data = response as {
+      data?: Array<{ id: string; name: string; access_token: string }>;
+      error?: { message: string };
+    };
 
     if (data.error) {
       throw new Error(`Facebook pages error: ${data.error.message}`);
@@ -166,7 +174,7 @@ export class FacebookChannelService {
       const data = response as { data?: Array<{ object: string; callback_url: string }> };
 
       // Se j√° existe webhook para esta URL, retornar true
-      if (data.data?.some(sub => sub.callback_url === webhookUrl)) {
+      if (data.data?.some((sub) => sub.callback_url === webhookUrl)) {
         return true;
       }
 
@@ -181,11 +189,7 @@ export class FacebookChannelService {
   /**
    * Processa webhook do Facebook Messenger
    */
-  async handleWebhook(
-    c: HonoContext,
-    tenantId: string,
-    channelId: string,
-  ) {
+  async handleWebhook(c: HonoContext, tenantId: string, channelId: string) {
     const logger = createDatadogLogger(c.env);
     const body = await c.req.json();
 
@@ -330,7 +334,10 @@ export class FacebookChannelService {
   /**
    * Obt√©m perfil do contato (nome, foto)
    */
-  async getSenderProfile(psid: string, pageAccessToken: string): Promise<{
+  async getSenderProfile(
+    psid: string,
+    pageAccessToken: string,
+  ): Promise<{
     name: string;
     profile_pic: string;
   } | null> {

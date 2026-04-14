@@ -48,8 +48,8 @@ export const processStripeSubscription = async (planName: string, cycle: 'monthl
     if (!response.ok) {
       throw new Error(
         '[Modo Demo] O sistema redirecionaria para o Stripe Checkout (Plano: ' +
-        planName +
-        '). \n\nVerifique se o Worker está rodando.',
+          planName +
+          '). \n\nVerifique se o Worker está rodando.',
       );
     }
 

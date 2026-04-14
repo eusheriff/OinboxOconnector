@@ -1,5 +1,9 @@
 import { Bindings } from '../../bindings';
-import { PropertyPublication, PublicationStatus, PortalPublishResponse } from '../../../../shared/types';
+import {
+  PropertyPublication,
+  PublicationStatus,
+  PortalPublishResponse,
+} from '../../../../shared/types';
 
 /**
  * Dados do imóvel para publicação
@@ -205,9 +209,7 @@ export abstract class BasePortal implements BasePortalAdapter {
 
     values.push(publicationId);
 
-    await env.DB.prepare(
-      `UPDATE property_publications SET ${updates.join(', ')} WHERE id = ?`,
-    )
+    await env.DB.prepare(`UPDATE property_publications SET ${updates.join(', ')} WHERE id = ?`)
       .bind(...values)
       .run();
   }

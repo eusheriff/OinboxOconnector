@@ -56,17 +56,18 @@ const PortalSelector: React.FC<PortalSelectorProps> = ({
   };
 
   // Lista de portais disponíveis (combinar disponíveis + padrão)
-  const portals = availablePortals.length > 0
-    ? availablePortals.map((p) => ({
-        id: p.id,
-        label: p.id,
-        configured: isPortalConfigured(p.id),
-      }))
-    : Object.keys(PORTAL_LABELS).map((id) => ({
-        id,
-        label: id,
-        configured: isPortalConfigured(id),
-      }));
+  const portals =
+    availablePortals.length > 0
+      ? availablePortals.map((p) => ({
+          id: p.id,
+          label: p.id,
+          configured: isPortalConfigured(p.id),
+        }))
+      : Object.keys(PORTAL_LABELS).map((id) => ({
+          id,
+          label: id,
+          configured: isPortalConfigured(id),
+        }));
 
   const handleSelectAll = () => {
     if (selectedPortals.length === portals.length) {
@@ -145,12 +146,8 @@ const PortalSelector: React.FC<PortalSelectorProps> = ({
                   </div>
                 )}
               </div>
-              {isSelected && isConfigured && (
-                <Check className="w-4 h-4 text-green-600 ml-2" />
-              )}
-              {!isConfigured && (
-                <AlertCircle className="w-4 h-4 text-gray-400 ml-2" />
-              )}
+              {isSelected && isConfigured && <Check className="w-4 h-4 text-green-600 ml-2" />}
+              {!isConfigured && <AlertCircle className="w-4 h-4 text-gray-400 ml-2" />}
             </label>
           );
         })}
@@ -158,12 +155,8 @@ const PortalSelector: React.FC<PortalSelectorProps> = ({
 
       <div className="mt-3 pt-3 border-t border-gray-200">
         <div className="flex justify-between items-center text-xs text-gray-500">
-          <span>
-            {selectedPortals.length} canal(is) selecionado(s)
-          </span>
-          <span>
-            {portals.filter((p) => p.configured).length} portal(is) configurado(s)
-          </span>
+          <span>{selectedPortals.length} canal(is) selecionado(s)</span>
+          <span>{portals.filter((p) => p.configured).length} portal(is) configurado(s)</span>
         </div>
         {!portals.every((p) => p.configured) && (
           <p className="text-xs text-orange-600 mt-2 flex items-center gap-1">

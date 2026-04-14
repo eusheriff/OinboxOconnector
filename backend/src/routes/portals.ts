@@ -229,7 +229,7 @@ portals.post('/api/:tenantId', async (c) => {
 });
 
 // ==========================================
-// ROTAS DE PUBLICA��O EM LOTE (COM AUTH)
+// ROTAS DE PUBLICA��O EM LOTE (COM AUTH)
 // ==========================================
 
 // Aplicar middleware de auth para todas as rotas abaixo
@@ -262,12 +262,7 @@ portalsAuth.post('/bulk-publish', async (c) => {
   });
 
   try {
-    const result = await PortalRegistry.publishToPortals(
-      property_id,
-      tenantId,
-      portal_ids,
-      env,
-    );
+    const result = await PortalRegistry.publishToPortals(property_id, tenantId, portal_ids, env);
 
     return c.json({
       success: true,
@@ -283,10 +278,13 @@ portalsAuth.post('/bulk-publish', async (c) => {
       error,
     });
 
-    return c.json({
-      error: 'Falha ao publicar em lote',
-      details: (error as Error).message,
-    }, 500);
+    return c.json(
+      {
+        error: 'Falha ao publicar em lote',
+        details: (error as Error).message,
+      },
+      500,
+    );
   }
 });
 
@@ -311,10 +309,13 @@ portalsAuth.get('/publications/:propertyId', async (c) => {
       publications: publications.results || [],
     });
   } catch (error) {
-    return c.json({
-      error: 'Falha ao obter publicações',
-      details: (error as Error).message,
-    }, 500);
+    return c.json(
+      {
+        error: 'Falha ao obter publicações',
+        details: (error as Error).message,
+      },
+      500,
+    );
   }
 });
 
@@ -340,10 +341,13 @@ portalsAuth.get('/configs', async (c) => {
       available_portals: availablePortals,
     });
   } catch (error) {
-    return c.json({
-      error: 'Falha ao obter configurações',
-      details: (error as Error).message,
-    }, 500);
+    return c.json(
+      {
+        error: 'Falha ao obter configurações',
+        details: (error as Error).message,
+      },
+      500,
+    );
   }
 });
 
@@ -423,10 +427,13 @@ portalsAuth.post('/configs/:portalId', async (c) => {
       error,
     });
 
-    return c.json({
-      error: 'Falha ao salvar configuração',
-      details: (error as Error).message,
-    }, 500);
+    return c.json(
+      {
+        error: 'Falha ao salvar configuração',
+        details: (error as Error).message,
+      },
+      500,
+    );
   }
 });
 
@@ -462,11 +469,14 @@ portalsAuth.post('/validate/:portalId', async (c) => {
 
     return c.json({ success: true, valid: isValid });
   } catch (error) {
-    return c.json({
-      error: 'Falha ao validar credenciais',
-      details: (error as Error).message,
-      valid: false,
-    }, 500);
+    return c.json(
+      {
+        error: 'Falha ao validar credenciais',
+        details: (error as Error).message,
+        valid: false,
+      },
+      500,
+    );
   }
 });
 

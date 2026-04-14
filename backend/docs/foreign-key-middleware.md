@@ -5,6 +5,7 @@
 Middleware global do Hono que garante que **foreign key enforcement** está ativo em todas as conexões com o banco D1/SQLite.
 
 ## Arquivo
+
 `backend/src/middleware/foreignKey.ts`
 
 ## O Que Faz
@@ -37,21 +38,21 @@ Confirmado em `backend/src/index.ts`:
 app.use('/*', foreignKeyMiddleware);
 ```
 
-� aplicado **globalmente**, antes de todas as rotas.
+� aplicado **globalmente**, antes de todas as rotas.
 
 ## Impacto
 
-| Sem o middleware | Com o middleware |
-|-----------------|-----------------|
-| FK violations são silenciosas | FK violations causam erro |
-| Dados órfãos podem existir | Integridade referencial garantida |
-| DELETE não cascadeia | CASCADE/SET NULL funcionam |
+| Sem o middleware              | Com o middleware                  |
+| ----------------------------- | --------------------------------- |
+| FK violations são silenciosas | FK violations causam erro         |
+| Dados órfãos podem existir    | Integridade referencial garantida |
+| DELETE não cascadeia          | CASCADE/SET NULL funcionam        |
 
 ## Limitações
 
-1. **Executado em toda request** � overhead mínimo (uma query extra por request)
-2. **D1 pode não suportar PRAGMA** da mesma forma que SQLite padrão � em algumas versões do D1, o PRAGMA é ignorado
-3. **Não valida dados existentes** � apenas previne novas violações. Se já existem dados órfãos, o middleware não os corrige
+1. **Executado em toda request** � overhead mínimo (uma query extra por request)
+2. **D1 pode não suportar PRAGMA** da mesma forma que SQLite padrão � em algumas versões do D1, o PRAGMA é ignorado
+3. **Não valida dados existentes** � apenas previne novas violações. Se já existem dados órfãos, o middleware não os corrige
 
 ## Recomendações
 

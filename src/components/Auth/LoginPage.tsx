@@ -47,9 +47,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
           {isClientMode ? 'Portal do Cliente' : 'Acesse sua conta'}
         </h2>
         <p className="mt-2 text-sm text-muted-foreground">
-          {isClientMode
-            ? 'Acompanhe seus leads e propriedades'
-            : 'Gerencie sua imobili√°ria com IA'}
+          {isClientMode ? 'Acompanhe seus leads e propriedades' : 'Gerencie sua imobili√°ria com IA'}
         </p>
 
         <div className="mt-6 flex justify-center p-1 bg-muted rounded-lg inline-flex mx-auto">
@@ -112,7 +110,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full pl-10 pr-10 py-3 border border-border rounded-lg shadow-sm placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm transition-all bg-background text-foreground font-medium"
-                  placeholder="‚¢‚¢‚¢‚¢‚¢‚¢‚¢‚¢"
+                  placeholder="ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ"
                 />
                 <button
                   type="button"
@@ -175,7 +173,7 @@ const LoginPage: React.FC<LoginPageProps> = ({
                 <div className="w-full border-t border-border" />
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className="px-2 bg-card text-muted-foreground">√rea do Cliente</span>
+                <span className="px-2 bg-card text-muted-foreground">ÔøΩrea do Cliente</span>
               </div>
             </div>
 

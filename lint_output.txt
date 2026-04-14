@@ -1,0 +1,511 @@
+
+> oinbox-saas@1.0.0 lint
+> eslint .
+
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/scripts/setup-stripe.ts
+  112:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/email-handler.ts
+  12:73  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/middleware/auth.ts
+  3:10  warning  'HTTPException' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/middleware/channelWebhookAuth.ts
+  22:11  warning  'path' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/middleware/logging.ts
+  34:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/admin.ts
+  4:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/automation.ts
+    2:10  warning  'authMiddleware' is defined but never used              @typescript-eslint/no-unused-vars
+    5:3   warning  'checkAndIncrementRateLimit' is defined but never used  @typescript-eslint/no-unused-vars
+  113:9   warning  'logger' is assigned a value but never used             @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/billing.ts
+    4:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+  150:46  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/campaigns.ts
+    3:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+   80:12  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  211:24  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/channels.ts
+   40:25  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  364:18  warning  'tenantId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  381:65  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  435:65  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+  558:11  warning  'repo' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  570:11  warning  'repo' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  582:11  warning  'repo' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  594:11  warning  'repo' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  606:11  warning  'repo' is assigned a value but never used      @typescript-eslint/no-unused-vars
+  627:88  warning  Unexpected any. Specify a different type       @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/client.ts
+  3:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/contracts.ts
+   3:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+  46:15  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/crm.ts
+    4:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+  100:15  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/evolution.ts
+    3:10  warning  'superAuthMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+   46:11  warning  'jid' is assigned a value but never used         @typescript-eslint/no-unused-vars
+   75:9   warning  'sentCount' is assigned a value but never used   @typescript-eslint/no-unused-vars
+  355:11  warning  'jid' is assigned a value but never used         @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/finance.ts
+   3:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+  22:15  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  48:15  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/leads.ts
+    8:32  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   91:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  128:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  179:92  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  291:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  298:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  311:48  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  379:94  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  391:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  414:94  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  423:12  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/marketing.ts
+   3:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+  28:12  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  46:19  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/notifications.ts
+  3:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/omnichannel.ts
+  192:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/places.ts
+    3:10  warning  'superAuthMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+   32:36  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+   56:19  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  160:19  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/portals.ts
+    5:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+   47:42  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  127:16  warning  'e' is defined but never used               @typescript-eslint/no-unused-vars
+  364:32  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  377:40  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+  457:14  warning  Unexpected any. Specify a different type    @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/properties.ts
+    3:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+  203:12  warning  'error' is defined but never used           @typescript-eslint/no-unused-vars
+  222:12  warning  'e' is defined but never used               @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/prospecting.ts
+   13:12  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+   65:17  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   73:54  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  100:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  109:46  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  133:14  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  153:12  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/qualifications.ts
+  3:10  warning  'superAuthMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/users.ts
+  4:10  warning  'authMiddleware' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/whatsapp.ts
+    3:10  warning  'authMiddleware' is defined but never used      @typescript-eslint/no-unused-vars
+   18:84  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  181:17  warning  'history' is assigned a value but never used    @typescript-eslint/no-unused-vars
+  182:17  warning  'knowledge' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  408:24  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+  435:53  warning  Unexpected any. Specify a different type        @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/routes/whatsapp_oauth.ts
+   60:12  warning  'e' is defined but never used                     @typescript-eslint/no-unused-vars
+   78:55  warning  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+   95:51  warning  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  149:9   warning  'logger' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  169:45  warning  Unexpected any. Specify a different type          @typescript-eslint/no-explicit-any
+  172:12  warning  'e' is defined but never used                     @typescript-eslint/no-unused-vars
+  219:17  warning  'contactMeta' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/apiService.ts
+  12:76  warning  'xmlUrls' is defined but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  16:27  warning  'env' is defined but never used. Allowed unused args must match /^_/u         @typescript-eslint/no-unused-vars
+  16:42  warning  'portal' is defined but never used. Allowed unused args must match /^_/u      @typescript-eslint/no-unused-vars
+  16:58  warning  'tenantId' is defined but never used. Allowed unused args must match /^_/u    @typescript-eslint/no-unused-vars
+  16:76  warning  'webhookUrl' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/autopilot/scheduler.ts
+   7:51  warning  'ctx' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  43:66  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  64:11  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  84:51  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  84:64  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  85:9   warning  'AGENT_HUB_URL' is assigned a value but never used                     @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/channels/facebookChannel.ts
+  166:5   warning  'verifyToken' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  259:11  warning  'token' is assigned a value but never used                                     @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/channels/xChannel.ts
+  155:42  warning  'crcToken' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/contractService.ts
+   3:11  warning  'ContractData' is defined but never used  @typescript-eslint/no-unused-vars
+  58:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  61:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  66:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/financeService.ts
+   3:11  warning  'Commission' is defined but never used    @typescript-eslint/no-unused-vars
+  27:12  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  70:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/marketingService.ts
+  101:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/matchService.ts
+  15:13  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  89:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/normalizerService.ts
+  432:15  warning  'senderId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  763:13  warning  'msgType' is assigned a value but never used   @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/portals/base-portal.ts
+   39:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  191:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/portals/facebook.ts
+   73:21  warning  Unexpected any. Specify a different type                               @typescript-eslint/no-explicit-any
+  110:5   warning  'env' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  208:55  warning  'env' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/portals/index.ts
+   89:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/portals/olx.ts
+   67:13  warning  'olxData' is assigned a value but never used                           @typescript-eslint/no-unused-vars
+  158:55  warning  'env' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/salesTools.ts
+  21:52  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  38:47  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  55:68  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  73:47  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/services/whatsappRepository.ts
+  149:91  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  189:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  236:86  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/utils/datadog.ts
+    9:18  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   51:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  103:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+  121:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/src/utils/email.ts
+  31:15  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/test/auth.test.ts
+   87:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   89:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  107:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  128:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  130:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  151:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  154:42  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  164:65  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/test/billing.test.ts
+    3:8   warning  'Stripe' is defined but never used        @typescript-eslint/no-unused-vars
+   88:10  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  104:66  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/test/leads.test.ts
+   17:36  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+   17:47  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+   45:66  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+   47:42  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+   71:66  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+   73:42  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+   94:66  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+   98:13  warning  'updateCall' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  104:16  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  109:30  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  110:30  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+  111:30  warning  Unexpected any. Specify a different type         @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/test/portals.test.ts
+  66:66  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  87:66  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/backend/test/whatsapp.test.ts
+   25:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   83:67  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  122:55  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/docs/app/[[...slug]]/page.tsx
+  12:33  error  Parsing error: ',' expected
+
+/Volumes/LexarAPFS/Oinbox/oinbox/docs/app/layout.tsx
+  4:8  warning  'Link' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/public/sw.js
+  13:1   error  'self' is not defined    no-undef
+  15:5   error  'caches' is not defined  no-undef
+  19:3   error  'self' is not defined    no-undef
+  23:1   error  'self' is not defined    no-undef
+  25:5   error  'caches' is not defined  no-undef
+  26:80  error  'caches' is not defined  no-undef
+  29:3   error  'self' is not defined    no-undef
+  33:1   error  'self' is not defined    no-undef
+  41:5   error  'fetch' is not defined   no-undef
+  46:11  error  'caches' is not defined  no-undef
+  54:16  error  'caches' is not defined  no-undef
+
+/Volumes/LexarAPFS/Oinbox/oinbox/shared/types/index.ts
+  324:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  404:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  480:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  502:29  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  510:23  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  515:72  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/App.tsx
+  30:9  warning  'location' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  46:5  error    Unnecessary try/catch wrapper                  no-useless-catch
+  63:5  error    Unnecessary try/catch wrapper                  no-useless-catch
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Admin/CampaignManager.tsx
+    9:3   warning  'MessageSquare' is defined but never used  @typescript-eslint/no-unused-vars
+   10:3   warning  'CheckCircle2' is defined but never used   @typescript-eslint/no-unused-vars
+   11:3   warning  'AlertCircle' is defined but never used    @typescript-eslint/no-unused-vars
+   12:3   warning  'MoreVertical' is defined but never used   @typescript-eslint/no-unused-vars
+   66:49  warning  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+   83:42  warning  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+  126:42  warning  Unexpected any. Specify a different type   @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Admin/QualificationView.tsx
+  78:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Admin/SettingsView.tsx
+  34:21  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Admin/SuperAdminDashboard.tsx
+  28:19  warning  'setTenants' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Admin/SuperAdminLeadCapture.tsx
+    17:3   warning  'Server' is defined but never used                       @typescript-eslint/no-unused-vars
+    21:3   warning  'CheckCircle2' is defined but never used                 @typescript-eslint/no-unused-vars
+    22:3   warning  'AlertCircle' is defined but never used                  @typescript-eslint/no-unused-vars
+    23:3   warning  'TrendingUp' is defined but never used                   @typescript-eslint/no-unused-vars
+    25:3   warning  'Database' is defined but never used                     @typescript-eslint/no-unused-vars
+    26:3   warning  'Globe' is defined but never used                        @typescript-eslint/no-unused-vars
+    45:3   warning  'KeyboardSensor' is defined but never used               @typescript-eslint/no-unused-vars
+    46:3   warning  'PointerSensor' is defined but never used                @typescript-eslint/no-unused-vars
+    47:3   warning  'useSensor' is defined but never used                    @typescript-eslint/no-unused-vars
+    48:3   warning  'useSensors' is defined but never used                   @typescript-eslint/no-unused-vars
+    54:3   warning  'arrayMove' is defined but never used                    @typescript-eslint/no-unused-vars
+    55:3   warning  'SortableContext' is defined but never used              @typescript-eslint/no-unused-vars
+    56:3   warning  'sortableKeyboardCoordinates' is defined but never used  @typescript-eslint/no-unused-vars
+    57:3   warning  'verticalListSortingStrategy' is defined but never used  @typescript-eslint/no-unused-vars
+    58:3   warning  'useSortable' is defined but never used                  @typescript-eslint/no-unused-vars
+    60:10  warning  'CSS' is defined but never used                          @typescript-eslint/no-unused-vars
+    86:9   warning  'totalMRR' is assigned a value but never used            @typescript-eslint/no-unused-vars
+    87:9   warning  'activeTenants' is assigned a value but never used       @typescript-eslint/no-unused-vars
+   278:40  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   304:19  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   323:47  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   338:25  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   362:26  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   427:19  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   448:40  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   737:39  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   793:10  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   828:38  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   842:19  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   851:39  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+   881:19  warning  Unexpected any. Specify a different type                 @typescript-eslint/no-explicit-any
+  1049:10  warning  'formData' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  1049:20  warning  'setFormData' is assigned a value but never used         @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Admin/TenantManagementModal.tsx
+  8:11  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  9:27  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Admin/WhatsAppBotManager.tsx
+  36:34  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  79:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Auth/LoginPage.tsx
+  32:14  warning  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Auth/RegisterPage.tsx
+   4:3   warning  'Lock' is defined but never used          @typescript-eslint/no-unused-vars
+  54:19  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/BroadcastBanner.tsx
+  26:49  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Calendar/CalendarView.tsx
+   3:3   warning  'ChevronLeft' is defined but never used              @typescript-eslint/no-unused-vars
+   8:3   warning  'Search' is defined but never used                   @typescript-eslint/no-unused-vars
+  34:10  warning  'currentDate' is assigned a value but never used     @typescript-eslint/no-unused-vars
+  34:23  warning  'setCurrentDate' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Clients/ClientList.tsx
+   87:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  328:91  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Dashboard/DashboardHome.tsx
+  2:48  warning  'DealStage' is defined but never used     @typescript-eslint/no-unused-vars
+  9:3   warning  'ArrowUpRight' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Inbox/ClientDetails.tsx
+  2:24  warning  'Property' is defined but never used  @typescript-eslint/no-unused-vars
+  9:3   warning  'User' is defined but never used      @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Landing/LandingPage.tsx
+   7:3   warning  'FileText' is defined but never used  @typescript-eslint/no-unused-vars
+   9:3   warning  'Lock' is defined but never used      @typescript-eslint/no-unused-vars
+  11:3   warning  'Palette' is defined but never used   @typescript-eslint/no-unused-vars
+  15:3   warning  'Sparkles' is defined but never used  @typescript-eslint/no-unused-vars
+  19:3   warning  'Play' is defined but never used      @typescript-eslint/no-unused-vars
+  22:10  warning  'Badge' is defined but never used     @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/LegalHub.tsx
+  2:56  warning  'Smartphone' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Listings/ListingForm.tsx
+   14:3   warning  'Save' is defined but never used                          @typescript-eslint/no-unused-vars
+   15:3   warning  'MapPin' is defined but never used                        @typescript-eslint/no-unused-vars
+   16:3   warning  'Home' is defined but never used                          @typescript-eslint/no-unused-vars
+   17:3   warning  'DollarSign' is defined but never used                    @typescript-eslint/no-unused-vars
+   18:3   warning  'PenTool' is defined but never used                       @typescript-eslint/no-unused-vars
+   19:3   warning  'Plus' is defined but never used                          @typescript-eslint/no-unused-vars
+   20:3   warning  'Trash2' is defined but never used                        @typescript-eslint/no-unused-vars
+   23:3   warning  'Globe' is defined but never used                         @typescript-eslint/no-unused-vars
+   58:10  warning  'publishedPropertyId' is assigned a value but never used  @typescript-eslint/no-unused-vars
+   67:23  warning  Unexpected any. Specify a different type                  @typescript-eslint/no-explicit-any
+   76:9   warning  'platforms' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  123:14  warning  'e' is defined but never used                             @typescript-eslint/no-unused-vars
+  166:14  warning  'e' is defined but never used                             @typescript-eslint/no-unused-vars
+  173:9   warning  'togglePlatform' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  208:23  warning  Unexpected any. Specify a different type                  @typescript-eslint/no-explicit-any
+  218:28  warning  Unexpected any. Specify a different type                  @typescript-eslint/no-explicit-any
+  230:37  warning  Unexpected any. Specify a different type                  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Marketing/MarketingStudio.tsx
+  46:16  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+  66:14  warning  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Portals/PortalSelector.tsx
+  49:3  warning  'onSelectAll' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Settings/IntegrationsSettings.tsx
+    5:3   warning  'Power' is defined but never used                                 @typescript-eslint/no-unused-vars
+   37:7   warning  'MASTER_INTEGRATIONS_LIBRARY' is assigned a value but never used  @typescript-eslint/no-unused-vars
+  105:26  warning  'setMyIntegrations' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  117:10  warning  'qrProgress' is assigned a value but never used                   @typescript-eslint/no-unused-vars
+  118:10  warning  'isAddModalOpen' is assigned a value but never used               @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Settings/OmnichannelChannels.tsx
+   31:3   warning  'SocialChannelConfig' is defined but never used    @typescript-eslint/no-unused-vars
+   36:3   warning  'SocialChannelProvider' is defined but never used  @typescript-eslint/no-unused-vars
+  163:10  warning  'loading' is assigned a value but never used       @typescript-eslint/no-unused-vars
+  177:78  warning  Unexpected any. Specify a different type           @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/components/Tools/FinancialCalculator.tsx
+   5:3   warning  'Wallet' is defined but never used        @typescript-eslint/no-unused-vars
+   7:3   warning  'TrendingDown' is defined but never used  @typescript-eslint/no-unused-vars
+  89:40  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/pages/admin/AdminDashboard.tsx
+  5:38  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/pages/admin/AdminInbox.tsx
+   16:30  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   42:45  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   96:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  106:53  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/pages/admin/EnterpriseBuyerLeads.tsx
+   9:3   warning  'DollarSign' is defined but never used                                                @typescript-eslint/no-unused-vars
+  44:3   warning  'apiUrl' is assigned a value but never used. Allowed unused args must match /^_/u     @typescript-eslint/no-unused-vars
+  45:3   warning  'authToken' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+  49:10  warning  'selectedLead' is assigned a value but never used                                     @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/pages/admin/FeatureManager.tsx
+  24:10  warning  'confirmModal' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/pages/admin/ProspectingMap.tsx
+  13:20  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:28  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/pages/admin/SettingsPage.tsx
+  26:9  warning  'ActiveIcon' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/pages/admin/SubscriptionManager.tsx
+  50:47  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  56:14  warning  'error' is defined but never used         @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/pages/admin/WhatsAppManager.tsx
+  52:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  74:62  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  96:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/pages/client/Campaigns.tsx
+  25:57  warning  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  49:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  59:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+  70:14  warning  'e' is defined but never used             @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/routes/AdminRoutes.tsx
+  4:10  warning  'UpgradePlan' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/services/aiService.ts
+  1:10  warning  'AIConfig' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Volumes/LexarAPFS/Oinbox/oinbox/src/services/apiService.ts
+    1:34  warning  'Campaign' is defined but never used          @typescript-eslint/no-unused-vars
+    1:44  warning  'OutreachCampaign' is defined but never used  @typescript-eslint/no-unused-vars
+   62:63  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  330:56  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  334:40  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  337:80  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  344:40  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  350:14  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  505:54  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  524:85  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  528:40  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  534:44  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  541:40  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  560:40  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+  575:40  warning  Unexpected any. Specify a different type      @typescript-eslint/no-explicit-any
+
+✖ 323 problems (14 errors, 309 warnings)
+
+npm notice
+npm notice New major version of npm available! 10.9.2 -> 11.12.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.12.1
+npm notice To update run: npm install -g npm@11.12.1
+npm notice

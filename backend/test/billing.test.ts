@@ -64,12 +64,10 @@ describe('Billing Route - Stripe Webhook', () => {
 
     // Mock DB Execution
     const runMock = vi.fn().mockResolvedValue({ success: true });
-    const bindMock = vi
-      .fn()
-      .mockReturnValue({
-        run: runMock,
-        first: vi.fn().mockResolvedValue({ email: 'admin@test.com' }),
-      });
+    const bindMock = vi.fn().mockReturnValue({
+      run: runMock,
+      first: vi.fn().mockResolvedValue({ email: 'admin@test.com' }),
+    });
     mockDB.prepare.mockReturnValue({ bind: bindMock });
 
     // Create Request

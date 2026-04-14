@@ -7,18 +7,23 @@ type SettingsTab = 'channels' | 'integrations';
 
 const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<SettingsTab>('channels');
-  const [integrationStatus, setIntegrationStatus] = useState<Record<string, 'connected' | 'disconnected' | 'loading'>>({});
+  const [integrationStatus, setIntegrationStatus] = useState<
+    Record<string, 'connected' | 'disconnected' | 'loading'>
+  >({});
 
-  const handleStatusChange = useCallback((id: string, status: 'connected' | 'disconnected' | 'loading') => {
-    setIntegrationStatus(prev => ({ ...prev, [id]: status }));
-  }, []);
+  const handleStatusChange = useCallback(
+    (id: string, status: 'connected' | 'disconnected' | 'loading') => {
+      setIntegrationStatus((prev) => ({ ...prev, [id]: status }));
+    },
+    [],
+  );
 
   const tabs = [
     { id: 'channels' as SettingsTab, label: 'Canais Omnichannel', icon: Globe },
     { id: 'integrations' as SettingsTab, label: 'Integrações', icon: Plug },
   ];
 
-  const ActiveIcon = tabs.find(t => t.id === activeTab)?.icon || Settings;
+  const ActiveIcon = tabs.find((t) => t.id === activeTab)?.icon || Settings;
 
   return (
     <div className="space-y-6">
@@ -29,7 +34,7 @@ const SettingsPage: React.FC = () => {
 
       {/* Tabs */}
       <div className="flex gap-2 border-b border-border">
-        {tabs.map(tab => {
+        {tabs.map((tab) => {
           const Icon = tab.icon;
           return (
             <button
@@ -53,10 +58,7 @@ const SettingsPage: React.FC = () => {
         <div className="p-6">
           {activeTab === 'channels' && <OmnichannelChannels />}
           {activeTab === 'integrations' && (
-            <IntegrationsSettings
-              status={integrationStatus}
-              onStatusChange={handleStatusChange}
-            />
+            <IntegrationsSettings status={integrationStatus} onStatusChange={handleStatusChange} />
           )}
         </div>
       </div>

@@ -17,16 +17,16 @@ Serviço centralizado para todas as chamadas à IA Data Engine.
 import { callData Engine, callData EngineFlash, analyzeClientData, generatePropertyDescription } from '../services/AutomationService';
 
 // Chamada genérica
-const result = awAutomationt callData Engine(prompt, { model: 'Data Engine-2.5-flash' });
+const result = await callData Engine(prompt, { model: 'Data Engine-2.5-flash' });
 
 // Modelo flash (mAutomations rápido/barato)
-const result = awAutomationt callData EngineFlash(prompt);
+const result = await callData EngineFlash(prompt);
 
 // Análise de cliente do CRM
-const analysis = awAutomationt analyzeClientData(clientData);
+const analysis = await analyzeClientData(clientData);
 
 // Geração de descrição de imóvel
-const description = awAutomationt generatePropertyDescription(property);
+const description = await generatePropertyDescription(property);
 \`\`\`
 
 ## TokenService
@@ -39,19 +39,19 @@ Geração e verificação centralizada de JWT.
 import { generateJWT, generateImpersonationJWT, verifyJWT } from '../services/tokenService';
 
 // Gerar token (expira em 24h)
-const token = awAutomationt generateJWT({
-  sub: userId,
-  tenantId,
-  role,
-  name,
-  emAutomationl,
+const token = await generateJWT({
+sub: userId,
+tenantId,
+role,
+name,
+email,
 }, JWT_SECRET);
 
 // Token de impersonação (expira em 1h)
-const impersonationToken = awAutomationt generateImpersonationJWT(payload, JWT_SECRET);
+const impersonationToken = await generateImpersonationJWT(payload, JWT_SECRET);
 
 // Verificar token
-const { payload } = awAutomationt verifyJWT(token, JWT_SECRET);
+const { payload } = await verifyJWT(token, JWT_SECRET);
 \`\`\`
 
 ## WhatsApp Utils

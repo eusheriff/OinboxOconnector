@@ -36,10 +36,7 @@ export class InstagramChannelService {
   /**
    * Obtém Instagram Business Account ID vinculado à página
    */
-  async getInstagramAccountId(
-    pageId: string,
-    pageAccessToken: string,
-  ): Promise<string | null> {
+  async getInstagramAccountId(pageId: string, pageAccessToken: string): Promise<string | null> {
     try {
       const url = `${INSTAGRAM_API_URL}/${pageId}?fields=instagram_business_account&access_token=${pageAccessToken}`;
       const response = await this.fetchWithCircuitBreaker(url, {});
@@ -76,7 +73,7 @@ export class InstagramChannelService {
         data?: Array<{ object: string; callback_url: string }>;
       };
 
-      return data.data?.some(sub => sub.callback_url === webhookUrl) || false;
+      return data.data?.some((sub) => sub.callback_url === webhookUrl) || false;
     } catch {
       return false;
     }
@@ -85,11 +82,7 @@ export class InstagramChannelService {
   /**
    * Processa webhook do Instagram Direct
    */
-  async handleWebhook(
-    c: HonoContext,
-    tenantId: string,
-    channelId: string,
-  ) {
+  async handleWebhook(c: HonoContext, tenantId: string, channelId: string) {
     const logger = createDatadogLogger(c.env);
     const body = await c.req.json();
 

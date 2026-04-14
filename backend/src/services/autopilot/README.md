@@ -5,6 +5,7 @@
 O Autopilot é um **cron job** do Cloudflare Worker que executa a cada **10 minutos** durante horário comercial (Seg-Sex, 11h-23h UTC = 8h-20h Brasil).
 
 Ele automatiza duas funções:
+
 1. **Ingestão de leads qualificados em campanhas**
 2. **Processamento de ações pendentes de campanhas** (envio de mensagens WhatsApp)
 
@@ -56,28 +57,32 @@ LIMIT 20
 
 Para cada lead pendente, o scheduler:
 
-#### Step 0 � Pitch Inicial
+#### Step 0 � Pitch Inicial
+
 - Se o lead tem `ai_pitch` salvo no banco, usa como mensagem
 - Senão, gera pitch via `SalesTools.generatePitch()` (chamada ao Agent Hub)
 - Fallback final: `"Olá {nome}, tudo bem?"`
 - Próximo follow-up em **24 horas**
 
-#### Step 1 � Follow-up
+#### Step 1 � Follow-up
+
 - Mensagem fixa: `"Oi {nome}, conseguiu ver minha mensagem anterior?"`
 - Próximo follow-up em **48 horas**
 
-#### Step 2+ � Fim da Sequência
+#### Step 2+ � Fim da Sequência
+
 - Marca `campaign_leads.status = 'completed'`
 
 ### Regras de Horário
 
 O scheduler **não envia mensagens fora do horário comercial** (9h-19h):
+
 - Se estiver fora do horário, reagenda para o **dia seguinte às 10h**
 - A mensagem não é enviada e o lead não avança de step
 
 ### Envio da Mensagem
 
-1. Chama `sendWhatsAppMessage(env, tenantId, phone, message)` � Evolution API
+1. Chama `sendWhatsAppMessage(env, tenantId, phone, message)` � Evolution API
 2. Se envio falha, **não avança o step** (lead permanece pendente para próxima tentativa)
 3. Se envio sucede:
    - Registra em `campaign_messages`
@@ -86,37 +91,37 @@ O scheduler **não envia mensagens fora do horário comercial** (9h-19h):
 
 ## Tabela: Sequência de Steps
 
-| Step | Ação | Mensagem | Próximo Delay |
-|------|------|----------|---------------|
-| 0 | Pitch inicial | `ai_pitch` ou gerado por IA | 24h |
-| 1 | Follow-up | Mensagem fixa | 48h |
-| 2+ | Completado | � | � |
+| Step | Ação          | Mensagem                    | Próximo Delay |
+| ---- | ------------- | --------------------------- | ------------- |
+| 0    | Pitch inicial | `ai_pitch` ou gerado por IA | 24h           |
+| 1    | Follow-up     | Mensagem fixa               | 48h           |
+| 2+   | Completado    | �                           | �             |
 
 ## Dependências Externas
 
-| Serviço | Uso | Fallback |
-|---------|-----|----------|
-| Agent Hub | Gerar pitch via `generate-pitch` skill | Mensagem genérica "Olá {nome}" |
-| Evolution API | Envio de WhatsApp | Falha silenciosa, step não avança |
-| D1 | Estado das campanhas e leads | Se D1 falhar, o cron loga erro e aborta |
+| Serviço       | Uso                                    | Fallback                                |
+| ------------- | -------------------------------------- | --------------------------------------- |
+| Agent Hub     | Gerar pitch via `generate-pitch` skill | Mensagem genérica "Olá {nome}"          |
+| Evolution API | Envio de WhatsApp                      | Falha silenciosa, step não avança       |
+| D1            | Estado das campanhas e leads           | Se D1 falhar, o cron loga erro e aborta |
 
 ## Arquivos Envolvidos
 
-| Arquivo | Responsabilidade |
-|---------|-----------------|
-| `backend/src/services/autopilot/scheduler.ts` | Lógica completa do scheduler |
-| `backend/src/index.ts` | Exporta `scheduled()` handler para o Worker |
-| `backend/src/services/salesTools.ts` | Geração de pitch via Agent Hub |
-| `backend/src/services/whatsappService.ts` | Envio de mensagens WhatsApp |
+| Arquivo                                       | Responsabilidade                            |
+| --------------------------------------------- | ------------------------------------------- |
+| `backend/src/services/autopilot/scheduler.ts` | Lógica completa do scheduler                |
+| `backend/src/index.ts`                        | Exporta `scheduled()` handler para o Worker |
+| `backend/src/services/salesTools.ts`          | Geração de pitch via Agent Hub              |
+| `backend/src/services/whatsappService.ts`     | Envio de mensagens WhatsApp                 |
 
 ## Lacunas Conhecidas
 
-1. **Sequência curta** � apenas 2 steps (pitch + 1 follow-up). Campanhas reais podem ter 5-10 steps
-2. **Sem matching lead-campanha** � pega a primeira campanha ativa, sem critério de segmentação
-3. **Tabela `campaign_leads` não existe no schema.sql** � o scheduler referencia esta tabela mas ela não está definida no schema base. Pode ter sido criada em uma migração não listada
-4. **Sem métricas de campanha no scheduler** � não incrementa `sent_count`, `failed_count`, etc. na tabela `campaigns`
-5. **Sem retry para mensagens falhadas** � se o step falha, o lead fica preso com `next_action_at` no passado (será re-processado no próximo cron, mas a mensagem não muda)
-6. **Código de campanha_leads** � referencia coluna `campaign_leads.error_log` que não existe no schema da tabela `campaign_messages`
+1. **Sequência curta** � apenas 2 steps (pitch + 1 follow-up). Campanhas reais podem ter 5-10 steps
+2. **Sem matching lead-campanha** � pega a primeira campanha ativa, sem critério de segmentação
+3. **Tabela `campaign_leads` não existe no schema.sql** � o scheduler referencia esta tabela mas ela não está definida no schema base. Pode ter sido criada em uma migração não listada
+4. **Sem métricas de campanha no scheduler** � não incrementa `sent_count`, `failed_count`, etc. na tabela `campaigns`
+5. **Sem retry para mensagens falhadas** � se o step falha, o lead fica preso com `next_action_at` no passado (será re-processado no próximo cron, mas a mensagem não muda)
+6. **Código de campanha_leads** � referencia coluna `campaign_leads.error_log` que não existe no schema da tabela `campaign_messages`
 
 ## Como Debugar
 

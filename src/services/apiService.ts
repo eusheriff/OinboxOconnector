@@ -46,7 +46,7 @@ const getHeaders = (isMultipart = false) => {
   };
 
   if (!token) {
-    console.warn('[API] WARNING: No auth token found � requests will be unauthenticated');
+    console.warn('[API] WARNING: No auth token found � requests will be unauthenticated');
   }
 
   if (!isMultipart) {
@@ -61,18 +61,18 @@ const handleResponse = async (response: Response) => {
   if (response.status === 402) {
     const data = (await response.json().catch(() => ({}))) as any;
     console.error('[API] 402 Payment Required - Trial Expired', data);
-    
+
     // Redirecionamento automático em SPA (usando window.location para garantir que saia do fluxo atual se necessário)
     const redirectUrl = data.redirect || '/admin/billing';
     if (window.location.pathname !== redirectUrl) {
       window.location.href = redirectUrl;
     }
-    
+
     throw new Error(data.error || 'Período de teste expirado. Assine para continuar.');
   }
 
   if (!response.ok) {
-    const errorData = await response.json().catch(() => ({})) as { error?: string };
+    const errorData = (await response.json().catch(() => ({}))) as { error?: string };
     throw new Error(errorData.error || `Erro ${response.status}: ${response.statusText}`);
   }
 
@@ -110,7 +110,9 @@ export const apiService = {
     );
 
     if (!res.ok) {
-      const errorData = await res.json().catch(() => ({ error: 'Login failed' })) as { error?: string };
+      const errorData = (await res.json().catch(() => ({ error: 'Login failed' }))) as {
+        error?: string;
+      };
       throw new Error(errorData.error || 'Login failed');
     }
     return await res.json();
@@ -132,22 +134,17 @@ export const apiService = {
   },
 
   register: async (userData: Record<string, unknown>) => {
-    try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(userData),
-      });
+    const res = await fetchWithTimeout(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData),
+    });
 
-      if (!res.ok) {
-        const err = (await res.json().catch(() => ({}))) as { error?: string };
-        throw new Error(err.error || 'Falha ao registrar');
-      }
-      return await res.json();
-    } catch (e) {
-      // Remover simulação silenciosa de registro
-      throw e;
+    if (!res.ok) {
+      const err = (await res.json().catch(() => ({}))) as { error?: string };
+      throw new Error(err.error || 'Falha ao registrar');
     }
+    return await res.json();
   },
 
   // Clients
@@ -165,24 +162,22 @@ export const apiService = {
     if (Array.isArray(data)) {
       return data.map((c) => ({
         ...c,
-        registeredAt: new Date((c as unknown as Record<string, unknown>).created_at as string || Date.now()),
+        registeredAt: new Date(
+          ((c as unknown as Record<string, unknown>).created_at as string) || Date.now(),
+        ),
       }));
     }
     return [];
   },
 
   createClient: async (client: Partial<Client>) => {
-    try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/clients`, {
-        method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(client),
-      });
-      if (!res.ok) throw new Error('Failed to create');
-      return await res.json();
-    } catch (e) {
-      throw e;
-    }
+    const res = await fetchWithTimeout(`${API_BASE_URL}/clients`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(client),
+    });
+    if (!res.ok) throw new Error('Failed to create');
+    return await res.json();
   },
 
   uploadImage: async (file: File): Promise<string> => {
@@ -225,43 +220,31 @@ export const apiService = {
 
   // Properties
   getProperties: async (): Promise<Property[]> => {
-    try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/properties`, { headers: getHeaders() });
-      if (!res.ok) throw new Error('Failed to fetch properties');
-      const data = await res.json();
-      return Array.isArray(data) ? data : [];
-    } catch (e) {
-      throw e;
-    }
+    const res = await fetchWithTimeout(`${API_BASE_URL}/properties`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Failed to fetch properties');
+    const data = await res.json();
+    return Array.isArray(data) ? data : [];
   },
 
   getPropertyById: async (id: string): Promise<Property | null> => {
-    try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/properties/${id}`, {
-        headers: getHeaders(),
-      });
-      if (!res.ok) {
-        if (res.status === 404) return null;
-        throw new Error('Failed to fetch property');
-      }
-      return await res.json();
-    } catch (e) {
-      throw e;
+    const res = await fetchWithTimeout(`${API_BASE_URL}/properties/${id}`, {
+      headers: getHeaders(),
+    });
+    if (!res.ok) {
+      if (res.status === 404) return null;
+      throw new Error('Failed to fetch property');
     }
+    return await res.json();
   },
 
   createProperty: async (property: Partial<Property>) => {
-    try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/properties`, {
-        method: 'POST',
-        headers: getHeaders(),
-        body: JSON.stringify(property),
-      });
-      if (!res.ok) throw new Error('Failed to create property');
-      return await res.json();
-    } catch (e) {
-      throw e;
-    }
+    const res = await fetchWithTimeout(`${API_BASE_URL}/properties`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(property),
+    });
+    if (!res.ok) throw new Error('Failed to create property');
+    return await res.json();
   },
 
   deleteProperty: async (id: string) => {
@@ -307,17 +290,11 @@ export const apiService = {
   },
 
   fetchClientDashboard: async () => {
-    try {
-      const res = await fetchWithTimeout(`${API_BASE_URL}/portal/dashboard`, {
-        headers: getHeaders(),
-      });
-      if (!res.ok) throw new Error('Failed to fetch dashboard');
-      return await res.json();
-    } catch (e) {
-      // Fallback APENAS se explicitamente necessário para testes offline
-      // Mas em produção, queremos saber se falhou.
-      throw e;
-    }
+    const res = await fetchWithTimeout(`${API_BASE_URL}/portal/dashboard`, {
+      headers: getHeaders(),
+    });
+    if (!res.ok) throw new Error('Failed to fetch dashboard');
+    return await res.json();
   },
 
   // WhatsApp Integrations
@@ -358,13 +335,19 @@ export const apiService = {
   },
 
   getConversationMessages: async (id: string, limit = 50): Promise<{ messages: any[] }> => {
-    const response = await fetchWithTimeout(`${API_BASE_URL}/whatsapp/conversations/${id}/messages?limit=${limit}`, {
-      headers: getHeaders(),
-    });
+    const response = await fetchWithTimeout(
+      `${API_BASE_URL}/whatsapp/conversations/${id}/messages?limit=${limit}`,
+      {
+        headers: getHeaders(),
+      },
+    );
     return handleResponse(response) as any;
   },
 
-  updateConversationStatus: async (id: string, status: 'bot' | 'open' | 'resolved'): Promise<any> => {
+  updateConversationStatus: async (
+    id: string,
+    status: 'bot' | 'open' | 'resolved',
+  ): Promise<any> => {
     const response = await fetchWithTimeout(`${API_BASE_URL}/whatsapp/conversations/${id}/status`, {
       method: 'PATCH',
       headers: getHeaders(),
@@ -397,7 +380,7 @@ export const apiService = {
     });
     return response.json();
   },
-  
+
   // WhatsApp Meta OAuth
   getMetaAuthUrl: async () => {
     const response = await fetchWithTimeout(`${API_BASE_URL}/whatsapp-oauth/login`, {
@@ -545,10 +528,16 @@ export const apiService = {
     return handleResponse(response) as any;
   },
 
-  getOmnichannelMessages: async (convId: string, limit = 50): Promise<{ success: boolean; messages: any[] }> => {
-    const response = await fetchWithTimeout(`${API_BASE_URL}/omnichannel/conversations/${convId}/messages?limit=${limit}`, {
-      headers: getHeaders(),
-    });
+  getOmnichannelMessages: async (
+    convId: string,
+    limit = 50,
+  ): Promise<{ success: boolean; messages: any[] }> => {
+    const response = await fetchWithTimeout(
+      `${API_BASE_URL}/omnichannel/conversations/${convId}/messages?limit=${limit}`,
+      {
+        headers: getHeaders(),
+      },
+    );
     return handleResponse(response) as any;
   },
 
@@ -571,12 +560,18 @@ export const apiService = {
     return handleResponse(response) as any;
   },
 
-  updateOmnichannelStatus: async (convId: string, status: 'bot' | 'open' | 'resolved'): Promise<{ success: boolean }> => {
-    const response = await fetchWithTimeout(`${API_BASE_URL}/omnichannel/conversations/${convId}/status`, {
-      method: 'PATCH',
-      headers: getHeaders(),
-      body: JSON.stringify({ status }),
-    });
+  updateOmnichannelStatus: async (
+    convId: string,
+    status: 'bot' | 'open' | 'resolved',
+  ): Promise<{ success: boolean }> => {
+    const response = await fetchWithTimeout(
+      `${API_BASE_URL}/omnichannel/conversations/${convId}/status`,
+      {
+        method: 'PATCH',
+        headers: getHeaders(),
+        body: JSON.stringify({ status }),
+      },
+    );
     return handleResponse(response) as any;
   },
 

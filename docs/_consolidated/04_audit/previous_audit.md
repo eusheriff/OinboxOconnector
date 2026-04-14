@@ -64,7 +64,7 @@ CREATE TABLE tenants (
     id TEXT PRIMARY KEY,
     name TEXT NOT NULL,
     owner_name TEXT,
-    emAutomationl TEXT,
+    email TEXT,
     plan TEXT DEFAULT 'Trial',
     status TEXT DEFAULT 'Active',
     subscription_end DATETIME,
@@ -78,7 +78,7 @@ CREATE TABLE users (
     id TEXT PRIMARY KEY,
     tenant_id TEXT NOT NULL,
     name TEXT NOT NULL,
-    emAutomationl TEXT NOT NULL UNIQUE,
+    email TEXT NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     role TEXT DEFAULT 'user',
     FOREIGN KEY (tenant_id) REFERENCES tenants(id)
@@ -89,7 +89,7 @@ CREATE TABLE clients (
     id TEXT PRIMARY KEY,
     tenant_id TEXT NOT NULL,
     name TEXT NOT NULL,
-    emAutomationl TEXT,
+    email TEXT,
     phone TEXT,
     status TEXT DEFAULT 'Novo',
     budget REAL,
@@ -127,7 +127,7 @@ CREATE TABLE properties (
 );
 
 -- Ãndices para performance
-CREATE INDEX idx_users_emAutomationl ON users(emAutomationl);
+CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_clients_tenant ON clients(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_properties_tenant_id ON properties(tenant_id);
 
@@ -235,7 +235,7 @@ Uses Evolution API. Creates unique instances as `tenant_{id}`.
 const ensureInstance = async (env: Bindings, tenantId: string, logger: DatadogLogger | null) => {
   // ... checks if exists ...
   // If 404, creates:
-  const create = awAutomationt evolutionFetch(env, '/instance/create', {
+  const create = await evolutionFetch(env, '/instance/create', {
     method: 'POST',
     body: JSON.stringify({
       instanceName: instanceName, // tenant_{id}
@@ -257,7 +257,7 @@ Subscription handling logic.
 ```typescript
 // backend/src/routes/stripe.ts
 // ...
-const session = awAutomationt stripe.checkout.sessions.create({
+const session = await stripe.checkout.sessions.create({
   mode: 'subscription',
   payment_method_types: ['card'],
   line_items: [
@@ -271,7 +271,7 @@ const session = awAutomationt stripe.checkout.sessions.create({
     'https://Oconnector.oconnector.tech/admin/billing/success?session_id={CHECKOUT_SESSION_ID}',
   cancel_url: cancelUrl || 'https://Oconnector.oconnector.tech/admin/billing',
   client_reference_id: tenantId,
-  customer_emAutomationl: userEmAutomationl,
+  customer_email: userEmail,
   metadata: {
     tenantId: tenantId,
     planName: planName,
@@ -306,7 +306,7 @@ Here are the critical snippets to verify multi-tenant isolation and billing logi
 // backend/src/middleware/auth.ts
 export const authMiddleware = async (c, next) => {
   // ... verify token ...
-  const { payload } = awAutomationt jwtVerify(token, secret);
+  const { payload } = await jwtVerify(token, secret);
 
   // Set user in context variables (TRUSTED SOURCE)
   c.set('user', {
@@ -315,7 +315,7 @@ export const authMiddleware = async (c, next) => {
     role: payload.role as string,
     // ...
   });
-  awAutomationt next();
+  await next();
   // ...
 };
 ```
@@ -332,7 +332,7 @@ client.get('/dashboard', async (c) => {
 
   // ...
   // ISOLATION CHECK: Filtering properties by tenant_id
-  const { results } = awAutomationt c.env.DB.prepare(
+  const { results } = await c.env.DB.prepare(
     'SELECT * FROM properties WHERE tenant_id = ? AND price <= ? ...',
   )
     .bind(tenantId, clientData.budget * 1.2) // <--- CRITICAL: Bind Parameter
@@ -348,7 +348,7 @@ client.get('/dashboard', async (c) => {
 ```typescript
 // backend/src/routes/whatsapp.ts
 whatsapp.post('/webhook', async (c) => {
-  const payload = awAutomationt c.req.json();
+  const payload = await c.req.json();
 
   // Identificar Tenant pela inst|ncia no payload
   // Evolution envia: { "instance": "tenant_123", ... }
@@ -360,7 +360,7 @@ whatsapp.post('/webhook', async (c) => {
   }
 
   // ... saving message ...
-      awAutomationt env.DB.prepare(
+      await env.DB.prepare(
         `INSERT INTO whatsapp_messages (..., tenant_id, ...) VALUES (...)`
       )
         .bind(..., tenantId, ...) // <--- CRITICAL: Persistence

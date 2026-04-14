@@ -24,7 +24,7 @@ const TEMPLATES: MarketingTemplate[] = [
     color: 'bg-primary',
   },
   { id: 't3', name: 'Post - Novo', format: 'post', label: 'NOVIDADE', color: 'bg-green-600' },
-  { id: 't4', name: 'Post - Luxo', format: 'post', label: 'ALTO PADRÃO', color: 'bg-background' },
+  { id: 't4', name: 'Post - Luxo', format: 'post', label: 'ALTO PADRï¿½O', color: 'bg-background' },
 ];
 
 const MarketingStudio: React.FC = () => {
@@ -207,10 +207,11 @@ const MarketingStudio: React.FC = () => {
             {/* THE ARTWORK */}
             <div
               ref={canvasRef}
-              className={`relative bg-white shadow-2xl overflow-hidden transition-all duration-500 group cursor-default ${selectedTemplate.format === 'story'
+              className={`relative bg-white shadow-2xl overflow-hidden transition-all duration-500 group cursor-default ${
+                selectedTemplate.format === 'story'
                   ? 'w-[360px] h-[640px] rounded-2xl'
                   : 'w-[500px] h-[500px] rounded-none'
-                }`}
+              }`}
             >
               {/* Background Image */}
               <img

@@ -21,10 +21,10 @@ Authorization: Bearer <JWT_TOKEN>
 
 ### Auth
 
-| Método | Rota                 | Descrição               |
-| ------ | -------------------- | ----------------------- |
-| POST   | `/api/auth/login`    | Login com emAutomationl/senha   |
-| POST   | `/api/auth/register` | Registro de novo tenant |
+| Método | Rota                 | Descrição                     |
+| ------ | -------------------- | ----------------------------- |
+| POST   | `/api/auth/login`    | Login com email/senha |
+| POST   | `/api/auth/register` | Registro de novo tenant       |
 
 ### Admin
 

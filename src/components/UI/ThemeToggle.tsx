@@ -12,14 +12,8 @@ export const ThemeToggle: React.FC = () => {
       aria-label={theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
       title={theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
     >
-      {theme === 'dark' ? (
-        <Sun className="h-4 w-4" />
-      ) : (
-        <Moon className="h-4 w-4" />
-      )}
-      <span className="hidden lg:inline">
-        {theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}
-      </span>
+      {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+      <span className="hidden lg:inline">{theme === 'dark' ? 'Modo Claro' : 'Modo Escuro'}</span>
     </button>
   );
 };

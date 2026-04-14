@@ -30,20 +30,10 @@ export enum Platform {
 }
 
 // Providers de canais sociais (backend)
-export type SocialChannelProvider =
-  | 'facebook'
-  | 'instagram'
-  | 'x'
-  | 'telegram'
-  | 'tiktok'
-  | 'line';
+export type SocialChannelProvider = 'facebook' | 'instagram' | 'x' | 'telegram' | 'tiktok' | 'line';
 
 // Todos os providers de canal (existentes + novos)
-export type ChannelProvider =
-  | 'whatsapp'
-  | 'email'
-  | 'livechat'
-  | SocialChannelProvider;
+export type ChannelProvider = 'whatsapp' | 'email' | 'livechat' | SocialChannelProvider;
 
 // Status de publicação em portais
 export enum PublicationStatus {
@@ -469,7 +459,16 @@ export interface NormalizedMessage {
   sender_type: 'contact' | 'agent' | 'bot' | 'system';
   sender_id?: string;
   content: string;
-  message_type: 'text' | 'image' | 'video' | 'document' | 'audio' | 'sticker' | 'location' | 'contact' | 'template';
+  message_type:
+    | 'text'
+    | 'image'
+    | 'video'
+    | 'document'
+    | 'audio'
+    | 'sticker'
+    | 'location'
+    | 'contact'
+    | 'template';
   media_url?: string;
   external_id?: string; // ID na plataforma externa
   channel_type: ChannelProvider;

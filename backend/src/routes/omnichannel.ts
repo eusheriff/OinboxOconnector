@@ -206,14 +206,7 @@ app.post('/send', async (c) => {
           message_type, status, created_at)
          VALUES (?, ?, ?, 'agent', ?, ?, 'text', 'sent', ?)`,
       )
-      .bind(
-        messageId,
-        user.tenantId,
-        body.conversation_id,
-        user.sub,
-        body.content,
-        now,
-      )
+      .bind(messageId, user.tenantId, body.conversation_id, user.sub, body.content, now)
       .run();
 
     await db

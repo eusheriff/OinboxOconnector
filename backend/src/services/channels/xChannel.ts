@@ -3,9 +3,9 @@
  *
  * X usa OAuth 1.0a para autorização e Account Activity API para webhooks.
  * Fluxo:
- * 1. OAuth 1.0a (3-legged) � access_token + access_token_secret
+ * 1. OAuth 1.0a (3-legged) � access_token + access_token_secret
  * 2. Registrar webhook via Account Activity API
- * 3. Webhook recebe DMs � NormalizerService � Inbox
+ * 3. Webhook recebe DMs � NormalizerService � Inbox
  */
 
 import { HonoContext } from '../../bindings';
@@ -25,11 +25,7 @@ export class XChannelService {
    * Nota: OAuth 1.0a requer assinatura HMAC-SHA1
    * Implementação simplificada - em produção usar lib como oauth-1.0a
    */
-  getOAuthUrl(
-    consumerKey: string,
-    callbackUrl: string,
-    state: string,
-  ): string {
+  getOAuthUrl(consumerKey: string, callbackUrl: string, state: string): string {
     // Passo 1: Obter request token
     // Em produção, isso é feito via backend com assinatura OAuth 1.0a
     return `https://api.twitter.com/oauth/authorize?oauth_token=PENDING_REQUEST_TOKEN&state=${state}`;
@@ -105,11 +101,7 @@ export class XChannelService {
   /**
    * Processa webhook de DMs do X
    */
-  async handleWebhook(
-    c: HonoContext,
-    tenantId: string,
-    channelId: string,
-  ) {
+  async handleWebhook(c: HonoContext, tenantId: string, channelId: string) {
     const logger = createDatadogLogger(c.env);
     const body = await c.req.json();
 

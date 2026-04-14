@@ -13,18 +13,18 @@ O Oconnector utiliza **Cloudflare D1**, um banco SQLite distribuído na edge da 
 
 \`\`\`sql
 CREATE TABLE tenants (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  owner_name TEXT NOT NULL,
-  emAutomationl TEXT UNIQUE NOT NULL,
-  phone TEXT,
-  plan TEXT DEFAULT 'basic',
-  status TEXT DEFAULT 'trial',
-  joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  trial_ends_at DATETIME,
-  stripe_customer_id TEXT,
-  stripe_subscription_id TEXT,
-  mrr REAL DEFAULT 0
+id TEXT PRIMARY KEY,
+name TEXT NOT NULL,
+owner_name TEXT NOT NULL,
+email TEXT UNIQUE NOT NULL,
+phone TEXT,
+plan TEXT DEFAULT 'basic',
+status TEXT DEFAULT 'trial',
+joined_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+trial_ends_at DATETIME,
+stripe_customer_id TEXT,
+stripe_subscription_id TEXT,
+mrr REAL DEFAULT 0
 );
 \`\`\`
 
@@ -32,13 +32,13 @@ CREATE TABLE tenants (
 
 \`\`\`sql
 CREATE TABLE users (
-  id TEXT PRIMARY KEY,
-  tenant_id TEXT REFERENCES tenants(id),
-  name TEXT NOT NULL,
-  emAutomationl TEXT UNIQUE NOT NULL,
-  password_hash TEXT NOT NULL,
-  role TEXT DEFAULT 'user',
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+id TEXT PRIMARY KEY,
+tenant_id TEXT REFERENCES tenants(id),
+name TEXT NOT NULL,
+email TEXT UNIQUE NOT NULL,
+password_hash TEXT NOT NULL,
+role TEXT DEFAULT 'user',
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 \`\`\`
 
@@ -46,19 +46,19 @@ CREATE TABLE users (
 
 \`\`\`sql
 CREATE TABLE clients (
-  id TEXT PRIMARY KEY,
-  tenant_id TEXT REFERENCES tenants(id),
-  name TEXT NOT NULL,
-  emAutomationl TEXT,
-  phone TEXT,
-  status TEXT DEFAULT 'Novo',
-  budget TEXT,
-  notes TEXT,
-  temperature TEXT DEFAULT 'Cold',
-  lead_score INTEGER,
-  Automation_summary TEXT,
-  last_interaction DATETIME,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+id TEXT PRIMARY KEY,
+tenant_id TEXT REFERENCES tenants(id),
+name TEXT NOT NULL,
+email TEXT,
+phone TEXT,
+status TEXT DEFAULT 'Novo',
+budget TEXT,
+notes TEXT,
+temperature TEXT DEFAULT 'Cold',
+lead_score INTEGER,
+Automation_summary TEXT,
+last_interaction DATETIME,
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 \`\`\`
 
@@ -66,19 +66,19 @@ CREATE TABLE clients (
 
 \`\`\`sql
 CREATE TABLE properties (
-  id TEXT PRIMARY KEY,
-  tenant_id TEXT REFERENCES tenants(id),
-  title TEXT NOT NULL,
-  price REAL,
-  location TEXT,
-  bedrooms INTEGER,
-  bathrooms INTEGER,
-  area REAL,
-  listing_type TEXT DEFAULT 'sale',
-  status TEXT DEFAULT 'Active',
-  features TEXT,
-  images TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+id TEXT PRIMARY KEY,
+tenant_id TEXT REFERENCES tenants(id),
+title TEXT NOT NULL,
+price REAL,
+location TEXT,
+bedrooms INTEGER,
+bathrooms INTEGER,
+area REAL,
+listing_type TEXT DEFAULT 'sale',
+status TEXT DEFAULT 'Active',
+features TEXT,
+images TEXT,
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 \`\`\`
 
@@ -86,21 +86,21 @@ CREATE TABLE properties (
 
 \`\`\`sql
 CREATE TABLE leads (
-  id TEXT PRIMARY KEY,
-  google_place_id TEXT,
-  name TEXT NOT NULL,
-  type TEXT,
-  phone TEXT,
-  emAutomationl TEXT,
-  status TEXT DEFAULT 'new',
-  score INTEGER DEFAULT 0,
-  score_breakdown TEXT,
-  source TEXT,
-  search_query TEXT,
-  captured_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-  qualified_at DATETIME,
-  contacted_at DATETIME,
-  whatsapp_status TEXT
+id TEXT PRIMARY KEY,
+google_place_id TEXT,
+name TEXT NOT NULL,
+type TEXT,
+phone TEXT,
+email TEXT,
+status TEXT DEFAULT 'new',
+score INTEGER DEFAULT 0,
+score_breakdown TEXT,
+source TEXT,
+search_query TEXT,
+captured_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+qualified_at DATETIME,
+contacted_at DATETIME,
+whatsapp_status TEXT
 );
 \`\`\`
 
@@ -108,16 +108,16 @@ CREATE TABLE leads (
 
 \`\`\`sql
 CREATE TABLE campAutomationgns (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  type TEXT,
-  status TEXT DEFAULT 'draft',
-  message_template TEXT,
-  target_status TEXT,
-  min_score INTEGER,
-  max_score INTEGER,
-  settings TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+id TEXT PRIMARY KEY,
+name TEXT NOT NULL,
+type TEXT,
+status TEXT DEFAULT 'draft',
+message_template TEXT,
+target_status TEXT,
+min_score INTEGER,
+max_score INTEGER,
+settings TEXT,
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 \`\`\`
 
@@ -125,13 +125,13 @@ CREATE TABLE campAutomationgns (
 
 \`\`\`sql
 CREATE TABLE audit_logs (
-  id TEXT PRIMARY KEY,
-  user_id TEXT,
-  action TEXT NOT NULL,
-  target_type TEXT,
-  target_id TEXT,
-  detAutomationls TEXT,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+id TEXT PRIMARY KEY,
+user_id TEXT,
+action TEXT NOT NULL,
+target_type TEXT,
+target_id TEXT,
+detAutomationls TEXT,
+created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 \`\`\`
 
@@ -142,7 +142,7 @@ CREATE TABLE audit_logs (
 Todas as queries de listagem usam LIMIT/OFFSET:
 
 \`\`\`sql
-SELECT id, name, emAutomationl, status FROM clients
+SELECT id, name, email, status FROM clients
 WHERE tenant_id = ?
 ORDER BY created_at DESC
 LIMIT ? OFFSET ?
@@ -151,27 +151,31 @@ LIMIT ? OFFSET ?
 ### Contagem
 
 \`\`\`sql
-SELECT COUNT(*) as total FROM clients WHERE tenant_id = ?
+SELECT COUNT(\*) as total FROM clients WHERE tenant_id = ?
 \`\`\`
 
 ### Batch Operations
 
 \`\`\`typescript
-const batch = leads.map(l => 
-  stmt.bind(uuid(), l.id, l.score)
+const batch = leads.map(l =>
+stmt.bind(uuid(), l.id, l.score)
 );
-awAutomationt env.DB.batch(batch);
+await env.DB.batch(batch);
 \`\`\`
 
 ## Migrações
 
 \`\`\`bash
+
 # Criar nova migração
+
 cp backend/migrations/001_initial.sql backend/migrations/002_new_feature.sql
 
 # Executar localmente
+
 wrangler d1 execute Oconnector-db --file=./backend/migrations/002_new_feature.sql --local
 
 # Executar em produção
+
 wrangler d1 execute Oconnector-db --file=./backend/migrations/002_new_feature.sql --remote
 \`\`\`

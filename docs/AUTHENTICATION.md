@@ -11,18 +11,18 @@ O backend usa **JWT (JSON Web Tokens)** via biblioteca `jose` para autentica√ß√£
 ## 2. Fluxo de Login
 
 ```
-POST /api/auth/login { emAutomationl, password }
-  ‚ Buscar usu√°rio + tenant no D1 (JOIN)
-  ‚ Verificar senha com bcrypt
-  ‚ Gerar JWT com payload:
+POST /api/auth/login { email, password }
+  ÔøΩ Buscar usu√°rio + tenant no D1 (JOIN)
+  ÔøΩ Verificar senha com bcrypt
+  ÔøΩ Gerar JWT com payload:
     {
       sub: user.id,
       tenantId: user.tenant_id,
       role: user.role,
       name: user.name,
-      emAutomationl: user.emAutomationl
+      email: user.email
     }
-  ‚ Retornar { token, user }
+  ÔøΩ Retornar { token, user }
 ```
 
 ## 3. Middleware de Autentica√ß√£o
@@ -32,32 +32,33 @@ POST /api/auth/login { emAutomationl, password }
 Executado em **todas as rotas** antes dos middlewares espec√≠ficos:
 
 ```
-Request ‚ Global Auth Middleware
-  ‚ Pular se rota p√∫blica (/api/auth, /api/health, webhooks)
-  ‚ Verificar JWT via jose.jwtVerify()
-  ‚ Popular c.set('user', { sub, tenantId, role, name, emAutomationl })
-  ‚ next()
+Request ÔøΩ Global Auth Middleware
+  ÔøΩ Pular se rota p√∫blica (/api/auth, /api/health, webhooks)
+  ÔøΩ Verificar JWT via jose.jwtVerify()
+  ÔøΩ Popular c.set('user', { sub, tenantId, role, name, email })
+  ÔøΩ next()
 ```
 
 **Rotas p√∫blicas (skip de auth):**
-- `/api/auth/*` ‚ login, register, forgot password
-- `/api/health` ‚ health check
-- `/api/whatsapp/webhook` ‚ webhook da Evolution API
-- `/api/portals/feed/*` ‚ XML feed de portAutomations
-- `/api/evolution/webhook` ‚ webhook da Evolution API
+
+- `/api/auth/*` ÔøΩ login, register, forgot password
+- `/api/health` ÔøΩ health check
+- `/api/whatsapp/webhook` ÔøΩ webhook da Evolution API
+- `/api/portals/feed/*` ÔøΩ XML feed de portAutomations
+- `/api/evolution/webhook` ÔøΩ webhook da Evolution API
 
 ### 3.2 Auth Middleware (`middleware/auth.ts`)
 
 Este middleware **n√£o √© usado globalmente** no momento. Sua responsabilidade adicional ao global √© o **Trial/Subscription Gate**:
 
 ```
-authMiddleware ‚ jwtVerify() + trial/subscription check
-  ‚ Se SuperAdmin: pular gate
-  ‚ Se tenant: verificar trial_ends_at e stripe_subscription_id
-  ‚ Se trial expirado e sem subscription: retornar 402
+authMiddleware ÔøΩ jwtVerify() + trial/subscription check
+  ÔøΩ Se SuperAdmin: pular gate
+  ÔøΩ Se tenant: verificar trial_ends_at e stripe_subscription_id
+  ÔøΩ Se trial expirado e sem subscription: retornar 402
 ```
 
-** Nota importante:** Atualmente o middleware global em `index.ts` j√° faz JWT verification inline, mas **n√£o aplica o trial gate**. O `authMiddleware` com trial gate existe mas n√£o est√° sendo aplicado globalmente ‚ ele √© importado mas seu uso depende de cada rota individualmente.
+** Nota importante:** Atualmente o middleware global em `index.ts` j√° faz JWT verification inline, mas **n√£o aplica o trial gate**. O `authMiddleware` com trial gate existe mas n√£o est√° sendo aplicado globalmente ÔøΩ ele √© importado mas seu uso depende de cada rota individualmente.
 
 **Gap identificado:** Rotas protegidas pelo global auth mas sem trial gate podem ser acessadas por tenants com trial expirado.
 
@@ -67,9 +68,9 @@ Ap√≥s o auth, o `tenantEnforcementMiddleware` valida que o usu√°rio pertence ao 
 
 ```
 tenantEnforcementMiddleware
-  ‚ Ler c.get('user').tenantId
-  ‚ Comparar com tenant_id da requisi√ß√£o (path param ou body)
-  ‚ Se mismatch: retornar 403 Forbidden
+  ÔøΩ Ler c.get('user').tenantId
+  ÔøΩ Comparar com tenant_id da requisi√ß√£o (path param ou body)
+  ÔøΩ Se mismatch: retornar 403 Forbidden
 ```
 
 Aplicado a todas as rotas de `/api/admin/*`, `/api/crm/*`, `/api/properties/*`, etc.
@@ -79,8 +80,8 @@ Aplicado a todas as rotas de `/api/admin/*`, `/api/crm/*`, `/api/properties/*`, 
 ### 5.1 Super Admin
 
 ```typescript
-superAuthMiddleware ‚ authMiddleware ‚ checar role === 'SuperAdmin'
-  ‚ Se n√£o for: 403 Forbidden
+superAuthMiddleware ÔøΩ authMiddleware ÔøΩ checar role === 'SuperAdmin'
+  ÔøΩ Se n√£o for: 403 Forbidden
 ```
 
 Rotas protegidas: `/api/admin/*` (gest√£o de tenants, billing, etc.)
@@ -88,7 +89,7 @@ Rotas protegidas: `/api/admin/*` (gest√£o de tenants, billing, etc.)
 ### 5.2 Role Factory
 
 ```typescript
-requireRole('admin', 'user')  // factory que gera middleware por role
+requireRole('admin', 'user'); // factory que gera middleware por role
 ```
 
 ## 6. Estrutura de JWT
@@ -99,7 +100,7 @@ requireRole('admin', 'user')  // factory que gera middleware por role
   "tenantId": "tenant-uuid",
   "role": "admin | user | SuperAdmin | super_admin",
   "name": "Nome do Usu√°rio",
-  "emAutomationl": "user@exemplo.com",
+  "email": "user@exemplo.com",
   "iat": 1712000000,
   "exp": 1712086400
 }
@@ -108,31 +109,31 @@ requireRole('admin', 'user')  // factory que gera middleware por role
 ## 7. Trial / Subscription Gate
 
 ```
-SuperAdmin ‚ acesso liberado
+SuperAdmin ÔøΩ acesso liberado
 
 Tenant normal:
-  ‚ hasActiveSub = stripe_subscription_id != null
-  ‚ isTrialActive = trial_ends_at > now
-  ‚ Se ambos falsos: 402 Payment Required
+  ÔøΩ hasActiveSub = stripe_subscription_id != null
+  ÔøΩ isTrialActive = trial_ends_at > now
+  ÔøΩ Se ambos falsos: 402 Payment Required
     { "error": "Per√≠odo de teste expirado", "code": "TRIAL_EXPIRED" }
 ```
 
 ## 8. Rate Limiting
 
-| Rota | Limite | Modo |
-|------|--------|------|
+| Rota                   | Limite     | Modo                                           |
+| ---------------------- | ---------- | ---------------------------------------------- |
 | `POST /api/auth/login` | 20 req/min | **fAutomationl-close** (bloqueia se D1 falhar) |
-| DemAutomations rotas | 10 req/min | fAutomationl-open (permite se D1 falhar) |
+| DemAutomations rotas   | 10 req/min | fAutomationl-open (permite se D1 falhar)       |
 
 ## 9. Seguran√ßa
 
-| Item | Implementa√ß√£o |
-|------|--------------|
-| Senhas | bcryptjs (hash) |
-| JWT | `jose` com secret via `wrangler secret put` |
-| CORS | Allow-list expl√≠cita (localhost + dom√≠nios oconnector.tech) |
-| Rate Limiting | D1-based sliding window por IP |
-| Tenant Isolation | Middleware + `tenant_id` em todas as tabelas |
+| Item             | Implementa√ß√£o                                               |
+| ---------------- | ----------------------------------------------------------- |
+| Senhas           | bcryptjs (hash)                                             |
+| JWT              | `jose` com secret via `wrangler secret put`                 |
+| CORS             | Allow-list expl√≠cita (localhost + dom√≠nios oconnector.tech) |
+| Rate Limiting    | D1-based sliding window por IP                              |
+| Tenant Isolation | Middleware + `tenant_id` em todas as tabelas                |
 
 ## 10. Gap de Autentica√ß√£o (Conhecido)
 
@@ -146,10 +147,10 @@ Tenant normal:
 
 ## 11. Arquivos Relacionados
 
-| Arquivo | Responsabilidade |
-|---------|-----------------|
-| `backend/src/index.ts` (linhas 68-105) | Global auth middleware |
-| `backend/src/middleware/auth.ts` | JWT + trial gate + role factory |
-| `backend/src/middleware/tenantEnforcement.ts` | Tenant isolation |
-| `backend/src/services/tokenService.ts` | Gera√ß√£o e verifica√ß√£o de JWT |
-| `backend/src/routes/auth.ts` | Login, register, etc. |
+| Arquivo                                       | Responsabilidade                |
+| --------------------------------------------- | ------------------------------- |
+| `backend/src/index.ts` (linhas 68-105)        | Global auth middleware          |
+| `backend/src/middleware/auth.ts`              | JWT + trial gate + role factory |
+| `backend/src/middleware/tenantEnforcement.ts` | Tenant isolation                |
+| `backend/src/services/tokenService.ts`        | Gera√ß√£o e verifica√ß√£o de JWT    |
+| `backend/src/routes/auth.ts`                  | Login, register, etc.           |

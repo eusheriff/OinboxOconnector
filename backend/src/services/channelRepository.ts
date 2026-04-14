@@ -129,20 +129,14 @@ export class ChannelRepository {
     return result.results || [];
   }
 
-  async updateChannelStatus(
-    channelId: string,
-    status: ChannelConnectionStatus,
-  ): Promise<void> {
+  async updateChannelStatus(channelId: string, status: ChannelConnectionStatus): Promise<void> {
     await this.db
       .prepare('UPDATE channels SET status = ? WHERE id = ?')
       .bind(status, channelId)
       .run();
   }
 
-  async updateChannelConfig(
-    channelId: string,
-    config: Record<string, unknown>,
-  ): Promise<void> {
+  async updateChannelConfig(channelId: string, config: Record<string, unknown>): Promise<void> {
     await this.db
       .prepare('UPDATE channels SET config = ? WHERE id = ?')
       .bind(JSON.stringify(config), channelId)
@@ -220,20 +214,14 @@ export class ChannelRepository {
     };
   }
 
-  async getOAuthToken(
-    channelId: string,
-    provider: string,
-  ): Promise<ChannelOAuthToken | null> {
+  async getOAuthToken(channelId: string, provider: string): Promise<ChannelOAuthToken | null> {
     return await this.db
       .prepare('SELECT * FROM channel_oauth_tokens WHERE channel_id = ? AND provider = ?')
       .bind(channelId, provider)
       .first<ChannelOAuthToken>();
   }
 
-  async getValidToken(
-    channelId: string,
-    provider: string,
-  ): Promise<ChannelOAuthToken | null> {
+  async getValidToken(channelId: string, provider: string): Promise<ChannelOAuthToken | null> {
     const token = await this.db
       .prepare(
         `SELECT * FROM channel_oauth_tokens
@@ -399,10 +387,7 @@ export class ChannelRepository {
       .run();
   }
 
-  async getMetrics(
-    tenantId: string,
-    provider: ChannelProvider,
-  ): Promise<ChannelMetrics | null> {
+  async getMetrics(tenantId: string, provider: ChannelProvider): Promise<ChannelMetrics | null> {
     return await this.db
       .prepare('SELECT * FROM channel_metrics WHERE tenant_id = ? AND provider = ?')
       .bind(tenantId, provider)
@@ -464,9 +449,7 @@ export class ChannelRepository {
       .run();
   }
 
-  async getPendingTokenRefreshJobs(
-    limit = 50,
-  ): Promise<TokenRefreshQueueEntry[]> {
+  async getPendingTokenRefreshJobs(limit = 50): Promise<TokenRefreshQueueEntry[]> {
     const result = await this.db
       .prepare(
         `SELECT * FROM token_refresh_queue
@@ -523,9 +506,7 @@ export class ChannelRepository {
   // Full Channel Info (join com token + webhook config + metrics)
   // ============================================================
 
-  async getFullChannelInfo(
-    channelId: string,
-  ): Promise<{
+  async getFullChannelInfo(channelId: string): Promise<{
     channel: SocialChannelConfig;
     token: Partial<ChannelOAuthToken> | null;
     webhook_config: Partial<ChannelWebhookConfig> | null;
@@ -558,9 +539,7 @@ export class ChannelRepository {
     };
   }
 
-  async getTenantChannelsWithDetails(
-    tenantId: string,
-  ): Promise<
+  async getTenantChannelsWithDetails(tenantId: string): Promise<
     Array<{
       channel: SocialChannelConfig;
       token: Partial<ChannelOAuthToken> | null;

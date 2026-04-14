@@ -62,16 +62,13 @@ export class FacebookMarketplacePortal extends BasePortal {
 
       // Criar listagem no Facebook Marketplace via Graph API
       // POST /{page-id}/listings
-      const response = await this.fetchWithRetry(
-        `${this.FB_API_BASE}/${pageId}/listings`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${accessToken}`,
-          },
-          body: JSON.stringify(listingData),
+      const response = await this.fetchWithRetry(`${this.FB_API_BASE}/${pageId}/listings`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
         },
-      );
+        body: JSON.stringify(listingData),
+      });
 
       const result: any = await response.json();
       const externalId = result.id;
@@ -120,15 +117,12 @@ export class FacebookMarketplacePortal extends BasePortal {
 
       // Deletar listagem do Facebook
       // DELETE /{listing-id}
-      await this.fetchWithRetry(
-        `${this.FB_API_BASE}/${externalId}`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${authData.access_token}`,
-          },
+      await this.fetchWithRetry(`${this.FB_API_BASE}/${externalId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${authData.access_token}`,
         },
-      );
+      });
 
       return { success: true };
     } catch (error) {
@@ -173,16 +167,13 @@ export class FacebookMarketplacePortal extends BasePortal {
 
       // Atualizar listagem existente
       // POST /{listing-id}
-      await this.fetchWithRetry(
-        `${this.FB_API_BASE}/${externalId}`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${authData.access_token}`,
-          },
-          body: JSON.stringify(listingData),
+      await this.fetchWithRetry(`${this.FB_API_BASE}/${externalId}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${authData.access_token}`,
         },
-      );
+        body: JSON.stringify(listingData),
+      });
 
       const externalUrl = `https://www.facebook.com/marketplace/item/${externalId}`;
 

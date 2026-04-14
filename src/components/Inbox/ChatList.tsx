@@ -30,7 +30,7 @@ const ChatList: React.FC<ChatListProps> = ({ conversations, activeId, onSelect }
 
   // Filtrar conversas por busca e canal
   const filteredConversations = useMemo(() => {
-    return conversations.filter(conv => {
+    return conversations.filter((conv) => {
       // Filtro por canal
       const platformValue = (conv.platform || '').toLowerCase();
       if (channelFilter !== 'all' && platformValue !== channelFilter) {
@@ -54,7 +54,7 @@ const ChatList: React.FC<ChatListProps> = ({ conversations, activeId, onSelect }
   // Contar conversas por canal
   const channelCounts = useMemo(() => {
     const counts: Record<string, number> = { all: conversations.length };
-    conversations.forEach(conv => {
+    conversations.forEach((conv) => {
       const p = (conv.platform || '').toLowerCase();
       counts[p] = (counts[p] || 0) + 1;
     });
@@ -82,7 +82,7 @@ const ChatList: React.FC<ChatListProps> = ({ conversations, activeId, onSelect }
             type="text"
             placeholder="Buscar cliente ou canal..."
             value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-gray-100 border-transparent rounded-lg focus:bg-card focus:ring-2 focus:ring-primary focus:outline-none transition-all text-sm"
           />
         </div>
@@ -112,7 +112,7 @@ const ChatList: React.FC<ChatListProps> = ({ conversations, activeId, onSelect }
 
         {showFilters && (
           <div className="flex gap-1 flex-wrap mt-2">
-            {SOCIAL_CHANNELS.map(ch => (
+            {SOCIAL_CHANNELS.map((ch) => (
               <button
                 key={ch.value}
                 onClick={() => {
@@ -138,9 +138,7 @@ const ChatList: React.FC<ChatListProps> = ({ conversations, activeId, onSelect }
       <div className="flex-1 overflow-y-auto">
         {filteredConversations.length === 0 ? (
           <div className="p-8 text-center text-gray-400 text-sm">
-            {conversations.length === 0
-              ? 'Nenhuma conversa ainda'
-              : 'Nenhuma conversa encontrada'}
+            {conversations.length === 0 ? 'Nenhuma conversa ainda' : 'Nenhuma conversa encontrada'}
           </div>
         ) : (
           filteredConversations.map((conv) => (

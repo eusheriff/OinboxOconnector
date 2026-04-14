@@ -3,7 +3,7 @@ import { D1Database } from '@cloudflare/workers-types';
 export interface OmniMessagePayload {
   id: string;
   tenant_id: string;
-  remote_jid: string; 
+  remote_jid: string;
   message_id?: string;
   content: string;
   media_url?: string | null;
@@ -37,39 +37,54 @@ export class WhatsAppRepository {
   }
 
   // Obter ou criar Conversation Omni
-  async getOrCreateOmniConversation(tenantId: string, remoteJid: string, leadId?: string): Promise<{id: string, status: string}> {
+  async getOrCreateOmniConversation(
+    tenantId: string,
+    remoteJid: string,
+    leadId?: string,
+  ): Promise<{ id: string; status: string }> {
     // 1. Encontra/Cria o Channel do WhatsApp
-    const channelName = "WhatsApp Business";
-    let channelId = await this.db.prepare(
-      "SELECT id FROM channels WHERE tenant_id = ? AND provider = 'whatsapp'"
-    ).bind(tenantId).first<{id: string}>();
+    const channelName = 'WhatsApp Business';
+    let channelId = await this.db
+      .prepare("SELECT id FROM channels WHERE tenant_id = ? AND provider = 'whatsapp'")
+      .bind(tenantId)
+      .first<{ id: string }>();
 
     if (!channelId) {
       const newChannelId = crypto.randomUUID();
-      await this.db.prepare(
-        "INSERT INTO channels (id, tenant_id, provider, name) VALUES (?, ?, 'whatsapp', ?)"
-      ).bind(newChannelId, tenantId, channelName).run();
+      await this.db
+        .prepare(
+          "INSERT INTO channels (id, tenant_id, provider, name) VALUES (?, ?, 'whatsapp', ?)",
+        )
+        .bind(newChannelId, tenantId, channelName)
+        .run();
       channelId = { id: newChannelId };
     }
 
     const contactId = leadId || remoteJid; // Fallback para remote_jid caso lead não exista
 
     // 2. Busca conversa ativa
-    let conversation = await this.db.prepare(
-      "SELECT id, status FROM conversations WHERE tenant_id = ? AND channel_id = ? AND contact_id = ? AND status != 'resolved'"
-    ).bind(tenantId, channelId.id, contactId).first<{id: string, status: string}>();
+    let conversation = await this.db
+      .prepare(
+        "SELECT id, status FROM conversations WHERE tenant_id = ? AND channel_id = ? AND contact_id = ? AND status != 'resolved'",
+      )
+      .bind(tenantId, channelId.id, contactId)
+      .first<{ id: string; status: string }>();
 
     if (!conversation) {
       const newConvId = crypto.randomUUID();
-      await this.db.prepare(
-        "INSERT INTO conversations (id, tenant_id, channel_id, contact_id, status) VALUES (?, ?, ?, ?, 'bot')"
-      ).bind(newConvId, tenantId, channelId.id, contactId).run();
+      await this.db
+        .prepare(
+          "INSERT INTO conversations (id, tenant_id, channel_id, contact_id, status) VALUES (?, ?, ?, ?, 'bot')",
+        )
+        .bind(newConvId, tenantId, channelId.id, contactId)
+        .run();
       conversation = { id: newConvId, status: 'bot' };
     } else {
       // Atualiza last action
-      await this.db.prepare(
-        "UPDATE conversations SET last_message_at = CURRENT_TIMESTAMP WHERE id = ?"
-      ).bind(conversation.id).run();
+      await this.db
+        .prepare('UPDATE conversations SET last_message_at = CURRENT_TIMESTAMP WHERE id = ?')
+        .bind(conversation.id)
+        .run();
     }
 
     return conversation;
@@ -79,21 +94,25 @@ export class WhatsAppRepository {
     // Extrai Lead ID se existir
     const phoneClean = msg.remote_jid.replace('@s.whatsapp.net', '');
     const lead = await this.findLeadByPhone(msg.tenant_id, phoneClean);
-    const conversation = await this.getOrCreateOmniConversation(msg.tenant_id, msg.remote_jid, lead?.id);
+    const conversation = await this.getOrCreateOmniConversation(
+      msg.tenant_id,
+      msg.remote_jid,
+      lead?.id,
+    );
 
     const senderType = msg.direction === 'inbound' ? 'contact' : 'bot'; // Por padrão assumimos bot/agent se outbound
 
     await this.db
       .prepare(
         `INSERT INTO omnichannel_messages (id, tenant_id, conversation_id, sender_type, sender_id, content, message_type, media_url, external_id, status, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .bind(
         msg.id,
         msg.tenant_id,
         conversation.id,
         senderType,
-        senderType === 'contact' ? (lead?.id || msg.remote_jid) : null,
+        senderType === 'contact' ? lead?.id || msg.remote_jid : null,
         msg.content,
         msg.message_type || 'text',
         msg.media_url || null,
@@ -116,7 +135,7 @@ export class WhatsAppRepository {
          FROM omnichannel_messages m
          JOIN conversations c ON m.conversation_id = c.id
          WHERE m.tenant_id = ? AND c.contact_id = ?
-         ORDER BY m.created_at DESC LIMIT ?`
+         ORDER BY m.created_at DESC LIMIT ?`,
       )
       .bind(tenantId, contactId, limit)
       .all<{ sender_type: string; content: string }>();
@@ -127,17 +146,13 @@ export class WhatsAppRepository {
     }));
   }
 
-  async getRawMessages(
-    tenantId: string,
-    remoteJid?: string,
-    limit: number = 50,
-  ): Promise<any[]> {
+  async getRawMessages(tenantId: string, remoteJid?: string, limit: number = 50): Promise<any[]> {
     let query = `
         SELECT m.*, c.channel_id 
         FROM omnichannel_messages m 
         JOIN conversations c ON m.conversation_id = c.id 
         WHERE m.tenant_id = ?`;
-        
+
     const params: (string | number)[] = [tenantId];
 
     if (remoteJid) {
@@ -174,7 +189,8 @@ export class WhatsAppRepository {
   async getConversations(tenantId: string): Promise<any[]> {
     // Busca conversas ativas com dados básicos e última mensagem
     const results = await this.db
-      .prepare(`
+      .prepare(
+        `
         SELECT 
           c.id, 
           c.contact_id, 
@@ -191,7 +207,8 @@ export class WhatsAppRepository {
         LEFT JOIN leads l ON c.contact_id = l.id
         WHERE c.tenant_id = ? AND c.status != 'resolved'
         ORDER BY c.last_message_at DESC
-      `)
+      `,
+      )
       .bind(tenantId)
       .all();
 
@@ -199,29 +216,33 @@ export class WhatsAppRepository {
   }
 
   async updateConversationStatus(
-    conversationId: string, 
-    status: 'bot' | 'open' | 'resolved', 
-    assignedTo?: string
+    conversationId: string,
+    status: 'bot' | 'open' | 'resolved',
+    assignedTo?: string,
   ): Promise<void> {
     if (assignedTo) {
-      await this.db.prepare(
-        "UPDATE conversations SET status = ?, assigned_to = ? WHERE id = ?"
-      ).bind(status, assignedTo, conversationId).run();
+      await this.db
+        .prepare('UPDATE conversations SET status = ?, assigned_to = ? WHERE id = ?')
+        .bind(status, assignedTo, conversationId)
+        .run();
     } else {
-      await this.db.prepare(
-        "UPDATE conversations SET status = ? WHERE id = ?"
-      ).bind(status, conversationId).run();
+      await this.db
+        .prepare('UPDATE conversations SET status = ? WHERE id = ?')
+        .bind(status, conversationId)
+        .run();
     }
   }
 
   async getConversationMessages(conversationId: string, limit: number = 50): Promise<any[]> {
     const results = await this.db
-      .prepare(`
+      .prepare(
+        `
         SELECT * FROM omnichannel_messages 
         WHERE conversation_id = ? 
         ORDER BY created_at ASC 
         LIMIT ?
-      `)
+      `,
+      )
       .bind(conversationId, limit)
       .all();
     return results.results;

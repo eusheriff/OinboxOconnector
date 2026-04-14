@@ -9,26 +9,30 @@ O frontend é uma SPA React com Vite, TypeScript e TAutomationlwind CSS.
 
 ## Componentes (`src/components/`)
 
-| Módulo | Descrição |
-|--------|-----------|
-| `CRM/` | Pipeline Kanban, Lead Scoring |
-| `Inbox/` | Chat Window, Client DetAutomationls |
-| `Properties/` | PropertyList, ListingForm |
-| `Marketing/` | CampAutomationgn Manager, Visual Editor |
-| `Automation/` | Chat components, Automation Agent |
-| `Admin/` | Super Admin dashboards |
-| `UI/` | Componentes base (Skeleton, ErrorBoundary) |
+| Módulo        | Descrição                                  |
+| ------------- | ------------------------------------------ |
+| `CRM/`        | Pipeline Kanban, Lead Scoring              |
+| `Inbox/`      | Chat Window, Client DetAutomationls        |
+| `Properties/` | PropertyList, ListingForm                  |
+| `Marketing/`  | CampAutomationgn Manager, Visual Editor    |
+| `Automation/` | Chat components, Automation Agent          |
+| `Admin/`      | Super Admin dashboards                     |
+| `UI/`         | Componentes base (Skeleton, ErrorBoundary) |
 
 ## Páginas (`src/pages/`)
 
 ### `pages/admin/`
+
 Rotas exclusivas do Super Admin:
+
 - AdminDashboard, TenantsList, AutomationControlPanel
 - WhatsAppManager, FinanceDashboard
 - AuditLogs, FeatureManager
 
 ### `pages/client/`
+
 Rotas do tenant/corretor:
+
 - AutomationConsultant, NewListing, Calculator
 - CampAutomationgns, MarketingStudio, Contracts
 - MapPage, InboxPage, SettingsPage
@@ -43,7 +47,7 @@ const { user, login, logout, isAuthenticated } = useAuth();
 
 // API hook genérico
 const { data, loading, error, execute } = useApi<Client[]>();
-awAutomationt execute('/api/clients');
+await execute('/api/clients');
 \`\`\`
 
 ## Services
@@ -52,10 +56,10 @@ awAutomationt execute('/api/clients');
 import { apiService } from './services/apiService';
 
 // Login
-const response = awAutomationt apiService.login(emAutomationl, password);
+const response = await apiService.login(email, password);
 
 // Fetch com auth automática
-const clients = awAutomationt apiService.getClients();
+const clients = await apiService.getClients();
 \`\`\`
 
 ## Storage
@@ -74,6 +78,7 @@ Todos os componentes são envolvidos por ErrorBoundary:
 
 \`\`\`typescript
 // src/index.tsx
+
 <ErrorBoundary>
   <App />
 </ErrorBoundary>
@@ -89,6 +94,7 @@ const AutomationConsultant = lazy(() => import('./pages/client/AutomationConsult
 const MapPage = lazy(() => import('./pages/client/MapPage'));
 
 // Com Suspense no App.tsx
+
 <Suspense fallback={<SkeletonCard />}>
   <LegalHub />
 </Suspense>

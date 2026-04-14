@@ -16,7 +16,8 @@ const AdminInbox: React.FC = () => {
       return rawData.map((c: any) => ({
         id: c.id,
         contactName: c.contact_name || c.contact_id,
-        contactAvatar: c.contact_avatar || `https://ui-avatars.com/api/?name=${c.contact_name || c.contact_id}`,
+        contactAvatar:
+          c.contact_avatar || `https://ui-avatars.com/api/?name=${c.contact_name || c.contact_id}`,
         platform: c.platform || 'Whatsapp',
         lastMessage: c.last_message || '',
         lastMessageTime: new Date(c.last_message_at),
@@ -24,7 +25,7 @@ const AdminInbox: React.FC = () => {
         status: c.status,
         assignedTo: c.assigned_to,
         tags: [],
-        messages: []
+        messages: [],
       }));
     } catch (e) {
       console.error('Failed to fetch WhatsApp conversations', e);
@@ -41,7 +42,8 @@ const AdminInbox: React.FC = () => {
       return response.conversations.map((c: any) => ({
         id: c.id,
         contactName: c.contact_name || c.contact_platform_id || 'Desconhecido',
-        contactAvatar: c.contact_profile_pic || `https://ui-avatars.com/api/?name=${c.contact_name || 'U'}`,
+        contactAvatar:
+          c.contact_profile_pic || `https://ui-avatars.com/api/?name=${c.contact_name || 'U'}`,
         platform: c.channel_type || c.provider || 'unknown',
         lastMessage: c.last_message || '',
         lastMessageTime: new Date(c.last_message_at),
@@ -49,7 +51,7 @@ const AdminInbox: React.FC = () => {
         status: c.status,
         assignedTo: c.assigned_to,
         tags: [],
-        messages: []
+        messages: [],
       }));
     } catch (e) {
       console.error('Failed to fetch social conversations', e);
@@ -66,7 +68,7 @@ const AdminInbox: React.FC = () => {
 
       // Merge e ordenar por ultima mensagem
       const allConvs = [...whatsAppConvs, ...socialConvs].sort(
-        (a, b) => b.lastMessageTime.getTime() - a.lastMessageTime.getTime()
+        (a, b) => b.lastMessageTime.getTime() - a.lastMessageTime.getTime(),
       );
 
       setConversations(allConvs);
@@ -86,8 +88,10 @@ const AdminInbox: React.FC = () => {
   const fetchMessages = async (convId: string) => {
     try {
       // Determinar qual API usar baseado na conversa ativa
-      const conv = conversations.find(c => c.id === convId);
-      const isWhatsApp = conv?.platform?.toLowerCase() === 'whatsapp' || conv?.platform?.toLowerCase() === 'whatsapp';
+      const conv = conversations.find((c) => c.id === convId);
+      const isWhatsApp =
+        conv?.platform?.toLowerCase() === 'whatsapp' ||
+        conv?.platform?.toLowerCase() === 'whatsapp';
 
       let rawMsgs: any[] = [];
 
@@ -108,12 +112,12 @@ const AdminInbox: React.FC = () => {
         type: m.message_type === 'private_note' ? 'private_note' : m.message_type,
         mediaUrl: m.media_url,
         isPrivate: m.message_type === 'private_note',
-        direction: m.direction
+        direction: m.direction,
       }));
 
-      setConversations(prev => prev.map(c =>
-        c.id === convId ? { ...c, messages: mappedMsgs } : c
-      ));
+      setConversations((prev) =>
+        prev.map((c) => (c.id === convId ? { ...c, messages: mappedMsgs } : c)),
+      );
     } catch (e) {
       console.error('Failed to fetch messages', e);
     }
@@ -127,7 +131,7 @@ const AdminInbox: React.FC = () => {
 
   const handleSendMessage = async (text: string, isPrivate = false) => {
     if (!activeId) return;
-    const activeConv = conversations.find(c => c.id === activeId);
+    const activeConv = conversations.find((c) => c.id === activeId);
     if (!activeConv) return;
 
     try {
@@ -139,7 +143,7 @@ const AdminInbox: React.FC = () => {
           text,
           undefined,
           undefined,
-          isPrivate
+          isPrivate,
         );
       } else {
         await apiService.sendOmnichannelMessage(activeId, text);
@@ -155,7 +159,7 @@ const AdminInbox: React.FC = () => {
   const handleStatusChange = async (status: 'bot' | 'open' | 'resolved') => {
     if (!activeId) return;
     try {
-      const activeConv = conversations.find(c => c.id === activeId);
+      const activeConv = conversations.find((c) => c.id === activeId);
       const isWhatsApp = activeConv?.platform?.toLowerCase() === 'whatsapp';
 
       if (isWhatsApp) {
@@ -184,7 +188,9 @@ const AdminInbox: React.FC = () => {
           />
         ) : (
           <div className="h-full flex items-center justify-center text-gray-500">
-            {loading ? 'Carregando conversas...' : 'Selecione uma conversa para iniciar o atendimento.'}
+            {loading
+              ? 'Carregando conversas...'
+              : 'Selecione uma conversa para iniciar o atendimento.'}
           </div>
         )}
       </div>

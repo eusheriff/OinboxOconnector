@@ -122,11 +122,7 @@ const callBackendAI = async (
       throw new AIError('Erro de conexão com o servidor de IA', 'NETWORK_ERROR', true);
     }
 
-    throw new AIError(
-      'Erro inesperado ao processar solicitação de IA',
-      'UNEXPECTED_ERROR',
-      false,
-    );
+    throw new AIError('Erro inesperado ao processar solicitação de IA', 'UNEXPECTED_ERROR', false);
   }
 };
 
@@ -240,8 +236,7 @@ export const analyzePropertyImage = async (file: File): Promise<ImageAnalysisRes
       description: 'Funcionalidade em migração.',
     };
   } catch (error) {
-    const errorMessage =
-      error instanceof AIError ? error.message : 'Erro na análise da imagem.';
+    const errorMessage = error instanceof AIError ? error.message : 'Erro na análise da imagem.';
     throw new AIError(errorMessage, 'IMAGE_ANALYSIS_ERROR', false);
   }
 };
@@ -367,7 +362,7 @@ export const fastAgentResponse = async (
     - Nome: ${clientName}
     - Perfil Resumido: ${profileSummary}
 
-    �LTIMA MENSAGEM DO CLIENTE: "${lastMessage}"
+    �LTIMA MENSAGEM DO CLIENTE: "${lastMessage}"
   `;
 
   const systemPrompt = `Você é Manú, corretora da Oconnector.tech.`;
@@ -410,11 +405,7 @@ export const askGlobalAgent = async (
 
     if (!response.ok) {
       const retryable = response.status >= 500 || response.status === 429;
-      throw new AIError(
-        `Erro na API: ${response.status}`,
-        `HTTP_${response.status}`,
-        retryable,
-      );
+      throw new AIError(`Erro na API: ${response.status}`, `HTTP_${response.status}`, retryable);
     }
 
     const data: { text?: string } = await response.json();

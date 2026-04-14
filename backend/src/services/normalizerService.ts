@@ -250,8 +250,10 @@ export class NormalizerService {
       }
 
       // Retorna o primeiro válido
-      const valid = results.find(r => r.success && !r.skip);
-      return valid || results[0] || { success: false, error: 'No valid Facebook messages', skip: true };
+      const valid = results.find((r) => r.success && !r.skip);
+      return (
+        valid || results[0] || { success: false, error: 'No valid Facebook messages', skip: true }
+      );
     } catch (e) {
       return {
         success: false,
@@ -465,7 +467,9 @@ export class NormalizerService {
 
       if (attachments?.media) {
         const mediaObj = attachments.media as Record<string, unknown>;
-        const mediaUrlRaw = (mediaObj.media_url_https || mediaObj.url_expanded_pic) as string | undefined;
+        const mediaUrlRaw = (mediaObj.media_url_https || mediaObj.url_expanded_pic) as
+          | string
+          | undefined;
         mediaUrl = mediaUrlRaw;
         mediaMimeType = mediaObj.ext_media_type as string | undefined;
         messageType = this.mediaToMessageType(mediaMimeType);
@@ -489,7 +493,8 @@ export class NormalizerService {
             id: recipientId,
             platform_id: recipientId,
           },
-          timestamp: typeof timestamp === 'string' ? new Date(timestamp).getTime() : timestamp * 1000,
+          timestamp:
+            typeof timestamp === 'string' ? new Date(timestamp).getTime() : timestamp * 1000,
           is_forwarded: false,
           raw_payload: raw,
           channel_metadata: {
@@ -561,7 +566,7 @@ export class NormalizerService {
       let mediaUrl: string | undefined;
       let mediaMimeType: string | undefined;
       let fileName: string | undefined;
-      let caption = message.caption as string | undefined;
+      const caption = message.caption as string | undefined;
 
       const finalText = text || caption || null;
 
@@ -755,7 +760,7 @@ export class NormalizerService {
       // Mensagem de texto
       const message = eventType.message;
       const text = message?.text;
-      const msgType = (message?.message_type) || 'text';
+      const msgType = message?.message_type || 'text';
 
       // Attachments
       const attachments = message?.attachment as Record<string, unknown> | undefined;
@@ -790,7 +795,8 @@ export class NormalizerService {
             id: recipientId || 'bot',
             platform_id: recipientId || 'bot',
           },
-          timestamp: typeof timestamp === 'string' ? new Date(timestamp).getTime() : timestamp * 1000,
+          timestamp:
+            typeof timestamp === 'string' ? new Date(timestamp).getTime() : timestamp * 1000,
           is_forwarded: false,
           raw_payload: raw,
           channel_metadata: {
@@ -885,14 +891,15 @@ export class NormalizerService {
           break;
       }
 
-      const location = lineMsgType === 'location'
-        ? {
-            lat: (message.latitude as number) || 0,
-            lng: (message.longitude as number) || 0,
-            name: message.address,
-            address: message.address,
-          }
-        : undefined;
+      const location =
+        lineMsgType === 'location'
+          ? {
+              lat: (message.latitude as number) || 0,
+              lng: (message.longitude as number) || 0,
+              name: message.address,
+              address: message.address,
+            }
+          : undefined;
 
       return {
         success: true,
@@ -914,7 +921,8 @@ export class NormalizerService {
             id: groupId || roomId || 'direct',
             platform_id: groupId || roomId || 'direct',
           },
-          timestamp: typeof timestamp === 'string' ? new Date(timestamp).getTime() : timestamp * 1000,
+          timestamp:
+            typeof timestamp === 'string' ? new Date(timestamp).getTime() : timestamp * 1000,
           is_forwarded: false,
           raw_payload: raw,
           channel_metadata: {

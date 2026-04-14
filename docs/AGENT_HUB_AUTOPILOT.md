@@ -25,11 +25,12 @@ Quando uma mensagem chega via WhatsApp e o lead **nÃ£o** tem um corretor atribuÃ
 ```typescript
 // backend/src/services/salesTools.ts
 SalesTools.analyzeIntention(message)
-  â POST /v1/hub/orchestrate { request: message, userId: leadId }
-  â Retorna: { intention, suggestedAction, suggestedResponse }
+  ï¿½ POST /v1/hub/orchestrate { request: message, userId: leadId }
+  ï¿½ Retorna: { intention, suggestedAction, suggestedResponse }
 ```
 
 A intenÃ§Ã£o Ã© usada para:
+
 - Classificar o lead no pipeline (Novo, Visita, Proposta)
 - Gerar resposta automÃ¡tica simulando o corretor
 - Atualizar score do lead
@@ -38,19 +39,19 @@ A intenÃ§Ã£o Ã© usada para:
 
 ```typescript
 SalesTools.generatePitch(leadData)
-  â POST /v1/hub/orchestrate { request: "generate pitch for...", userId: leadId }
-  â Retorna: { pitch, tone, highlights }
+  ï¿½ POST /v1/hub/orchestrate { request: "generate pitch for...", userId: leadId }
+  ï¿½ Retorna: { pitch, tone, highlights }
 ```
 
 ### 1.3 Circuit Breaker
 
 Todas as chamadas ao Agent Hub sÃ£o protegidas por circuit breaker:
 
-| Par|metro | Valor |
-|-----------|-------|
-| FAutomationlure Threshold | 3 falhas |
-| Recovery Timeout | 90 segundos |
-| Success Threshold | 2 sucessos |
+| Par                       | metro       | Valor |
+| ------------------------- | ----------- | ----- |
+| FAutomationlure Threshold | 3 falhas    |
+| Recovery Timeout          | 90 segundos |
+| Success Threshold         | 2 sucessos  |
 
 Quando o circuit breaker estÃ¡ **OPEN**, as chamadas ao Agent Hub retornam erro imediatamente sem tentar a requisiÃ§Ã£o.
 
@@ -74,7 +75,7 @@ curl http://localhost:8787/api/health/circuit-breakers | jq .breakers.agentHub
 
 ### 1.6 Perguntas em Aberto
 
-- Quem mantÃ©m o Agent Hub? Ã do mesmo time ou time separado?
+- Quem mantÃ©m o Agent Hub? ï¿½ do mesmo time ou time separado?
 - Qual o SLA do serviÃ§o?
 - HÃ¡ um contrato de API documentado (OpenAPI, schema)?
 - O que acontece se o Agent Hub mudar o formato da resposta?
@@ -102,23 +103,24 @@ O **Autopilot** Ã© um job agendado (cron trigger) que roda periodicamente no Clo
 ```typescript
 // backend/src/index.ts
 async scheduled(event, env, ctx) {
-  const { runAutopilot } = awAutomationt import('./services/autopilot/scheduler');
-  awAutomationt runAutopilot(env, ctx);
+  const { runAutopilot } = await import('./services/autopilot/scheduler');
+  await runAutopilot(env, ctx);
 }
 ```
 
 ### 2.4 Arquivos
 
-| Arquivo | Responsabilidade |
-|---------|-----------------|
-| `backend/src/services/autopilot/scheduler.ts` | Entry point do job |
-| `backend/src/services/autopilot/` | DemAutomations mÃ³dulos do autopilot |
+| Arquivo                                       | Responsabilidade                    |
+| --------------------------------------------- | ----------------------------------- |
+| `backend/src/services/autopilot/scheduler.ts` | Entry point do job                  |
+| `backend/src/services/autopilot/`             | DemAutomations mÃ³dulos do autopilot |
 
 ### 2.5 O que o Autopilot faz
 
-*(Baseado no nome e contexto â ler o cÃ³digo do scheduler.ts para detalhes exatos)*
+_(Baseado no nome e contexto ï¿½ ler o cÃ³digo do scheduler.ts para detalhes exatos)_
 
 Provavelmente executa:
+
 - Follow-up automÃ¡tico de leads sem interaÃ§Ã£o recente
 - AtualizaÃ§Ã£o de scores de leads
 - Disparo de campanhas agendadas
@@ -147,22 +149,22 @@ service:Oconnector-backend "Autopilot"
 ## 3. RelaÃ§Ã£o entre Agent Hub e Autopilot
 
 ```
-âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
-â                    Oconnector Backend                    â
-â                                                      â
-â  WhatsApp Message                                    â
-â       â                                              â
-â       â¼                                              â
-â  SalesTools.analyzeIntention() âââââââââââ           â
-â       â                                   â           â
-â       â¼                                   â¼           â
-â  Agent Hub (externo)              Autopilot (cron)    â
-â  POST /v1/hub/orchestrate             A cada 10min    â
-â       â                                   â           â
-â       â¼                                   â¼           â
-â  IntenÃ§Ã£o do lead                 Follow-ups automÃ¡ticosâ
-â  + resposta automÃ¡tica              + score updates    â
-âââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ï¿½                    Oconnector Backend                    ï¿½
+ï¿½                                                      ï¿½
+ï¿½  WhatsApp Message                                    ï¿½
+ï¿½       ï¿½                                              ï¿½
+ï¿½       ï¿½                                              ï¿½
+ï¿½  SalesTools.analyzeIntention() ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½           ï¿½
+ï¿½       ï¿½                                   ï¿½           ï¿½
+ï¿½       ï¿½                                   ï¿½           ï¿½
+ï¿½  Agent Hub (externo)              Autopilot (cron)    ï¿½
+ï¿½  POST /v1/hub/orchestrate             A cada 10min    ï¿½
+ï¿½       ï¿½                                   ï¿½           ï¿½
+ï¿½       ï¿½                                   ï¿½           ï¿½
+ï¿½  IntenÃ§Ã£o do lead                 Follow-ups automÃ¡ticosï¿½
+ï¿½  + resposta automÃ¡tica              + score updates    ï¿½
+ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 ```
 
 O Agent Hub processa **reaÃ§Ãµes em tempo real** a mensagens.

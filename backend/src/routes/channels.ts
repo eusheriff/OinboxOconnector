@@ -65,39 +65,48 @@ app.get('/', async (c) => {
 
     return c.json({
       success: true,
-      channels: channels.map(ch => ({
+      channels: channels.map((ch) => ({
         id: ch.channel.id,
         provider: ch.channel.provider,
         name: ch.channel.name,
         status: ch.channel.status,
         created_at: ch.channel.created_at,
-        token: ch.token ? {
-          provider: ch.token.provider,
-          page_id: ch.token.page_id,
-          page_name: ch.token.page_name,
-          bot_username: ch.token.bot_username,
-          expires_at: ch.token.expires_at,
-        } : null,
-        webhook_config: ch.webhook_config ? {
-          provider: ch.webhook_config.provider,
-          is_webhook_registered: ch.webhook_config.is_webhook_registered,
-          last_verified_at: ch.webhook_config.last_verified_at,
-        } : null,
-        metrics: ch.metrics ? {
-          messages_sent_today: ch.metrics.messages_sent_today,
-          messages_received_today: ch.metrics.messages_received_today,
-          active_conversations: ch.metrics.active_conversations,
-        } : null,
+        token: ch.token
+          ? {
+              provider: ch.token.provider,
+              page_id: ch.token.page_id,
+              page_name: ch.token.page_name,
+              bot_username: ch.token.bot_username,
+              expires_at: ch.token.expires_at,
+            }
+          : null,
+        webhook_config: ch.webhook_config
+          ? {
+              provider: ch.webhook_config.provider,
+              is_webhook_registered: ch.webhook_config.is_webhook_registered,
+              last_verified_at: ch.webhook_config.last_verified_at,
+            }
+          : null,
+        metrics: ch.metrics
+          ? {
+              messages_sent_today: ch.metrics.messages_sent_today,
+              messages_received_today: ch.metrics.messages_received_today,
+              active_conversations: ch.metrics.active_conversations,
+            }
+          : null,
       })),
     });
   } catch (error) {
     await logger?.error('[Channels] Failed to list channels', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return c.json({
-      success: false,
-      error: 'Failed to list channels',
-    }, 500);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to list channels',
+      },
+      500,
+    );
   }
 });
 
@@ -130,10 +139,13 @@ app.post('/', async (c) => {
     await logger?.error('[Channels] Failed to create channel', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return c.json({
-      success: false,
-      error: 'Failed to create channel',
-    }, 500);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to create channel',
+      },
+      500,
+    );
   }
 });
 
@@ -182,7 +194,10 @@ app.post('/:id/connect', async (c) => {
         // Substituir placeholders
         const finalUrl = oauthUrl
           .replace('{app_id}', body.app_id || '')
-          .replace('{redirect_uri}', encodeURIComponent(`${publicUrl}/api/channels/${channelId}/oauth/callback`));
+          .replace(
+            '{redirect_uri}',
+            encodeURIComponent(`${publicUrl}/api/channels/${channelId}/oauth/callback`),
+          );
 
         await repo.updateChannelStatus(channelId, 'connecting');
 
@@ -216,7 +231,10 @@ app.post('/:id/connect', async (c) => {
 
         const botInfo = await telegram.getBotInfo(botToken);
         if (!botInfo) {
-          return c.json({ success: false, error: 'Invalid bot token - could not get bot info' }, 400);
+          return c.json(
+            { success: false, error: 'Invalid bot token - could not get bot info' },
+            400,
+          );
         }
 
         // Salvar token (incluindo bot_token para envio)
@@ -280,7 +298,10 @@ app.post('/:id/connect', async (c) => {
         }
 
         // Obter access token
-        const tokenResult = await getServices(c).line.getChannelAccessToken(lineChannelId, channelSecret);
+        const tokenResult = await getServices(c).line.getChannelAccessToken(
+          lineChannelId,
+          channelSecret,
+        );
         if (!tokenResult) {
           return c.json({ success: false, error: 'Failed to get access token' }, 400);
         }
@@ -301,16 +322,22 @@ app.post('/:id/connect', async (c) => {
       }
 
       default:
-        return c.json({ success: false, error: `OAuth not supported for ${channel.provider}` }, 400);
+        return c.json(
+          { success: false, error: `OAuth not supported for ${channel.provider}` },
+          400,
+        );
     }
   } catch (error) {
     await logger?.error('[Channels] Connect failed', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return c.json({
-      success: false,
-      error: 'Failed to connect channel',
-    }, 500);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to connect channel',
+      },
+      500,
+    );
   }
 });
 
@@ -350,19 +377,29 @@ app.get('/:id/oauth/callback', async (c) => {
       case 'facebook': {
         // Em produção: trocar code por page token
         // Isso requer app_id e app_secret salvos no config do channel
-        const config = channel.config ? JSON.parse(channel.config as unknown as string) as any : {};
+        const config = channel.config
+          ? (JSON.parse(channel.config as unknown as string) as any)
+          : {};
         const appId = config.app_id || '';
         const appSecret = config.app_secret || '';
 
         if (!appId || !appSecret) {
-          return c.json({
-            error: 'App ID and Secret not configured',
-            next_step: 'Configure app credentials in channel config',
-          }, 400);
+          return c.json(
+            {
+              error: 'App ID and Secret not configured',
+              next_step: 'Configure app credentials in channel config',
+            },
+            400,
+          );
         }
 
         const redirectUri = `${publicUrl}/api/channels/${channelId}/oauth/callback`;
-        const tokenData = await facebook.exchangeCodeForPageToken(code!, appId, appSecret, redirectUri);
+        const tokenData = await facebook.exchangeCodeForPageToken(
+          code!,
+          appId,
+          appSecret,
+          redirectUri,
+        );
 
         // Salvar token
         await repo.saveOAuthToken({
@@ -394,7 +431,9 @@ app.get('/:id/oauth/callback', async (c) => {
       }
 
       case 'tiktok': {
-        const config = channel.config ? JSON.parse(channel.config as unknown as string) as any : {};
+        const config = channel.config
+          ? (JSON.parse(channel.config as unknown as string) as any)
+          : {};
         const clientKey = config.client_key || '';
         const clientSecret = config.client_secret || '';
 
@@ -403,7 +442,12 @@ app.get('/:id/oauth/callback', async (c) => {
         }
 
         const redirectUri = `${publicUrl}/api/channels/${channelId}/oauth/callback`;
-        const tokenData = await tiktok.exchangeCodeForToken(code!, clientKey, clientSecret, redirectUri);
+        const tokenData = await tiktok.exchangeCodeForToken(
+          code!,
+          clientKey,
+          clientSecret,
+          redirectUri,
+        );
 
         if (!tokenData) {
           return c.json({ error: 'Failed to exchange code for token' }, 400);
@@ -431,10 +475,13 @@ app.get('/:id/oauth/callback', async (c) => {
     await logger?.error('[Channels] OAuth callback failed', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return c.json({
-      error: 'OAuth callback failed',
-      message: error instanceof Error ? error.message : 'Unknown error',
-    }, 500);
+    return c.json(
+      {
+        error: 'OAuth callback failed',
+        message: error instanceof Error ? error.message : 'Unknown error',
+      },
+      500,
+    );
   }
 });
 
@@ -577,7 +624,7 @@ app.post('/line/webhook', async (c) => {
 
   // Line precisa do channel_secret para verificar assinatura
   const channel = await repo.getChannelById(channelId);
-  const config = channel?.config ? JSON.parse(channel.config as unknown as string) as any : {};
+  const config = channel?.config ? (JSON.parse(channel.config as unknown as string) as any) : {};
 
   return line.handleWebhook(c, '', channelId, config.channel_secret || '');
 });
@@ -620,7 +667,12 @@ app.post('/send', async (c) => {
           return c.json({ success: false, error: 'No valid Instagram token' }, 400);
         }
         const igAccountId = token.page_id || '';
-        sent = await instagram.sendMessage(igAccountId, body.recipient_id, body.message, token.access_token);
+        sent = await instagram.sendMessage(
+          igAccountId,
+          body.recipient_id,
+          body.message,
+          token.access_token,
+        );
         break;
       }
 
@@ -630,7 +682,11 @@ app.post('/send', async (c) => {
           return c.json({ success: false, error: 'No valid Telegram bot token' }, 400);
         }
         // Precisaria do bot_token completo - simplificado
-        const msgId = await telegram.sendMessage('PLACEHOLDER_TOKEN', body.recipient_id, body.message);
+        const msgId = await telegram.sendMessage(
+          'PLACEHOLDER_TOKEN',
+          body.recipient_id,
+          body.message,
+        );
         sent = msgId !== null;
         break;
       }
@@ -654,7 +710,10 @@ app.post('/send', async (c) => {
       }
 
       default:
-        return c.json({ success: false, error: `Sending not supported for ${channel.provider}` }, 400);
+        return c.json(
+          { success: false, error: `Sending not supported for ${channel.provider}` },
+          400,
+        );
     }
 
     if (sent) {
@@ -674,10 +733,13 @@ app.post('/send', async (c) => {
     await logger?.error('[Channels] Send message failed', {
       error: error instanceof Error ? error.message : String(error),
     });
-    return c.json({
-      success: false,
-      error: 'Failed to send message',
-    }, 500);
+    return c.json(
+      {
+        success: false,
+        error: 'Failed to send message',
+      },
+      500,
+    );
   }
 });
 

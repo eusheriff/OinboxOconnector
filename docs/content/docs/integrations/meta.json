@@ -1,7 +1,4 @@
 {
   "title": "Integrations",
-  "pages": [
-    "agent-hub",
-    "whatsapp-channel"
-  ]
+  "pages": ["agent-hub", "whatsapp-channel"]
 }

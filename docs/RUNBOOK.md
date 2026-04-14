@@ -1,4 +1,4 @@
-# Operational Runbook � Oconnector Backend
+# Operational Runbook � Oconnector Backend
 
 > Para operadores, SREs e desenvolvedores em plantão.
 
@@ -6,17 +6,17 @@
 
 ## 1. Infraestrutura
 
-| Componente | Tecnologia | Localização |
-|------------|-----------|-------------|
-| Frontend | React SPA (Vite) � Cloudflare Pages | `Oconnector.oconnector.tech` |
-| Backend | Hono � Cloudflare Worker | `api.Oconnector.oconnector.tech` |
-| Banco | Cloudflare D1 (SQLite edge) | Edge Cloudflare |
-| Storage | Cloudflare R2 | `oconnector-images` bucket |
-| WhatsApp | Evolution API (BAutomationleys) | VPS GCP (tunnel Cloudflare) |
-| IA | Google Data Engine + Agent Hub externo | `agent-hub.oconnector.tech` |
-| Billing | Stripe | Cloud |
-| Observabilidade | Datadog | Região US5 |
-| Evolution API (dev) | Docker local | `localhost:8080` |
+| Componente          | Tecnologia                             | Localização                      |
+| ------------------- | -------------------------------------- | -------------------------------- |
+| Frontend            | React SPA (Vite) � Cloudflare Pages    | `Oconnector.oconnector.tech`     |
+| Backend             | Hono � Cloudflare Worker               | `api.Oconnector.oconnector.tech` |
+| Banco               | Cloudflare D1 (SQLite edge)            | Edge Cloudflare                  |
+| Storage             | Cloudflare R2                          | `oconnector-images` bucket       |
+| WhatsApp            | Evolution API (BAutomationleys)        | VPS GCP (tunnel Cloudflare)      |
+| IA                  | Google Data Engine + Agent Hub externo | `agent-hub.oconnector.tech`      |
+| Billing             | Stripe                                 | Cloud                            |
+| Observabilidade     | Datadog                                | Região US5                       |
+| Evolution API (dev) | Docker local                           | `localhost:8080`                 |
 
 ## 2. Comandos OperacionAutomations
 
@@ -35,8 +35,8 @@ curl -s https://api.Oconnector.oconnector.tech/api/health | jq .
 
 **Respostas esperadas:**
 
-- `200 {"status": "ok"}` � tudo funcionando
-- `503 {"status": "degraded"}` � uma ou mAutomations dependências com problema
+- `200 {"status": "ok"}` � tudo funcionando
+- `503 {"status": "degraded"}` � uma ou mAutomations dependências com problema
 
 ### 2.2 Deploy
 
@@ -129,7 +129,7 @@ wrangler deploy   # produção
 
 - Sintoma: health check retorna `{"d1": {"status": "error"}}`
 - Ação: verificar status do D1 no [dashboard Cloudflare](https://dash.cloudflare.com)
-- Workaround: nenhum � o D1 é required para todas as operações
+- Workaround: nenhum � o D1 é required para todas as operações
 
 ### 3.3 Circuit Breaker aberto
 
@@ -175,13 +175,13 @@ wrangler deploy   # produção
 
 ## 4. Escalação
 
-| Problema | Responsável | Como contatar |
-|----------|------------|---------------|
-| Cloudflare Workers/D1/R2 | Time de infra | � |
-| Evolution API (VPS) | Ops | � |
-| Agent Hub | Time de IA | � |
-| Stripe | Financeiro | � |
-| Bug na aplicação | Dev team | � |
+| Problema                 | Responsável   | Como contatar |
+| ------------------------ | ------------- | ------------- |
+| Cloudflare Workers/D1/R2 | Time de infra | �             |
+| Evolution API (VPS)      | Ops           | �             |
+| Agent Hub                | Time de IA    | �             |
+| Stripe                   | Financeiro    | �             |
+| Bug na aplicação         | Dev team      | �             |
 
 ---
 
@@ -212,9 +212,9 @@ Para backup externo, usar `rclone` ou API do R2.
 
 - Logs: pesquisar por `service:Oconnector-backend`
 - Métricas custom:
-  - `Oconnector.http.request.duration` � latência das requisições
-  - `Oconnector.http.error` � contagem de erros por status code
-  - `Oconnector.exception.unhandled` � exceções não tratadas
+  - `Oconnector.http.request.duration` � latência das requisições
+  - `Oconnector.http.error` � contagem de erros por status code
+  - `Oconnector.exception.unhandled` � exceções não tratadas
 
 ### 6.2 Correlation IDs
 

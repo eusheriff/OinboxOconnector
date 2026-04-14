@@ -8,7 +8,7 @@
 
 ## 1. DiagnÃ³stico em 10 Bullets
 
-1. **Tipos duplicados em 3 locAutomations**: `src/types.ts` (278 linhas), `backend/src/types.ts` (66 linhas), `shared/types/index.ts` (204 linhas) â sem uso consistente do `shared/`.
+1. **Tipos duplicados em 3 locAutomations**: `src/types.ts` (278 linhas), `backend/src/types.ts` (66 linhas), `shared/types/index.ts` (204 linhas) ï¿½ sem uso consistente do `shared/`.
 
 2. **`server.ts` deprecated mas usado pelo Docker**: `backend/src/_deprecated/server.ts` Ã© referenciado pelo `npm run start:backend` em `package.json` e `Dockerfile`, mas diverge do `index.ts` de produÃ§Ã£o (apenas 5 rotas vs 22 rotas).
 
@@ -20,11 +20,11 @@
 
 6. **`shared/types` nÃ£o utilizado**: Existe pacote shared, mas frontend e backend mantÃªm cÃ³pias independentes dos types.
 
-7. **ESLint disables em arquivos crÃ­ticos**: `backend/src/types.ts`, `backend/src/_deprecated/server.ts`, `backend/src/middleware/auth.ts`, `backend/src/routes/leads.ts`, `backend/src/routes/portals.ts` â indicam dÃ­vida tÃ©cnica.
+7. **ESLint disables em arquivos crÃ­ticos**: `backend/src/types.ts`, `backend/src/_deprecated/server.ts`, `backend/src/middleware/auth.ts`, `backend/src/routes/leads.ts`, `backend/src/routes/portals.ts` ï¿½ indicam dÃ­vida tÃ©cnica.
 
 8. **MigraÃ§Ãµes SQL avulsas na rAutomationz**: `backend/migration_lead_ops.sql` e `backend/migration_lead_ops_part2.sql` fora da pasta `migrations/`.
 
-9. **Arquivos mÃºltiplos de ambiente**: `.env`, `.env.bak`, `.env.docker`, `.env.example`, `.env.production`, `.dev.vars` â risco de divergÃªncia e confusÃ£o.
+9. **Arquivos mÃºltiplos de ambiente**: `.env`, `.env.bak`, `.env.docker`, `.env.example`, `.env.production`, `.dev.vars` ï¿½ risco de divergÃªncia e confusÃ£o.
 
 10. **Pasta `evolution-api-fly` vazia/nÃ£o integrada**: Apenas 1 filho, sem uso aparente no cÃ³digo.
 
@@ -60,24 +60,24 @@ Com apenas 4 arquivos de teste para ~55 mÃ³dulos de cÃ³digo, mudanÃ§as simples p
 
 ## 3. Tabela de Achados
 
-| Item                                   | Tipo                 | EvidÃªncia                                         | Risco | AÃ§Ã£o Sugerida                        | ConfirmaÃ§Ã£o? |
-| -------------------------------------- | -------------------- | ------------------------------------------------- | ----- | ------------------------------------ | ------------ |
-| `src/types.ts`                         | Duplicidade          | 278 linhas duplicando `shared/types`              | Alto  | Migrar para usar `shared/types`      | Sim          |
-| `backend/src/types.ts`                 | Duplicidade          | 66 linhas, parcialmente diferente de `shared/`    | Alto  | Consolidar com `shared/types`        | Sim          |
-| `backend/src/_deprecated/server.ts`    | Obsoleto             | Warning na linha 18, diverge de `index.ts`        | Alto  | Sincronizar ou remover Docker flow   | Sim          |
+| Item                                   | Tipo                 | EvidÃªncia                                                 | Risco         | AÃ§Ã£o Sugerida                        | ConfirmaÃ§Ã£o? |
+| -------------------------------------- | -------------------- | --------------------------------------------------------- | ------------- | ------------------------------------ | ------------ |
+| `src/types.ts`                         | Duplicidade          | 278 linhas duplicando `shared/types`                      | Alto          | Migrar para usar `shared/types`      | Sim          |
+| `backend/src/types.ts`                 | Duplicidade          | 66 linhas, parcialmente diferente de `shared/`            | Alto          | Consolidar com `shared/types`        | Sim          |
+| `backend/src/_deprecated/server.ts`    | Obsoleto             | Warning na linha 18, diverge de `index.ts`                | Alto          | Sincronizar ou remover Docker flow   | Sim          |
 | `backend/migration_lead_ops.sql`       | Fora de lÃ³gica       | Na rAutomationz de `/backend/` ao invÃ©s de `/migrations/` | BAutomationxo | Mover para `migrations/`             | NÃ£o          |
-| `backend/migration_lead_ops_part2.sql` | Fora de lÃ³gica       | Idem                                              | BAutomationxo | Mover para `migrations/`             | NÃ£o          |
-| `.env.bak` (41 bytes)                  | Sobra                | Backup sem uso, risco de leak                     | MÃ©dio | Remover                              | Sim          |
-| `.env.production` (48 bytes)           | Sobra                | Apenas 48 bytes, provavelmente obsoleto           | MÃ©dio | Verificar uso e remover se obsoleto  | Sim          |
-| `evolution-api-fly/`                   | Candidato a obsoleto | Apenas 1 arquivo filho, sem referÃªncia no cÃ³digo  | BAutomationxo | Verificar propÃ³sito                  | Sim          |
+| `backend/migration_lead_ops_part2.sql` | Fora de lÃ³gica       | Idem                                                      | BAutomationxo | Mover para `migrations/`             | NÃ£o          |
+| `.env.bak` (41 bytes)                  | Sobra                | Backup sem uso, risco de leak                             | MÃ©dio         | Remover                              | Sim          |
+| `.env.production` (48 bytes)           | Sobra                | Apenas 48 bytes, provavelmente obsoleto                   | MÃ©dio         | Verificar uso e remover se obsoleto  | Sim          |
+| `evolution-api-fly/`                   | Candidato a obsoleto | Apenas 1 arquivo filho, sem referÃªncia no cÃ³digo          | BAutomationxo | Verificar propÃ³sito                  | Sim          |
 | `data/` directory                      | Sobra                | DiretÃ³rio na rAutomationz com 1 arquivo                   | BAutomationxo | Avaliar necessidade                  | Sim          |
-| `docs/EVOLUTION_API_EASYPANEL.md`      | Fora de lÃ³gica       | Fora de `_consolidated/`                          | BAutomationxo | Mover para `02_runbooks/`            | NÃ£o          |
-| Imports `../../` em 37 arquivos        | Gap                  | Pattern detectado via grep                        | MÃ©dio | Configurar path aliases              | NÃ£o          |
-| `backend/test/` (3 arquivos)           | Gap                  | Apenas auth, billing, portals testados            | Alto  | Adicionar testes para rotas crÃ­ticas | NÃ£o          |
-| `docs/_consolidated/01_architecture/`  | Gap                  | DiretÃ³rio vazio, sem ADRs                         | MÃ©dio | Criar ADRs bÃ¡sicos                   | NÃ£o          |
-| `docs/_consolidated/02_runbooks/`      | Gap                  | DiretÃ³rio vazio                                   | MÃ©dio | Criar runbooks deploy/debug          | NÃ£o          |
-| `docs/_consolidated/03_api/`           | Gap                  | DiretÃ³rio vazio                                   | Alto  | Documentar API contracts             | NÃ£o          |
-| Observabilidade                        | Gap                  | Apenas `datadog.ts`, sem correlation-id visÃ­vel   | Alto  | Implementar correlation-id           | NÃ£o          |
+| `docs/EVOLUTION_API_EASYPANEL.md`      | Fora de lÃ³gica       | Fora de `_consolidated/`                                  | BAutomationxo | Mover para `02_runbooks/`            | NÃ£o          |
+| Imports `../../` em 37 arquivos        | Gap                  | Pattern detectado via grep                                | MÃ©dio         | Configurar path aliases              | NÃ£o          |
+| `backend/test/` (3 arquivos)           | Gap                  | Apenas auth, billing, portals testados                    | Alto          | Adicionar testes para rotas crÃ­ticas | NÃ£o          |
+| `docs/_consolidated/01_architecture/`  | Gap                  | DiretÃ³rio vazio, sem ADRs                                 | MÃ©dio         | Criar ADRs bÃ¡sicos                   | NÃ£o          |
+| `docs/_consolidated/02_runbooks/`      | Gap                  | DiretÃ³rio vazio                                           | MÃ©dio         | Criar runbooks deploy/debug          | NÃ£o          |
+| `docs/_consolidated/03_api/`           | Gap                  | DiretÃ³rio vazio                                           | Alto          | Documentar API contracts             | NÃ£o          |
+| Observabilidade                        | Gap                  | Apenas `datadog.ts`, sem correlation-id visÃ­vel           | Alto          | Implementar correlation-id           | NÃ£o          |
 
 ---
 
@@ -86,11 +86,11 @@ Com apenas 4 arquivos de teste para ~55 mÃ³dulos de cÃ³digo, mudanÃ§as simples p
 ### L0 - RÃ¡pido/BAutomationxo Risco (1-2h)
 
 1. **Mover migraÃ§Ãµes avulsas**:
-   - `backend/migration_lead_ops.sql` â `backend/migrations/0012_lead_ops.sql`
-   - `backend/migration_lead_ops_part2.sql` â `backend/migrations/0013_lead_ops_part2.sql`
+   - `backend/migration_lead_ops.sql` ï¿½ `backend/migrations/0012_lead_ops.sql`
+   - `backend/migration_lead_ops_part2.sql` ï¿½ `backend/migrations/0013_lead_ops_part2.sql`
 
 2. **Consolidar docs dispersos**:
-   - `docs/EVOLUTION_API_EASYPANEL.md` â `docs/_consolidated/02_runbooks/evolution_api_easypanel.md`
+   - `docs/EVOLUTION_API_EASYPANEL.md` ï¿½ `docs/_consolidated/02_runbooks/evolution_api_easypanel.md`
 
 3. **Limpar arquivos de backup**:
    - Remover `.env.bak` (verificar conteÃºdo antes)
@@ -154,35 +154,35 @@ Com apenas 4 arquivos de teste para ~55 mÃ³dulos de cÃ³digo, mudanÃ§as simples p
 
 ```
 docs/_consolidated/
-âââ README.md            â Ãndice central (jÃ¡ existe)
-âââ STATE.md             â Estado atual (jÃ¡ existe)
-âââ WORKLOG.md           â Log de trabalho (jÃ¡ existe)
-âââ 00_overview/
-â   âââ README.md        â VisÃ£o geral do sistema
-â   âââ legacy_plans/    â (jÃ¡ existe)
-âââ 01_architecture/
-â   âââ README.md        â CRIAR
-â   âââ ADR-001-multitenancy.md  â CRIAR
-â   âââ ADR-002-cloudflare.md    â CRIAR
-â   âââ diagrams/        â CRIAR (MermAutomationd)
-âââ 02_runbooks/
-â   âââ README.md        â CRIAR
-â   âââ evolution_api_easypanel.md  â MOVER de docs/
-â   âââ local_development.md        â CRIAR
-â   âââ deploy_cloudflare.md        â CRIAR
-âââ 03_api/
-â   âââ README.md        â CRIAR
-â   âââ openapi.yaml     â CRIAR (futuro)
-âââ 04_audit/
-â   âââ previous_audit.md           â (jÃ¡ existe)
-â   âââ full_audit_2026-01-17.md    â (ESTE ARQUIVO)
-âââ 99_archive/
-    âââ README.md        â CRIAR
+ï¿½ï¿½ï¿½ README.md            ï¿½ ï¿½ndice central (jÃ¡ existe)
+ï¿½ï¿½ï¿½ STATE.md             ï¿½ Estado atual (jÃ¡ existe)
+ï¿½ï¿½ï¿½ WORKLOG.md           ï¿½ Log de trabalho (jÃ¡ existe)
+ï¿½ï¿½ï¿½ 00_overview/
+ï¿½   ï¿½ï¿½ï¿½ README.md        ï¿½ VisÃ£o geral do sistema
+ï¿½   ï¿½ï¿½ï¿½ legacy_plans/    ï¿½ (jÃ¡ existe)
+ï¿½ï¿½ï¿½ 01_architecture/
+ï¿½   ï¿½ï¿½ï¿½ README.md        ï¿½ CRIAR
+ï¿½   ï¿½ï¿½ï¿½ ADR-001-multitenancy.md  ï¿½ CRIAR
+ï¿½   ï¿½ï¿½ï¿½ ADR-002-cloudflare.md    ï¿½ CRIAR
+ï¿½   ï¿½ï¿½ï¿½ diagrams/        ï¿½ CRIAR (MermAutomationd)
+ï¿½ï¿½ï¿½ 02_runbooks/
+ï¿½   ï¿½ï¿½ï¿½ README.md        ï¿½ CRIAR
+ï¿½   ï¿½ï¿½ï¿½ evolution_api_easypanel.md  ï¿½ MOVER de docs/
+ï¿½   ï¿½ï¿½ï¿½ local_development.md        ï¿½ CRIAR
+ï¿½   ï¿½ï¿½ï¿½ deploy_cloudflare.md        ï¿½ CRIAR
+ï¿½ï¿½ï¿½ 03_api/
+ï¿½   ï¿½ï¿½ï¿½ README.md        ï¿½ CRIAR
+ï¿½   ï¿½ï¿½ï¿½ openapi.yaml     ï¿½ CRIAR (futuro)
+ï¿½ï¿½ï¿½ 04_audit/
+ï¿½   ï¿½ï¿½ï¿½ previous_audit.md           ï¿½ (jÃ¡ existe)
+ï¿½   ï¿½ï¿½ï¿½ full_audit_2026-01-17.md    ï¿½ (ESTE ARQUIVO)
+ï¿½ï¿½ï¿½ 99_archive/
+    ï¿½ï¿½ï¿½ README.md        ï¿½ CRIAR
 ```
 
 ### Checklist de ConsolidaÃ§Ã£o
 
-- [ ] Mover `docs/EVOLUTION_API_EASYPANEL.md` â `docs/_consolidated/02_runbooks/`
+- [ ] Mover `docs/EVOLUTION_API_EASYPANEL.md` ï¿½ `docs/_consolidated/02_runbooks/`
 - [ ] Criar `docs/_consolidated/01_architecture/README.md`
 - [ ] Criar `docs/_consolidated/02_runbooks/README.md`
 - [ ] Criar `docs/_consolidated/03_api/README.md`
@@ -194,7 +194,7 @@ docs/_consolidated/
 
 ## 6. Arquivos para RemoÃ§Ã£o/MovimentaÃ§Ã£o (Requer ConfirmaÃ§Ã£o)
 
-> **CAUTION**: Os itens abAutomationxo requerem CONFIRMAÃÃO EXPLÃCITA antes de qualquer aÃ§Ã£o.
+> **CAUTION**: Os itens abAutomationxo requerem CONFIRMAï¿½ï¿½O EXPLï¿½CITA antes de qualquer aÃ§Ã£o.
 
 ### RemoÃ§Ã£o
 
@@ -216,23 +216,23 @@ docs/_consolidated/
 | Item                 | Motivo                                  | AÃ§Ã£o sugerida                                 |
 | -------------------- | --------------------------------------- | --------------------------------------------- |
 | `evolution-api-fly/` | DiretÃ³rio com 1 arquivo, sem referÃªncia | Verificar se Ã© WIP ou obsoleto                |
-| `data/`              | DiretÃ³rio na rAutomationz                       | Verificar se Ã© usado pelo Docker ou dev local |
+| `data/`              | DiretÃ³rio na rAutomationz               | Verificar se Ã© usado pelo Docker ou dev local |
 | `metadata.json`      | NÃ£o referenciado no cÃ³digo              | Verificar propÃ³sito                           |
 
 ---
 
 ## 7. CritÃ©rios de Sucesso ("100%")
 
-| CritÃ©rio                         | Estado Atual        | Meta                             |
-| -------------------------------- | ------------------- | -------------------------------- |
-| Fluxos crÃ­ticos documentados     |  Parcial          |  WhatsApp, Auth, Stripe, Leads |
-| Fluxos crÃ­ticos testados         |  7% estrutural    |  40%+                          |
-| Observabilidade (correlation-id) |  Ausente          |  Implementado                  |
-| Logs coerentes                   |  Datadog          |  Manter                        |
-| Estrutura sem duplicidades       |  3 arquivos types |  1 shared/                     |
-| Docs centralizados               |  Disperso         |  \_consolidated/               |
-| ADRs documentados                |  0                |  3+ crÃ­ticos                   |
-| Path aliases configurados        |  Ausente          |  Configurado                   |
+| CritÃ©rio                         | Estado Atual     | Meta                          |
+| -------------------------------- | ---------------- | ----------------------------- |
+| Fluxos crÃ­ticos documentados     | Parcial          | WhatsApp, Auth, Stripe, Leads |
+| Fluxos crÃ­ticos testados         | 7% estrutural    | 40%+                          |
+| Observabilidade (correlation-id) | Ausente          | Implementado                  |
+| Logs coerentes                   | Datadog          | Manter                        |
+| Estrutura sem duplicidades       | 3 arquivos types | 1 shared/                     |
+| Docs centralizados               | Disperso         | \_consolidated/               |
+| ADRs documentados                | 0                | 3+ crÃ­ticos                   |
+| Path aliases configurados        | Ausente          | Configurado                   |
 
 ---
 
@@ -242,4 +242,4 @@ docs/_consolidated/
 2. **Curto prazo**: Unificar types e configurar aliases (L1)
 3. **MÃ©dio prazo**: Expandir testes e criar ADRs (L2)
 
-> **IMPORTANTE**: Solicito **CONFIRMAÃÃO** para prosseguir com as aÃ§Ãµes L0 listadas acima.
+> **IMPORTANTE**: Solicito **CONFIRMAï¿½ï¿½O** para prosseguir com as aÃ§Ãµes L0 listadas acima.

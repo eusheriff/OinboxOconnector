@@ -17,7 +17,9 @@ import { SkeletonCard } from '../components/UI/Skeleton';
 import { TrialAlert } from '../components/UI/TrialAlert';
 
 // Lazy loaded components
-const LegalHub = React.lazy(() => import('../components/LegalHub').then(m => ({ default: m.LegalHub })));
+const LegalHub = React.lazy(() =>
+  import('../components/LegalHub').then((m) => ({ default: m.LegalHub })),
+);
 const AIConsultant = React.lazy(() => import('../pages/client/AIConsultant'));
 const MarketingStudio = React.lazy(() => import('../pages/client/MarketingStudio'));
 const Calculator = React.lazy(() => import('../pages/client/Calculator'));
@@ -89,14 +91,56 @@ export const ClientRoutes: React.FC<ClientRoutesProps> = ({ user, onLogout }) =>
         />
         <Route path="clients" element={<ClientList clients={[]} onAddClient={() => undefined} />} />
         <Route path="calendar" element={<CalendarView />} />
-        <Route path="ai-consultant" element={<Suspense fallback={<LazyFallback />}><AIConsultant /></Suspense>} />
+        <Route
+          path="ai-consultant"
+          element={
+            <Suspense fallback={<LazyFallback />}>
+              <AIConsultant />
+            </Suspense>
+          }
+        />
         <Route path="listings/new" element={<ListingForm />} />
         <Route path="campaigns" element={<Campaigns />} />
-        <Route path="marketing" element={<Suspense fallback={<LazyFallback />}><MarketingStudio /></Suspense>} />
-        <Route path="contracts" element={<Suspense fallback={<LazyFallback />}><Contracts /></Suspense>} />
-        <Route path="calculator" element={<Suspense fallback={<LazyFallback />}><Calculator /></Suspense>} />
-        <Route path="map" element={<Suspense fallback={<LazyFallback />}><MapPage /></Suspense>} />
-        <Route path="legal-hub" element={<Suspense fallback={<LazyFallback />}><LegalHub /></Suspense>} />
+        <Route
+          path="marketing"
+          element={
+            <Suspense fallback={<LazyFallback />}>
+              <MarketingStudio />
+            </Suspense>
+          }
+        />
+        <Route
+          path="contracts"
+          element={
+            <Suspense fallback={<LazyFallback />}>
+              <Contracts />
+            </Suspense>
+          }
+        />
+        <Route
+          path="calculator"
+          element={
+            <Suspense fallback={<LazyFallback />}>
+              <Calculator />
+            </Suspense>
+          }
+        />
+        <Route
+          path="map"
+          element={
+            <Suspense fallback={<LazyFallback />}>
+              <MapPage />
+            </Suspense>
+          }
+        />
+        <Route
+          path="legal-hub"
+          element={
+            <Suspense fallback={<LazyFallback />}>
+              <LegalHub />
+            </Suspense>
+          }
+        />
         <Route path="settings" element={<ClientSettings />} />
         <Route path="whatsapp" element={<WhatsAppManager />} />
         <Route path="leads" element={<LeadsPage />} />

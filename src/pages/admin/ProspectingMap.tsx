@@ -9,7 +9,7 @@ import L from 'leaflet';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
-let DefaultIcon = L.icon({
+const DefaultIcon = L.icon({
   iconUrl: icon as any,
   shadowUrl: iconShadow as any,
   iconSize: [25, 41],
@@ -173,7 +173,7 @@ export default function ProspectingMap() {
               <div className="flex justify-between items-start">
                 <h4 className="font-bold text-gray-800">{place.name}</h4>
                 <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded font-bold flex items-center gap-1">
-                  â {place.rating || 'N/A'}
+                  ï¿½ {place.rating || 'N/A'}
                 </span>
               </div>
               <p className="text-sm text-gray-500 mt-1 line-clamp-2">{place.address}</p>
